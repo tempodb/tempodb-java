@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,16 +19,18 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Client {
 	
@@ -39,7 +40,7 @@ public class Client {
 	private DefaultHttpClient httpclient = new DefaultHttpClient();
 	private AuthCache authCache = new BasicAuthCache();
 	private BasicHttpContext localcontext = new BasicHttpContext();
-	private SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	public static SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	
 	public Client(String apiKey, String apiSecret) {
 		httpclient.getCredentialsProvider().setCredentials(
@@ -53,67 +54,42 @@ public class Client {
         // Add AuthCache to the execution context
         localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
 	}
-	
-    public static void main(String[] args) throws Exception {
-    	Client client = new Client("myagley", "opensesame");
-
-    	Date start = client.iso8601.parse("2011-01-03T13:42:00+0000");
-    	Date end = client.iso8601.parse("2011-01-04T13:42:00+0000");
-    	//JSONArray read_id = client.read_id("your-series-id", start, end);
-    	JSONArray read_key = client.read_key("your-series-key", start, end);
-    	System.out.println(read_key);
-    	
-    	/*
-    	JSONArray series = client.getSeries();
-
-    	for (int i = 0; i < series.length(); i++) {
-    		try {
-    			JSONObject s = series.getJSONObject(i);
-    			System.out.println( "id: " + s.getString("id") );
-    			System.out.println( "key: " + s.getString("key") );
-    			System.out.println( "tags: " + s.getJSONArray("tags") );
-    			System.out.println( "attributes: " + s.getJSONObject("attributes") );
-    			System.out.println();
-    		}
-    		catch (JSONException e){}
-		}
-		*/
-    }
     
-    public JSONArray getSeries() throws Exception {
+    public ArrayList<Series> getSeries() throws Exception {
     	HttpGet httpget = new HttpGet("/"+this.APIVersion+"/series/");
     	String resultString = request(httpget);
     	
-    	return new JSONArray(resultString);
+    	return SeriesManager.createSeriesList(new JSONArray(resultString));
     }
 
-    public JSONArray read_id(String seriesID, Date start, Date end) throws Exception {
-    	return read_id(seriesID, start, end, null, null);
+
+    public ArrayList<DataPoint> readId(String seriesId, Date start, Date end) throws Exception {
+    	return readId(seriesId, start, end, null, null);
     }
     
-    public JSONArray read_id(String seriesID, Date start, Date end, String interval) throws Exception {
-    	return read_id(seriesID, start, end, interval, null);
+    public ArrayList<DataPoint> readId(String seriesId, Date start, Date end, String interval) throws Exception {
+    	return readId(seriesId, start, end, interval, null);
     }
     
-    public JSONArray read_id(String seriesID, Date start, Date end, String interval, String function) throws Exception {
-    	return read("id", seriesID, start, end, interval, function);
+    public ArrayList<DataPoint> readId(String seriesId, Date start, Date end, String interval, String function) throws Exception {
+    	return read("id", seriesId, start, end, interval, function);
     }
     
     
-    public JSONArray read_key(String seriesKey, Date start, Date end) throws Exception {
-    	return read_key(seriesKey, start, end, null, null);
+    public ArrayList<DataPoint> readKey(String seriesKey, Date start, Date end) throws Exception {
+    	return readKey(seriesKey, start, end, null, null);
     }
     
-    public JSONArray read_key(String seriesKey, Date start, Date end, String interval) throws Exception {
-    	return read_key(seriesKey, start, end, interval, null);
+    public ArrayList<DataPoint> readKey(String seriesKey, Date start, Date end, String interval) throws Exception {
+    	return readKey(seriesKey, start, end, interval, null);
     }
     
-    public JSONArray read_key(String seriesKey, Date start, Date end, String interval, String function) throws Exception {
+    public ArrayList<DataPoint> readKey(String seriesKey, Date start, Date end, String interval, String function) throws Exception {
     	return read("key", seriesKey, start, end, interval, function);
     }
-    
-    
-    public JSONArray read(String seriesType, String seriesValue, Date start, Date end, String interval, String function) throws Exception {
+
+
+    public ArrayList<DataPoint> read(String seriesType, String seriesValue, Date start, Date end, String interval, String function) throws Exception {
     	List<NameValuePair> params = new ArrayList<NameValuePair>();
     	params.add(new BasicNameValuePair("start", iso8601.format(start)));
         params.add(new BasicNameValuePair("end", iso8601.format(end)));
@@ -125,8 +101,60 @@ public class Client {
         HttpGet httpget = new HttpGet("/"+this.APIVersion+"/series/"+ seriesType +"/" + seriesValue + "/data/?"+qsParams);
         
         String resultString = request(httpget);
-    	return new JSONArray(resultString);
+    	return DataPointManager.createDataPointList(new JSONArray(resultString));
     }
+
+
+    public JSONObject writeId(String seriesId, ArrayList<DataPoint> data) throws Exception {
+    	return write("id", seriesId, data);
+    }
+    
+    public JSONObject writeKey(String seriesKey, ArrayList<DataPoint> data) throws Exception {
+    	return write("key", seriesKey, data);
+    }
+
+
+    public JSONObject write(String seriesType, String seriesValue, ArrayList<DataPoint> data) throws Exception {
+    	HttpPost httppost = new HttpPost("/"+this.APIVersion+"/series/"+ seriesType +"/" + seriesValue + "/data/");
+        
+    	String jsonData = "[";
+        for (DataPoint dp : data ) {
+        	jsonData += dp.toJSONString() + ",";
+        }
+        
+        // remove trailing comma
+        jsonData = jsonData.substring(0,jsonData.length()-1);
+        jsonData += "]";
+    	
+        httppost.setEntity(new StringEntity(jsonData));
+        httppost.setHeader("Accept", "application/json");
+        
+        String resultString = request(httppost);
+    	return new JSONObject(resultString);
+    }
+
+
+    public JSONObject bulkWrite(Date t, ArrayList<BulkPoint> data) throws Exception {
+    	HttpPost httppost = new HttpPost("/"+this.APIVersion+"/data/");
+    	
+    	String jsonData = "[";
+        for (BulkPoint bp : data ) {
+        	jsonData += bp.toJSONString() + ",";
+        }
+        
+        // remove trailing comma
+        jsonData = jsonData.substring(0,jsonData.length()-1);
+        jsonData += "]";
+        
+        String jsonString = "{ \"t\":\"" + Client.iso8601.format(t) + "\", \"data\":" + jsonData + "}";
+    	System.out.println(jsonString);
+    	httppost.setEntity(new StringEntity(jsonString));
+        httppost.setHeader("Accept", "application/json");
+        
+        String resultString = request(httppost);
+    	return new JSONObject(resultString);
+    }
+
 
     public String request(HttpUriRequest uriRequest) throws Exception {
     	uriRequest.addHeader("Content-Type", "application/json");
@@ -134,19 +162,18 @@ public class Client {
     	String resultString = "";
 
     	try {
-            //System.out.println("executing request: " + httpget.getRequestLine());
-            //System.out.println("to target: " + targetHost);
+            System.out.println("executing request: " + uriRequest.getRequestLine());
+            System.out.println("to target: " + targetHost);
 
             HttpResponse response = this.httpclient.execute(this.targetHost, uriRequest, this.localcontext);
             HttpEntity entity = response.getEntity();
 
-            /*
+
             System.out.println("----------------------------------------");
             System.out.println(response.getStatusLine());
             if (entity != null) {
                 System.out.println("Response content length: " + entity.getContentLength());
             }
-            */
 
             InputStream instream = entity.getContent();
             Header contentEncoding = response.getFirstHeader("Content-Encoding");
@@ -166,6 +193,7 @@ public class Client {
 
     	return resultString;
     }
+
 
     private static String convertStreamToString(InputStream is) {
 	/*
