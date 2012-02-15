@@ -11,7 +11,7 @@ import com.tempodb.client.Series;
 public class SeriesDemo {
 	
 	public static void main(String[] args) throws Exception {
-    	Client client = new Client("myagley", "opensesame");
+		Client client = new Client("your-api-key", "your-api-secret");
 
     	ArrayList<Series> series = client.getSeries();
 
