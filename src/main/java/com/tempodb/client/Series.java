@@ -9,35 +9,35 @@ public class Series {
 	private String key;
 	private String[] tags;
 	private HashMap<String, String> attributes;
-	
+
 	public static final String idName = "id";
 	public static final String keyName = "key";
 	public static final String tagsName = "tags";
 	public static final String attributesName = "attributes";
-	
+
 	public Series(String id, String key, String[] tags, HashMap<String, String> attributes) {
 		this.id = id;
 		this.key = key;
 		this.tags = tags;
 		this.attributes = attributes;
 	}
-	
+
 	public String getId() {
 		return this.id;
 	}
-	
+
 	public String getKey() {
 		return this.key;
 	}
-	
+
 	public String[] getTags() {
 		return this.tags;
 	}
-	
+
 	public HashMap<String, String> getAttributes() {
 		return this.attributes;
 	}
-	
+
 	public String toString() {
 		try {
 			return this.toJSONString();
@@ -47,7 +47,7 @@ public class Series {
 			return "";
 		}
 	}
-	
+
 	public JSONObject toJSONObject() throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(Series.idName, this.id);
@@ -56,7 +56,7 @@ public class Series {
 		jsonObject.put(Series.attributesName, this.attributes);
 		return jsonObject;
 	}
-	
+
 	public String toJSONString() throws Exception {
 		return this.toJSONObject().toString();
 	}

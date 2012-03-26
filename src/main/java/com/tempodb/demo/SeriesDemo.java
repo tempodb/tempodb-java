@@ -9,7 +9,7 @@ import com.tempodb.client.Client;
 import com.tempodb.client.Series;
 
 public class SeriesDemo {
-	
+
 	public static void main(String[] args) throws Exception {
 		Client client = new Client("your-api-key", "your-api-secret");
 
