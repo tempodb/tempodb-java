@@ -16,8 +16,11 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -51,12 +54,40 @@ public class Client {
     }
 
     public String request(String url) throws Exception {
+        return request(url, HttpMethod.GET, "");
+    }
+
+    public String request(String url, HttpMethod method) throws Exception {
+        return request(url, method, "");
+    }
+
+    public String request(String url, HttpMethod method, String body) throws Exception {
         String protocol = secure ? "https://" : "http://";
         String portString = (port == 80) ? "" : ":" + port;
-
         String uri = protocol + host + portString + url;
-        HttpGet httpget = new HttpGet(uri);
-        return execute(httpget);
+
+        String rv = "";
+        switch (method) {
+            case POST:
+                HttpPost post = new HttpPost(uri);
+                post.setEntity(new StringEntity(body));
+                rv = execute(post);
+                break;
+
+            case PUT:
+                HttpPut put = new HttpPut(uri);
+                put.setEntity(new StringEntity(body));
+                rv = execute(put);
+                break;
+
+            case GET:
+            default:  // Drop down by design
+                HttpGet get = new HttpGet(uri);
+                rv = execute(get);
+                break;
+        }
+
+        return rv;
     }
 
     private String execute(HttpUriRequest uri) throws Exception {
