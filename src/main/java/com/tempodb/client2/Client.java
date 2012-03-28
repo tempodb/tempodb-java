@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -20,6 +21,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.ClientConnectionRequest;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
@@ -43,7 +46,16 @@ public class Client {
     private DefaultHttpClient client = null;
     private HttpHost _targetHost = null;
     private BasicHttpContext _context = null;
+
+    /** How long connections are kept alive. */
+    private static final int KEEP_ALIVE_DURATION_SECS = 20;
+
+    /** How often the monitoring thread checks for connections to close. */
+    private static final int KEEP_ALIVE_MONITOR_INTERVAL_SECS = 5;
+
+    /** How often the monitoring thread checks for connections to close. */
     private static final int DEFAULT_TIMEOUT_MILLIS = 30000; // 30 seconds
+
 
     public Client(String key, String secret, String host, int port, boolean secure) {
         this.key = key;
@@ -143,7 +155,7 @@ public class Client {
             HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
             HttpProtocolParams.setUserAgent(httpParams, "TempoDB Java Client");
 
-            client = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
+            client = new DefaultHttpClient(new TempoDBClientConnManager(), httpParams);
 
             client.getCredentialsProvider().setCredentials(
                 new AuthScope(host, port),
@@ -171,5 +183,63 @@ public class Client {
             _context.setAttribute(ClientContext.AUTH_CACHE, authCache);
         }
         return _context;
+    }
+
+    private static class TempoDBClientConnManager extends ThreadSafeClientConnManager {
+        public TempoDBClientConnManager() {
+            super();
+        }
+
+        @Override
+        public ClientConnectionRequest requestConnection(HttpRoute route, Object state) {
+            IdleConnectionCloserThread.ensureRunning(this, KEEP_ALIVE_DURATION_SECS, KEEP_ALIVE_MONITOR_INTERVAL_SECS);
+            return super.requestConnection(route, state);
+        }
+    }
+
+    private static class IdleConnectionCloserThread extends Thread {
+        private final TempoDBClientConnManager manager;
+        private final int idleTimeoutSeconds;
+        private final int checkIntervalMs;
+        private static IdleConnectionCloserThread thread = null;
+
+        public IdleConnectionCloserThread(TempoDBClientConnManager manager,
+                int idleTimeoutSeconds, int checkIntervalSeconds) {
+            super();
+            this.manager = manager;
+            this.idleTimeoutSeconds = idleTimeoutSeconds;
+            this.checkIntervalMs = checkIntervalSeconds * 1000;
+        }
+
+        public static synchronized void ensureRunning(
+                TempoDBClientConnManager manager, int idleTimeoutSeconds,
+                int checkIntervalSeconds) {
+            if (thread == null) {
+                thread = new IdleConnectionCloserThread(manager,
+                        idleTimeoutSeconds, checkIntervalSeconds);
+                thread.start();
+            }
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    synchronized (this) {
+                        wait(checkIntervalMs);
+                    }
+                    manager.closeExpiredConnections();
+                    manager.closeIdleConnections(idleTimeoutSeconds, TimeUnit.SECONDS);
+                    synchronized (IdleConnectionCloserThread.class) {
+                        if (manager.getConnectionsInPool() == 0) {
+                            thread = null;
+                            return;
+                        }
+                    }
+                }
+            } catch (InterruptedException e) {
+                thread = null;
+            }
+        }
     }
 }
