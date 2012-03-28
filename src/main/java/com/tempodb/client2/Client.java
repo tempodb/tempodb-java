@@ -1,16 +1,6 @@
 package com.tempodb.client2;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
@@ -21,11 +11,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.ClientConnectionRequest;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -51,7 +40,7 @@ public class Client {
     private static final int KEEP_ALIVE_DURATION_SECS = 20;
 
     /** How often the monitoring thread checks for connections to close. */
-    private static final int KEEP_ALIVE_MONITOR_INTERVAL_SECS = 5;
+    private static final int KEEP_ALIVE_MONITOR_INTERVAL_SECS = 1;
 
     /** How often the monitoring thread checks for connections to close. */
     private static final int DEFAULT_TIMEOUT_MILLIS = 30000; // 30 seconds
@@ -103,48 +92,14 @@ public class Client {
     }
 
     private String execute(HttpUriRequest uri) throws Exception {
-        String responseBody = "";
         HttpClient client = getHttpClient();
 
         HttpHost targetHost = getTargetHost();
         BasicHttpContext context = getContext();
 
-        HttpResponse response = client.execute(targetHost, uri, context);
-        HttpEntity entity = response.getEntity();
-
-        if (entity != null) {
-            InputStream instream = entity.getContent();
-            Header contentEncoding = response.getFirstHeader("Content-Encoding");
-            if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-                instream = new GZIPInputStream(instream);
-            }
-
-            // convert content stream to a String
-            responseBody = convertStreamToString(instream);
-            instream.close();
-        }
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        String responseBody = client.execute(targetHost, uri, responseHandler, context);
         return responseBody;
-    }
-
-    private static String convertStreamToString(InputStream is) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return sb.toString();
     }
 
     private synchronized HttpClient getHttpClient() {
@@ -155,7 +110,7 @@ public class Client {
             HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
             HttpProtocolParams.setUserAgent(httpParams, "TempoDB Java Client");
 
-            client = new DefaultHttpClient(new TempoDBClientConnManager(), httpParams);
+            client = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
 
             client.getCredentialsProvider().setCredentials(
                 new AuthScope(host, port),
@@ -183,63 +138,5 @@ public class Client {
             _context.setAttribute(ClientContext.AUTH_CACHE, authCache);
         }
         return _context;
-    }
-
-    private static class TempoDBClientConnManager extends ThreadSafeClientConnManager {
-        public TempoDBClientConnManager() {
-            super();
-        }
-
-        @Override
-        public ClientConnectionRequest requestConnection(HttpRoute route, Object state) {
-            IdleConnectionCloserThread.ensureRunning(this, KEEP_ALIVE_DURATION_SECS, KEEP_ALIVE_MONITOR_INTERVAL_SECS);
-            return super.requestConnection(route, state);
-        }
-    }
-
-    private static class IdleConnectionCloserThread extends Thread {
-        private final TempoDBClientConnManager manager;
-        private final int idleTimeoutSeconds;
-        private final int checkIntervalMs;
-        private static IdleConnectionCloserThread thread = null;
-
-        public IdleConnectionCloserThread(TempoDBClientConnManager manager,
-                int idleTimeoutSeconds, int checkIntervalSeconds) {
-            super();
-            this.manager = manager;
-            this.idleTimeoutSeconds = idleTimeoutSeconds;
-            this.checkIntervalMs = checkIntervalSeconds * 1000;
-        }
-
-        public static synchronized void ensureRunning(
-                TempoDBClientConnManager manager, int idleTimeoutSeconds,
-                int checkIntervalSeconds) {
-            if (thread == null) {
-                thread = new IdleConnectionCloserThread(manager,
-                        idleTimeoutSeconds, checkIntervalSeconds);
-                thread.start();
-            }
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    synchronized (this) {
-                        wait(checkIntervalMs);
-                    }
-                    manager.closeExpiredConnections();
-                    manager.closeIdleConnections(idleTimeoutSeconds, TimeUnit.SECONDS);
-                    synchronized (IdleConnectionCloserThread.class) {
-                        if (manager.getConnectionsInPool() == 0) {
-                            thread = null;
-                            return;
-                        }
-                    }
-                }
-            } catch (InterruptedException e) {
-                thread = null;
-            }
-        }
     }
 }
