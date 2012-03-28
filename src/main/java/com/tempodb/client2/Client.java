@@ -94,13 +94,13 @@ public class Client {
         String responseBody = "";
         HttpClient client = getHttpClient();
 
-        try {
-            HttpHost targetHost = getTargetHost();
-            BasicHttpContext context = getContext();
+        HttpHost targetHost = getTargetHost();
+        BasicHttpContext context = getContext();
 
-            HttpResponse response = client.execute(targetHost, uri, context);
-            HttpEntity entity = response.getEntity();
+        HttpResponse response = client.execute(targetHost, uri, context);
+        HttpEntity entity = response.getEntity();
 
+        if (entity != null) {
             InputStream instream = entity.getContent();
             Header contentEncoding = response.getFirstHeader("Content-Encoding");
             if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
@@ -110,11 +110,6 @@ public class Client {
             // convert content stream to a String
             responseBody = convertStreamToString(instream);
             instream.close();
-        } finally {
-            // When HttpClient instance is no longer needed,
-            // shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            client.getConnectionManager().shutdown();
         }
         return responseBody;
     }
