@@ -1,18 +1,20 @@
 package com.tempodb.demo;
 
+import java.util.ArrayList;
+
 import com.tempodb.client2.Client;
 import com.tempodb.client2.ClientBuilder;
-
+import com.tempodb.models.Series;
 
 public class TestDemo {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()
-            .key("your-api-key")
-            .secret("your-api-secret")
+            .key("myagley")
+            .secret("opensesame")
             .build();
 
-        String response = client.request("/v1/series/");
+        ArrayList<Series> response = client.getSeries();
         System.out.println(response);
     }
 }

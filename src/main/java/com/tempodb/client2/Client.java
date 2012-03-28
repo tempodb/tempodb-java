@@ -1,5 +1,7 @@
 package com.tempodb.client2;
 
+import java.util.ArrayList;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -23,6 +25,11 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.tempodb.models.Series;
+
 
 public class Client {
 
@@ -35,16 +42,12 @@ public class Client {
     private DefaultHttpClient client = null;
     private HttpHost _targetHost = null;
     private BasicHttpContext _context = null;
-
-    /** How long connections are kept alive. */
-    private static final int KEEP_ALIVE_DURATION_SECS = 20;
-
-    /** How often the monitoring thread checks for connections to close. */
-    private static final int KEEP_ALIVE_MONITOR_INTERVAL_SECS = 1;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /** How often the monitoring thread checks for connections to close. */
     private static final int DEFAULT_TIMEOUT_MILLIS = 30000; // 30 seconds
 
+    private static final String API_VERSION = "v1";
 
     public Client(String key, String secret, String host, int port, boolean secure) {
         this.key = key;
@@ -52,6 +55,13 @@ public class Client {
         this.host = host;
         this.port = port;
         this.secure = secure;
+    }
+
+    public ArrayList<Series> getSeries() throws Exception {
+        String json = request("/series/");
+
+        ArrayList<Series> result = mapper.readValue(json, new TypeReference<ArrayList<Series>>() {});
+        return result;
     }
 
     public String request(String url) throws Exception {
@@ -65,7 +75,7 @@ public class Client {
     public String request(String url, HttpMethod method, String body) throws Exception {
         String protocol = secure ? "https://" : "http://";
         String portString = (port == 80) ? "" : ":" + port;
-        String uri = protocol + host + portString + url;
+        String uri = protocol + host + portString + "/" + API_VERSION + url;
 
         String rv = "";
         switch (method) {
