@@ -85,7 +85,7 @@ public class Client {
     }
 
     public DataSet readId(String seriesId, DateTime start, DateTime end, String interval, String function) throws Exception {
-        return read("id", seriesId, start, end, interval, function);
+        return readOne("id", seriesId, start, end, interval, function);
     }
 
 
@@ -98,10 +98,10 @@ public class Client {
     }
 
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
-        return read("key", seriesKey, start, end, interval, function);
+        return readOne("key", seriesKey, start, end, interval, function);
     }
 
-    public DataSet read(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
+    private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
         params.add(new BasicNameValuePair("end", end.toString(iso8601)));
