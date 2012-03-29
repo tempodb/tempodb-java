@@ -36,4 +36,9 @@ public class Series {
     public String getName() { return name; }
     public List<String> getTags() { return tags; }
     public Map<String, String> getAttributes() { return attributes; }
+
+    @Override
+    public String toString() {
+        return String.format("Series: \n\tid:\t%s\n\tkey:\t%s\n\tname:\t%s\n\ttags:\t%s\n\tattr:\t%s", id, key, name, tags, attributes);
+    }
 }

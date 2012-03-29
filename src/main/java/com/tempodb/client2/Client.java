@@ -38,6 +38,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.tempodb.models.DataSet;
+import com.tempodb.models.Filter;
 import com.tempodb.models.Series;
 
 
@@ -69,11 +70,47 @@ public class Client {
     }
 
     public List<Series> getSeries() throws Exception {
-        String json = request("/series/");
+        return getSeries(new Filter());
+    }
+
+    public List<Series> getSeries(Filter filter) throws Exception {
+        String filterString = URLEncodedUtils.format(filter.getParams(), "UTF-8");
+        String json = request(String.format("/series/?%s", filterString));
         ObjectMapper mapper = getMapper();
 
         ArrayList<Series> result = mapper.readValue(json, new TypeReference<ArrayList<Series>>() {});
         return result;
+    }
+
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter) throws Exception {
+        return read(start, end, filter, null, null);
+    }
+
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval) throws Exception {
+        return read(start, end, filter, interval, null);
+    }
+
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval, String function) throws Exception {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("start", start.toString(iso8601)));
+        params.add(new BasicNameValuePair("end", end.toString(iso8601)));
+
+        if (filter != null)
+            params.addAll(filter.getParams());
+
+        if (interval != null)
+            params.add(new BasicNameValuePair("interval", interval));
+
+        if (function != null)
+            params.add(new BasicNameValuePair("function", function));
+
+        String qsParams = URLEncodedUtils.format(params, "UTF-8");
+        String url = String.format("/data/?%s", qsParams);
+        String json = request(url);
+
+        ObjectMapper mapper = getMapper();
+        List<DataSet> datasets = mapper.readValue(json, new TypeReference<ArrayList<DataSet>>() {});
+        return datasets;
     }
 
     public DataSet readId(String seriesId, DateTime start, DateTime end) throws Exception {
