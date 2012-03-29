@@ -31,12 +31,14 @@ import org.apache.http.protocol.BasicHttpContext;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
 import com.tempodb.models.Filter;
 import com.tempodb.models.Series;
@@ -136,6 +138,24 @@ public class Client {
 
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
         return readOne("key", seriesKey, start, end, interval, function);
+    }
+
+    public List<DataPoint> writeId(String seriesId, List<DataPoint> data) throws Exception {
+        return write("id", seriesId, data);
+    }
+
+    public List<DataPoint> writeKey(String seriesKey, List<DataPoint> data) throws Exception {
+        return write("key", seriesKey, data);
+    }
+
+    public List<DataPoint> write(String seriesType, String seriesValue, List<DataPoint> data) throws Exception {
+        String url = String.format("/series/%s/%s/data/", seriesType, seriesValue);
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(data);
+
+        request(url, HttpMethod.POST, json);
+        return data;
     }
 
     private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
@@ -249,6 +269,7 @@ public class Client {
         if (_mapper == null) {
             _mapper = new ObjectMapper();
             _mapper.registerModule(new JodaModule());
+            _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         }
         return _mapper;
     }

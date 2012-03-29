@@ -19,6 +19,14 @@ public class DataPoint {
         this.value = value;
     }
 
+    @JsonProperty("t")
     public DateTime getTimestamp() { return timestamp; }
+
+    @JsonProperty("v")
     public Number getValue() { return value; }
+
+    @Override
+    public String toString() {
+        return String.format("DataPoint(%s, %s)", timestamp, value);
+    }
 }
