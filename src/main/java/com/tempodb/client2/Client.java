@@ -1,8 +1,10 @@
 package com.tempodb.client2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpHost;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
@@ -13,12 +15,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -27,7 +31,13 @@ import org.apache.http.protocol.BasicHttpContext;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import com.tempodb.models.DataSet;
 import com.tempodb.models.Series;
 
 
@@ -42,7 +52,8 @@ public class Client {
     private DefaultHttpClient client = null;
     private HttpHost _targetHost = null;
     private BasicHttpContext _context = null;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper _mapper = null;
+    private final DateTimeFormatter iso8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /** How often the monitoring thread checks for connections to close. */
     private static final int DEFAULT_TIMEOUT_MILLIS = 30000; // 30 seconds
@@ -57,11 +68,54 @@ public class Client {
         this.secure = secure;
     }
 
-    public ArrayList<Series> getSeries() throws Exception {
+    public List<Series> getSeries() throws Exception {
         String json = request("/series/");
+        ObjectMapper mapper = getMapper();
 
         ArrayList<Series> result = mapper.readValue(json, new TypeReference<ArrayList<Series>>() {});
         return result;
+    }
+
+    public DataSet readId(String seriesId, DateTime start, DateTime end) throws Exception {
+        return readId(seriesId, start, end, null, null);
+    }
+
+    public DataSet readId(String seriesId, DateTime start, DateTime end, String interval) throws Exception {
+        return readId(seriesId, start, end, interval, null);
+    }
+
+    public DataSet readId(String seriesId, DateTime start, DateTime end, String interval, String function) throws Exception {
+        return read("id", seriesId, start, end, interval, function);
+    }
+
+
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end) throws Exception {
+        return readKey(seriesKey, start, end, null, null);
+    }
+
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval) throws Exception {
+        return readKey(seriesKey, start, end, interval, null);
+    }
+
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
+        return read("key", seriesKey, start, end, interval, function);
+    }
+
+    public DataSet read(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("start", start.toString(iso8601)));
+        params.add(new BasicNameValuePair("end", end.toString(iso8601)));
+        params.add(new BasicNameValuePair("interval", interval));
+        params.add(new BasicNameValuePair("function", function));
+
+        String qsParams = URLEncodedUtils.format(params, "UTF-8");
+        String url = "/series/" + seriesType + "/" + seriesValue + "/data/?" + qsParams;
+
+        String json = request(url);
+
+        ObjectMapper mapper = getMapper();
+        DataSet dataset = mapper.readValue(json, DataSet.class);
+        return dataset;
     }
 
     public String request(String url) throws Exception {
@@ -148,5 +202,13 @@ public class Client {
             _context.setAttribute(ClientContext.AUTH_CACHE, authCache);
         }
         return _context;
+    }
+
+    private synchronized ObjectMapper getMapper() {
+        if (_mapper == null) {
+            _mapper = new ObjectMapper();
+            _mapper.registerModule(new JodaModule());
+        }
+        return _mapper;
     }
 }

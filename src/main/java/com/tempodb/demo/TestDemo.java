@@ -1,6 +1,6 @@
 package com.tempodb.demo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.tempodb.client2.Client;
 import com.tempodb.client2.ClientBuilder;
@@ -14,7 +14,7 @@ public class TestDemo {
             .secret("opensesame")
             .build();
 
-        ArrayList<Series> response = client.getSeries();
+        List<Series> response = client.getSeries();
         System.out.println(response);
     }
 }
