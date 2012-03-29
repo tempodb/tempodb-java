@@ -50,7 +50,7 @@ public class Client {
     private int port;
     private boolean secure;
 
-    private DefaultHttpClient client = null;
+    private DefaultHttpClient _client = null;
     private HttpHost _targetHost = null;
     private BasicHttpContext _context = null;
     private ObjectMapper _mapper = null;
@@ -208,20 +208,20 @@ public class Client {
     }
 
     private synchronized HttpClient getHttpClient() {
-        if (client == null) {
+        if (_client == null) {
             HttpParams httpParams = new BasicHttpParams();
             HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
             HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
             HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
             HttpProtocolParams.setUserAgent(httpParams, "TempoDB Java Client");
 
-            client = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
+            _client = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
 
-            client.getCredentialsProvider().setCredentials(
+            _client.getCredentialsProvider().setCredentials(
                 new AuthScope(host, port),
                 new UsernamePasswordCredentials(key, secret));
         }
-        return client;
+        return _client;
     }
 
     private synchronized HttpHost getTargetHost() {
