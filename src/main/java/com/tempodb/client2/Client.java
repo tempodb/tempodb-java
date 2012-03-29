@@ -105,12 +105,16 @@ public class Client {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
         params.add(new BasicNameValuePair("end", end.toString(iso8601)));
-        params.add(new BasicNameValuePair("interval", interval));
-        params.add(new BasicNameValuePair("function", function));
+
+        if (interval != null)
+            params.add(new BasicNameValuePair("interval", interval));
+
+        if (function != null)
+            params.add(new BasicNameValuePair("function", function));
 
         String qsParams = URLEncodedUtils.format(params, "UTF-8");
-        String url = "/series/" + seriesType + "/" + seriesValue + "/data/?" + qsParams;
 
+        String url = String.format("/series/%s/%s/data/?%s", seriesType, seriesValue, qsParams);
         String json = request(url);
 
         ObjectMapper mapper = getMapper();
