@@ -3,40 +3,40 @@ package com.tempodb.client;
 
 public class ClientBuilder {
 
-    private String _key;
-    private String _secret;
-    private String _host = "api.tempo-db.com";
-    private int _port = 443;
-    private boolean _secure = true;
+    private String key;
+    private String secret;
+    private String host = "api.tempo-db.com";
+    private int port = 443;
+    private boolean secure = true;
 
     public ClientBuilder() { }
 
     public Client build() {
-        return new Client(_key, _secret, _host, _port, _secure);
+        return new Client(key, secret, host, port, secure);
     }
 
-    public ClientBuilder key(String _key) {
-        this._key = _key;
+    public ClientBuilder key(String key) {
+        this.key = key;
         return this;
     }
 
-    public ClientBuilder secret(String _secret) {
-        this._secret = _secret;
+    public ClientBuilder secret(String secret) {
+        this.secret = secret;
         return this;
     }
 
-    public ClientBuilder host(String _host) {
-        this._host = _host;
+    public ClientBuilder host(String host) {
+        this.host = host;
         return this;
     }
 
-    public ClientBuilder port(int _port) {
-        this._port = _port;
+    public ClientBuilder port(int port) {
+        this.port = port;
         return this;
     }
 
-    public ClientBuilder secure(boolean _secure) {
-        this._secure = _secure;
+    public ClientBuilder secure(boolean secure) {
+        this.secure = secure;
         return this;
     }
 }
