@@ -14,13 +14,9 @@ public class TestWrite {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()
-            .key("myagley")
-            .secret("opensesame")
-            .host("localhost")
-            .port(4242)
-            .secure(false)
+            .key("your-api-key")
+            .secret("your-api-secret")
             .build();
-
 
         ArrayList<DataPoint> datapoints = new ArrayList<DataPoint>();
         datapoints.add(new DataPoint(new DateTime(2012, 3, 29, 5, 0, 0, 0), 32.34));

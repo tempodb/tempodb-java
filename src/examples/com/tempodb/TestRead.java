@@ -14,11 +14,8 @@ public class TestRead {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()
-            .key("myagley")
-            .secret("opensesame")
-            .host("localhost")
-            .port(4242)
-            .secure(false)
+            .key("your-api-key")
+            .secret("your-api-secret")
             .build();
 
         DateTime start = new DateTime(2012, 3, 30, 0, 0, 0, 0);

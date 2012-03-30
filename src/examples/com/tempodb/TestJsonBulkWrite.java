@@ -33,12 +33,5 @@ public class TestJsonBulkWrite {
         BulkDataSet dataset = new BulkDataSet(now, points);
         String json = mapper.writeValueAsString(dataset);
         System.out.println(json);
-
-/*
-        String json = "[{\"t\":\"2012-01-01T01:01:00+00:00\",\"v\":23.45},{\"t\":\"2012-01-02T01:01:00+00:00\",\"v\":3.45}]";
-        ArrayList<DataPoint> datapoints = mapper.readValue(json, new TypeReference<ArrayList<DataPoint>>(){});
-
-        System.out.println(datapoints);
-*/
     }
 }

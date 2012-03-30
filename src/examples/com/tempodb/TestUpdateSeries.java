@@ -14,11 +14,8 @@ public class TestUpdateSeries {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()
-            .key("myagley")
-            .secret("opensesame")
-            .host("localhost")
-            .port(4242)
-            .secure(false)
+            .key("your-api-key")
+            .secret("your-api-secret")
             .build();
 
         ArrayList<String> tags = new ArrayList<String>();

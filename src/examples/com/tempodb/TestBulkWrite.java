@@ -16,11 +16,8 @@ public class TestBulkWrite {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()
-            .key("myagley")
-            .secret("opensesame")
-            .host("localhost")
-            .port(4242)
-            .secure(false)
+            .key("your-api-key")
+            .secret("your-api-secret")
             .build();
 
         DateTime ts = new DateTime(2012, 3, 30, 1, 0, 0, 0);
