@@ -1,4 +1,4 @@
-package com.tempodb.demo;
+package com.tempodb;
 
 import java.util.ArrayList;
 import java.util.HashMap;

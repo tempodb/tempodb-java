@@ -1,11 +1,11 @@
-package com.tempodb.demo;
+package com.tempodb;
 
 import java.util.List;
 
 import org.joda.time.DateTime;
 
-import com.tempodb.client2.Client;
-import com.tempodb.client2.ClientBuilder;
+import com.tempodb.client.Client;
+import com.tempodb.client.ClientBuilder;
 import com.tempodb.models.DataSet;
 import com.tempodb.models.Filter;
 

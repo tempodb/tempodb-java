@@ -1,226 +1,296 @@
 package com.tempodb.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import com.tempodb.models.BulkDataSet;
+import com.tempodb.models.DataPoint;
+import com.tempodb.models.DataSet;
+import com.tempodb.models.Filter;
+import com.tempodb.models.Series;
+
 
 public class Client {
-	
-	private String baseAPIURL = "api.tempo-db.com";
-	private String APIVersion = "v1";
-	private HttpHost targetHost = new HttpHost(baseAPIURL, 443, "https");
-	private DefaultHttpClient httpclient = new DefaultHttpClient();
-	private AuthCache authCache = new BasicAuthCache();
-	private BasicHttpContext localcontext = new BasicHttpContext();
-	public static SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-	
-	public Client(String apiKey, String apiSecret) {
-		httpclient.getCredentialsProvider().setCredentials(
-                new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials(apiKey, apiSecret));
-		
-		// Generate BASIC scheme object and add it to the local
-        BasicScheme basicAuth = new BasicScheme();
-        authCache.put(targetHost, basicAuth);
-        
-        // Add AuthCache to the execution context
-        localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-	}
-    
-    public ArrayList<Series> getSeries() throws Exception {
-    	HttpGet httpget = new HttpGet("/"+this.APIVersion+"/series/");
-    	String resultString = request(httpget);
-    	
-    	return SeriesManager.createSeriesList(new JSONArray(resultString));
+
+    private String key;
+    private String secret;
+    private String host;
+    private int port;
+    private boolean secure;
+
+    private DefaultHttpClient _client = null;
+    private HttpHost _targetHost = null;
+    private BasicHttpContext _context = null;
+    private ObjectMapper _mapper = null;
+    private final DateTimeFormatter iso8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    /** How often the monitoring thread checks for connections to close. */
+    private static final int DEFAULT_TIMEOUT_MILLIS = 30000; // 30 seconds
+
+    private static final String API_VERSION = "v1";
+
+    public Client(String key, String secret, String host, int port, boolean secure) {
+        this.key = key;
+        this.secret = secret;
+        this.host = host;
+        this.port = port;
+        this.secure = secure;
+    }
+
+    public List<Series> getSeries() throws Exception {
+        return getSeries(new Filter());
+    }
+
+    public List<Series> getSeries(Filter filter) throws Exception {
+        String filterString = URLEncodedUtils.format(filter.getParams(), "UTF-8");
+        String json = request(String.format("/series/?%s", filterString));
+        ObjectMapper mapper = getMapper();
+
+        ArrayList<Series> result = mapper.readValue(json, new TypeReference<ArrayList<Series>>() {});
+        return result;
+    }
+
+    public Series updateSeries(Series series) throws Exception {
+        String url = String.format("/series/id/%s/", series.getId());
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(series);
+
+        String response = request(url, HttpMethod.PUT, json);
+        return mapper.readValue(response, Series.class);
+    }
+
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter) throws Exception {
+        return read(start, end, filter, null, null);
+    }
+
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval) throws Exception {
+        return read(start, end, filter, interval, null);
+    }
+
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval, String function) throws Exception {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("start", start.toString(iso8601)));
+        params.add(new BasicNameValuePair("end", end.toString(iso8601)));
+
+        if (filter != null)
+            params.addAll(filter.getParams());
+
+        if (interval != null)
+            params.add(new BasicNameValuePair("interval", interval));
+
+        if (function != null)
+            params.add(new BasicNameValuePair("function", function));
+
+        String qsParams = URLEncodedUtils.format(params, "UTF-8");
+        String url = String.format("/data/?%s", qsParams);
+        String json = request(url);
+
+        ObjectMapper mapper = getMapper();
+        List<DataSet> datasets = mapper.readValue(json, new TypeReference<ArrayList<DataSet>>() {});
+        return datasets;
+    }
+
+    public DataSet readId(String seriesId, DateTime start, DateTime end) throws Exception {
+        return readId(seriesId, start, end, null, null);
+    }
+
+    public DataSet readId(String seriesId, DateTime start, DateTime end, String interval) throws Exception {
+        return readId(seriesId, start, end, interval, null);
+    }
+
+    public DataSet readId(String seriesId, DateTime start, DateTime end, String interval, String function) throws Exception {
+        return readOne("id", seriesId, start, end, interval, function);
     }
 
 
-    public ArrayList<DataPoint> readId(String seriesId, Date start, Date end) throws Exception {
-    	return readId(seriesId, start, end, null, null);
-    }
-    
-    public ArrayList<DataPoint> readId(String seriesId, Date start, Date end, String interval) throws Exception {
-    	return readId(seriesId, start, end, interval, null);
-    }
-    
-    public ArrayList<DataPoint> readId(String seriesId, Date start, Date end, String interval, String function) throws Exception {
-    	return read("id", seriesId, start, end, interval, function);
-    }
-    
-    
-    public ArrayList<DataPoint> readKey(String seriesKey, Date start, Date end) throws Exception {
-    	return readKey(seriesKey, start, end, null, null);
-    }
-    
-    public ArrayList<DataPoint> readKey(String seriesKey, Date start, Date end, String interval) throws Exception {
-    	return readKey(seriesKey, start, end, interval, null);
-    }
-    
-    public ArrayList<DataPoint> readKey(String seriesKey, Date start, Date end, String interval, String function) throws Exception {
-    	return read("key", seriesKey, start, end, interval, function);
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end) throws Exception {
+        return readKey(seriesKey, start, end, null, null);
     }
 
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval) throws Exception {
+        return readKey(seriesKey, start, end, interval, null);
+    }
 
-    public ArrayList<DataPoint> read(String seriesType, String seriesValue, Date start, Date end, String interval, String function) throws Exception {
-    	List<NameValuePair> params = new ArrayList<NameValuePair>();
-    	params.add(new BasicNameValuePair("start", iso8601.format(start)));
-        params.add(new BasicNameValuePair("end", iso8601.format(end)));
-        params.add(new BasicNameValuePair("interval", interval));
-        params.add(new BasicNameValuePair("function", function));
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
+        return readOne("key", seriesKey, start, end, interval, function);
+    }
+
+    public List<DataPoint> writeId(String seriesId, List<DataPoint> data) throws Exception {
+        return write("id", seriesId, data);
+    }
+
+    public List<DataPoint> writeKey(String seriesKey, List<DataPoint> data) throws Exception {
+        return write("key", seriesKey, data);
+    }
+
+    public List<DataPoint> write(String seriesType, String seriesValue, List<DataPoint> data) throws Exception {
+        String url = String.format("/series/%s/%s/data/", seriesType, seriesValue);
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(data);
+
+        request(url, HttpMethod.POST, json);
+        return data;
+    }
+
+    public void bulkWrite(BulkDataSet dataset) throws Exception {
+        String url = "/data/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(dataset);
+
+        request(url, HttpMethod.POST, json);
+    }
+
+    private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("start", start.toString(iso8601)));
+        params.add(new BasicNameValuePair("end", end.toString(iso8601)));
+
+        if (interval != null)
+            params.add(new BasicNameValuePair("interval", interval));
+
+        if (function != null)
+            params.add(new BasicNameValuePair("function", function));
 
         String qsParams = URLEncodedUtils.format(params, "UTF-8");
 
-        HttpGet httpget = new HttpGet("/"+this.APIVersion+"/series/"+ seriesType +"/" + seriesValue + "/data/?"+qsParams);
-        
-        String resultString = request(httpget);
-    	return DataPointManager.createDataPointList(new JSONArray(resultString));
+        String url = String.format("/series/%s/%s/data/?%s", seriesType, seriesValue, qsParams);
+        String json = request(url);
+
+        ObjectMapper mapper = getMapper();
+        DataSet dataset = mapper.readValue(json, DataSet.class);
+        return dataset;
     }
 
-
-    public JSONObject writeId(String seriesId, ArrayList<DataPoint> data) throws Exception {
-    	return write("id", seriesId, data);
-    }
-    
-    public JSONObject writeKey(String seriesKey, ArrayList<DataPoint> data) throws Exception {
-    	return write("key", seriesKey, data);
+    public String request(String url) throws Exception {
+        return request(url, HttpMethod.GET, "");
     }
 
-
-    public JSONObject write(String seriesType, String seriesValue, ArrayList<DataPoint> data) throws Exception {
-    	HttpPost httppost = new HttpPost("/"+this.APIVersion+"/series/"+ seriesType +"/" + seriesValue + "/data/");
-        
-    	String jsonData = "[";
-        for (DataPoint dp : data ) {
-        	jsonData += dp.toJSONString() + ",";
-        }
-        
-        // remove trailing comma
-        jsonData = jsonData.substring(0,jsonData.length()-1);
-        jsonData += "]";
-    	
-        httppost.setEntity(new StringEntity(jsonData));
-        httppost.setHeader("Accept", "application/json");
-        
-        String resultString = request(httppost);
-    	return new JSONObject(resultString);
+    public String request(String url, HttpMethod method) throws Exception {
+        return request(url, method, "");
     }
 
+    public String request(String url, HttpMethod method, String body) throws Exception {
+        String protocol = secure ? "https://" : "http://";
+        String portString = (port == 80) ? "" : ":" + port;
+        String uri = protocol + host + portString + "/" + API_VERSION + url;
 
-    public JSONObject bulkWrite(Date t, ArrayList<BulkPoint> data) throws Exception {
-    	HttpPost httppost = new HttpPost("/"+this.APIVersion+"/data/");
-    	
-    	String jsonData = "[";
-        for (BulkPoint bp : data ) {
-        	jsonData += bp.toJSONString() + ",";
-        }
-        
-        // remove trailing comma
-        jsonData = jsonData.substring(0,jsonData.length()-1);
-        jsonData += "]";
-        
-        String jsonString = "{ \"t\":\"" + Client.iso8601.format(t) + "\", \"data\":" + jsonData + "}";
-    	System.out.println(jsonString);
-    	httppost.setEntity(new StringEntity(jsonString));
-        httppost.setHeader("Accept", "application/json");
-        
-        String resultString = request(httppost);
-    	return new JSONObject(resultString);
-    }
+        String rv = "";
+        switch (method) {
+            case POST:
+                HttpPost post = new HttpPost(uri);
+                post.setEntity(new StringEntity(body));
+                rv = execute(post);
+                break;
 
+            case PUT:
+                HttpPut put = new HttpPut(uri);
+                put.setEntity(new StringEntity(body));
+                rv = execute(put);
+                break;
 
-    public String request(HttpUriRequest uriRequest) throws Exception {
-    	uriRequest.addHeader("Content-Type", "application/json");
-
-    	String resultString = "";
-
-    	try {
-            System.out.println("executing request: " + uriRequest.getRequestLine());
-            System.out.println("to target: " + targetHost);
-
-            HttpResponse response = this.httpclient.execute(this.targetHost, uriRequest, this.localcontext);
-            HttpEntity entity = response.getEntity();
-
-
-            System.out.println("----------------------------------------");
-            System.out.println(response.getStatusLine());
-            if (entity != null) {
-                System.out.println("Response content length: " + entity.getContentLength());
-            }
-
-            InputStream instream = entity.getContent();
-            Header contentEncoding = response.getFirstHeader("Content-Encoding");
-            if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-            	instream = new GZIPInputStream(instream);
-            }
-            
-            // convert content stream to a String
-            resultString= convertStreamToString(instream);
-            instream.close();
-        } finally {
-            // When HttpClient instance is no longer needed,
-            // shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            httpclient.getConnectionManager().shutdown();
+            case GET:
+            default:  // Drop down by design
+                HttpGet get = new HttpGet(uri);
+                rv = execute(get);
+                break;
         }
 
-    	return resultString;
+        return rv;
     }
 
+    private String execute(HttpUriRequest uri) throws Exception {
+        HttpClient client = getHttpClient();
 
-    private static String convertStreamToString(InputStream is) {
-	/*
-	 * To convert the InputStream to String we use the BufferedReader.readLine()
-	 * method. We iterate until the BufferedReader return null which means
-	 * there's no more data to read. Each line will appended to a StringBuilder
-	 * and returned as String.
-	 * 
-	 * (c) public domain: http://senior.ceng.metu.edu.tr/2009/praeda/2009/01/11/a-simple-restful-client-at-android/
-	 */
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-	
-	    String line = null;
-	    try {
-	    	while ((line = reader.readLine()) != null) {
-	    		sb.append(line + "\n");
-	    	}
-	    } catch (IOException e) {
-	    	e.printStackTrace();
-	    } finally {
-	    	try {
-	    		is.close();
-	    	} catch (IOException e) {
-	    		e.printStackTrace();
-	    	}
-	    }
-	    return sb.toString();
+        HttpHost targetHost = getTargetHost();
+        BasicHttpContext context = getContext();
+
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        String responseBody = client.execute(targetHost, uri, responseHandler, context);
+        return responseBody;
+    }
+
+    private synchronized HttpClient getHttpClient() {
+        if (_client == null) {
+            HttpParams httpParams = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
+            HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
+            HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
+            HttpProtocolParams.setUserAgent(httpParams, "TempoDB Java Client");
+
+            _client = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
+
+            _client.getCredentialsProvider().setCredentials(
+                new AuthScope(host, port),
+                new UsernamePasswordCredentials(key, secret));
+        }
+        return _client;
+    }
+
+    private synchronized HttpHost getTargetHost() {
+        if (_targetHost == null) {
+            _targetHost = new HttpHost(host, port, secure ? "https" : "http");
+        }
+        return _targetHost;
+    }
+
+    private synchronized BasicHttpContext getContext() {
+        if (_context == null) {
+            HttpHost targetHost = getTargetHost();
+
+            AuthCache authCache = new BasicAuthCache();
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(targetHost, basicAuth);
+
+            _context = new BasicHttpContext();
+            _context.setAttribute(ClientContext.AUTH_CACHE, authCache);
+        }
+        return _context;
+    }
+
+    private synchronized ObjectMapper getMapper() {
+        if (_mapper == null) {
+            _mapper = new ObjectMapper();
+            _mapper.registerModule(new JodaModule());
+            _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        }
+        return _mapper;
     }
 }

@@ -1,11 +1,11 @@
-package com.tempodb.demo;
+package com.tempodb;
 
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
 
-import com.tempodb.client2.Client;
-import com.tempodb.client2.ClientBuilder;
+import com.tempodb.client.Client;
+import com.tempodb.client.ClientBuilder;
 import com.tempodb.models.BulkDataSet;
 import com.tempodb.models.BulkPoint;
 import com.tempodb.models.BulkIdPoint;

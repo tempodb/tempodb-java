@@ -1,4 +1,4 @@
-package com.tempodb.client2;
+package com.tempodb.client;
 
 public enum HttpMethod {
     GET,
