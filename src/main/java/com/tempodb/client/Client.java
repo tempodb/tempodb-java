@@ -45,6 +45,14 @@ import com.tempodb.models.Filter;
 import com.tempodb.models.Series;
 
 
+/**
+ *  Stores the session information for authenticating and accessing TempoDB.
+ *  Your api key and secret is required. The Client also allows you to specify
+ *  the hostname, port, and protocol (http or https). This is used if you are on
+ *  a private cluster. The default hostname and port should work for the standard cluster.
+ *  <p>
+ *  All access to data is made through a client instance.
+ */
 public class Client {
 
     private String key;
@@ -66,6 +74,13 @@ public class Client {
 
     private enum HttpMethod { GET, POST, PUT, DELETE }
 
+    /**
+     *  @param key Api key
+     *  @param secret Api secret
+     *  @param host Hostname of the api server
+     *  @param port Port that the api server is listening on
+     *  @param secure Uses http if false, https if true
+     */
     public Client(String key, String secret, String host, int port, boolean secure) {
         this.key = key;
         this.secret = secret;
@@ -74,10 +89,21 @@ public class Client {
         this.secure = secure;
     }
 
+    /**
+     *  Gets a list of all series in the database.
+     *
+     *  @return A list of Series
+     */
     public List<Series> getSeries() throws Exception {
         return getSeries(new Filter());
     }
 
+    /**
+     *  Gets a list of series filtered by the provided Filter.
+     *
+     *  @param filter A Filter instance to filter the list
+     *  @return A list of Series
+     */
     public List<Series> getSeries(Filter filter) throws Exception {
         String filterString = URLEncodedUtils.format(filter.getParams(), "UTF-8");
         String json = request(String.format("/series/?%s", filterString));
@@ -87,6 +113,12 @@ public class Client {
         return result;
     }
 
+    /**
+     *  Updates a Series's metadata
+     *
+     *  @param series The series to update.
+     *  @return The updated Series
+     */
     public Series updateSeries(Series series) throws Exception {
         String url = String.format("/series/id/%s/", series.getId());
 
@@ -97,14 +129,41 @@ public class Client {
         return mapper.readValue(response, Series.class);
     }
 
+    /**
+     *  Reads a list of DataSet by the provided filter.
+     *
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param filter A Filter instance to filter the series
+     *  @return A list of DataSets
+     */
     public List<DataSet> read(DateTime start, DateTime end, Filter filter) throws Exception {
         return read(start, end, filter, null, null);
     }
 
+    /**
+     *  Reads a list of DataSet by the provided filter and rolluped by the interval
+     *
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param filter A Filter instance to filter the series
+     *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
+     *  @return A list of DataSets
+     */
     public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval) throws Exception {
         return read(start, end, filter, interval, null);
     }
 
+    /**
+     *  Reads a list of DataSet by the provided filter and rolluped by the interval
+     *
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param filter A Filter instance to filter the series
+     *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
+     *  @param function A function for the rollup. (e.g. min, max, sum, avg)
+     *  @return A list of DataSets
+     */
     public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval, String function) throws Exception {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
@@ -128,49 +187,111 @@ public class Client {
         return datasets;
     }
 
+    /**
+     *  Reads a DataSet by id
+     *
+     *  @param seriesId The id of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @return A DataSet
+     */
     public DataSet readId(String seriesId, DateTime start, DateTime end) throws Exception {
         return readId(seriesId, start, end, null, null);
     }
 
+    /**
+     *  Reads a DataSet by id
+     *
+     *  @param seriesId The id of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
+     *  @return A DataSet
+     */
     public DataSet readId(String seriesId, DateTime start, DateTime end, String interval) throws Exception {
         return readId(seriesId, start, end, interval, null);
     }
 
+    /**
+     *  Reads a DataSet by id
+     *
+     *  @param seriesId The id of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
+     *  @param function A function for the rollup. (e.g. min, max, sum, avg)
+     *  @return A DataSet
+     */
     public DataSet readId(String seriesId, DateTime start, DateTime end, String interval, String function) throws Exception {
         return readOne("id", seriesId, start, end, interval, function);
     }
 
-
+    /**
+     *  Reads a DataSet by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @return A DataSet
+     */
     public DataSet readKey(String seriesKey, DateTime start, DateTime end) throws Exception {
         return readKey(seriesKey, start, end, null, null);
     }
 
+    /**
+     *  Reads a DataSet by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
+     *  @return A DataSet
+     */
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval) throws Exception {
         return readKey(seriesKey, start, end, interval, null);
     }
 
+    /**
+     *  Reads a DataSet by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
+     *  @param function A function for the rollup. (e.g. min, max, sum, avg)
+     *  @return A DataSet
+     */
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
         return readOne("key", seriesKey, start, end, interval, function);
     }
 
+    /**
+     *  Writes a DataSet by id
+     *
+     *  @param seriesId The id of the series
+     *  @param data A list of DataPoints to write
+     *  @return The list of DataPoints written
+     */
     public List<DataPoint> writeId(String seriesId, List<DataPoint> data) throws Exception {
         return write("id", seriesId, data);
     }
 
+    /**
+     *  Writes a DataSet by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param data A list of DataPoints to write
+     *  @return The list of DataPoints written
+     */
     public List<DataPoint> writeKey(String seriesKey, List<DataPoint> data) throws Exception {
         return write("key", seriesKey, data);
     }
 
-    public List<DataPoint> write(String seriesType, String seriesValue, List<DataPoint> data) throws Exception {
-        String url = String.format("/series/%s/%s/data/", seriesType, seriesValue);
-
-        ObjectMapper mapper = getMapper();
-        String json = mapper.writeValueAsString(data);
-
-        request(url, HttpMethod.POST, json);
-        return data;
-    }
-
+    /**
+     *  Writes a set of datapoints for different series for the same timestamp
+     *
+     *  @param dataset A BulkDataSet to write
+     */
     public void bulkWrite(BulkDataSet dataset) throws Exception {
         String url = "/data/";
 
@@ -199,6 +320,16 @@ public class Client {
         ObjectMapper mapper = getMapper();
         DataSet dataset = mapper.readValue(json, DataSet.class);
         return dataset;
+    }
+
+    private List<DataPoint> write(String seriesType, String seriesValue, List<DataPoint> data) throws Exception {
+        String url = String.format("/series/%s/%s/data/", seriesType, seriesValue);
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(data);
+
+        request(url, HttpMethod.POST, json);
+        return data;
     }
 
     private String request(String url) throws Exception {
