@@ -38,6 +38,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.tempodb.models.BulkDataSet;
 import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
 import com.tempodb.models.Filter;
@@ -156,6 +157,15 @@ public class Client {
 
         request(url, HttpMethod.POST, json);
         return data;
+    }
+
+    public void bulkWrite(BulkDataSet dataset) throws Exception {
+        String url = "/data/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(dataset);
+
+        request(url, HttpMethod.POST, json);
     }
 
     private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
