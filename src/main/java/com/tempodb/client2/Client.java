@@ -85,6 +85,16 @@ public class Client {
         return result;
     }
 
+    public Series updateSeries(Series series) throws Exception {
+        String url = String.format("/series/id/%s/", series.getId());
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(series);
+
+        String response = request(url, HttpMethod.PUT, json);
+        return mapper.readValue(response, Series.class);
+    }
+
     public List<DataSet> read(DateTime start, DateTime end, Filter filter) throws Exception {
         return read(start, end, filter, null, null);
     }
