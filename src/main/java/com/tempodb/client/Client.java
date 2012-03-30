@@ -64,6 +64,8 @@ public class Client {
 
     private static final String API_VERSION = "v1";
 
+    private enum HttpMethod { GET, POST, PUT, DELETE }
+
     public Client(String key, String secret, String host, int port, boolean secure) {
         this.key = key;
         this.secret = secret;
@@ -199,15 +201,15 @@ public class Client {
         return dataset;
     }
 
-    public String request(String url) throws Exception {
+    private String request(String url) throws Exception {
         return request(url, HttpMethod.GET, "");
     }
 
-    public String request(String url, HttpMethod method) throws Exception {
+    private String request(String url, HttpMethod method) throws Exception {
         return request(url, method, "");
     }
 
-    public String request(String url, HttpMethod method, String body) throws Exception {
+    private String request(String url, HttpMethod method, String body) throws Exception {
         String protocol = secure ? "https://" : "http://";
         String portString = (port == 80) ? "" : ":" + port;
         String uri = protocol + host + portString + "/" + API_VERSION + url;
