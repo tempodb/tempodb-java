@@ -12,7 +12,7 @@ public class BulkKeyPoint extends BulkPoint {
     private final String key;
 
     /**
-     *  @param id The id of the Series
+     *  @param key The key of the Series
      *  @param value The datapoint value
      */
     @JsonCreator
