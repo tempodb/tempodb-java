@@ -90,6 +90,30 @@ public class Client {
     }
 
     /**
+     *  Creates a new series in the database.
+     *
+     *  @return A Series
+     */
+    public Series createSeries() throws Exception {
+        return createSeries("");
+    }
+
+    /**
+     *  Creates a new series in the database with a key.
+     *
+     *  @param key A user-defined key for the series
+     *  @return A Series
+     */
+    public Series createSeries(String key) throws Exception {
+        String url = "/series/";
+        String json = String.format("{\"key\":\"%s\"}", key);
+
+        ObjectMapper mapper = getMapper();
+        String response = request(url, HttpMethod.POST, json);
+        return mapper.readValue(response, Series.class);
+    }
+
+    /**
      *  Gets a list of all series in the database.
      *
      *  @return A list of Series
