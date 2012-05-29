@@ -282,7 +282,7 @@ public class Client {
      *  @param start The start time of the range
      *  @param end The end time of the range
      *  @param interval An interval for the rollup. (e.g. 1min, 15min, 1hour, 1day, 1month)
-     *  @param function A function for the rollup. (e.g. min, max, sum, avg)
+     *  @param function A function for the rollup. (e.g. min, max, sum, avg, stddev, count)
      *  @return A DataSet
      */
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
