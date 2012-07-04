@@ -325,6 +325,43 @@ public class Client {
         request(url, HttpMethod.POST, json);
     }
 
+    /**
+     *  Increments a DataSet by id
+     *
+     *  @param seriesId The id of the series
+     *  @param data A list of DataPoints to increment. The value of each DataPoint specifies the amount to increment.
+     *  @return The list of DataPoints written
+     */
+    public List<DataPoint> incrementId(String seriesId, List<DataPoint> data) throws Exception {
+        return increment("id", seriesId, data);
+    }
+
+    /**
+     *  Increments a DataSet by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param data A list of DataPoints to increment. The value of each DataPoint specifies the amount to increment.
+     *  @return The list of DataPoints written
+     */
+    public List<DataPoint> incrementKey(String seriesKey, List<DataPoint> data) throws Exception {
+        return increment("key", seriesKey, data);
+    }
+
+    /**
+     *  Increments a set of datapoints for different series for the same timestamp. Similar to a write, but it increments the values instead
+     *  of overwriting.
+     *
+     *  @param dataset A BulkDataSet to write
+     */
+    public void bulkIncrement(BulkDataSet dataset) throws Exception {
+        String url = "/increment/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(dataset);
+
+        request(url, HttpMethod.POST, json);
+    }
+
     private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
@@ -348,6 +385,16 @@ public class Client {
 
     private List<DataPoint> write(String seriesType, String seriesValue, List<DataPoint> data) throws Exception {
         String url = String.format("/series/%s/%s/data/", seriesType, seriesValue);
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(data);
+
+        request(url, HttpMethod.POST, json);
+        return data;
+    }
+
+    private List<DataPoint> increment(String seriesType, String seriesValue, List<DataPoint> data) throws Exception {
+        String url = String.format("/series/%s/%s/increment/", seriesType, seriesValue);
 
         ObjectMapper mapper = getMapper();
         String json = mapper.writeValueAsString(data);
