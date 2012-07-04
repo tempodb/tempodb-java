@@ -1,4 +1,4 @@
-package com.tempodb;
+package com.tempodb.examples;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import com.tempodb.models.Filter;
 import com.tempodb.models.Series;
 
 
-public class TestUpdateSeries {
+public class ExampleUpdateSeries {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()

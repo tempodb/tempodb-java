@@ -1,4 +1,4 @@
-package com.tempodb;
+package com.tempodb.examples;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 import com.tempodb.models.Filter;
 
 
-public class TestFilter {
+public class ExampleFilter {
 
     public static void main(String[] args) throws Exception {
         Filter filter = new Filter();

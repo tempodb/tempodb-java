@@ -1,4 +1,4 @@
-package com.tempodb;
+package com.tempodb.examples;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import com.tempodb.models.DataSet;
 import com.tempodb.models.Filter;
 
 
-public class TestRead {
+public class ExampleRead {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()

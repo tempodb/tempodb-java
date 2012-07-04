@@ -1,7 +1,9 @@
 package com.tempodb.client;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
@@ -65,6 +67,7 @@ public class Client {
     private HttpHost _targetHost = null;
     private BasicHttpContext _context = null;
     private ObjectMapper _mapper = null;
+    private String _version = null;
     private final DateTimeFormatter iso8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /** How often the monitoring thread checks for connections to close. */
@@ -457,7 +460,7 @@ public class Client {
             HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
             HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
             HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
-            HttpProtocolParams.setUserAgent(httpParams, "TempoDB Java Client");
+            HttpProtocolParams.setUserAgent(httpParams, String.format("tempodb-java/%s", getVersion()));
 
             _client = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
 
@@ -496,5 +499,20 @@ public class Client {
             _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         }
         return _mapper;
+    }
+
+    private String getVersion() {
+        if(_version == null) {
+            try {
+                InputStream is = getClass().getResourceAsStream( "/build.properties" );
+                Properties prop = new Properties();
+                prop.load(is);
+
+                _version = prop.getProperty("app.version");
+            } catch(Exception e) {
+                _version = "failed";
+            }
+        }
+        return _version;
     }
 }

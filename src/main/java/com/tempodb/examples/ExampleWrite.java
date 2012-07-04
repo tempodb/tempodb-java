@@ -1,4 +1,4 @@
-package com.tempodb;
+package com.tempodb.examples;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
 
 
-public class TestWrite {
+public class ExampleWrite {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()

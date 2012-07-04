@@ -1,11 +1,11 @@
-package com.tempodb;
+package com.tempodb.examples;
 
 import com.tempodb.client.Client;
 import com.tempodb.client.ClientBuilder;
 import com.tempodb.models.Series;
 
 
-public class TestCreateSeries {
+public class ExampleCreateSeries {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()

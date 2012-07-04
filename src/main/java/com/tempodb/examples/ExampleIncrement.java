@@ -1,4 +1,4 @@
-package com.tempodb;
+package com.tempodb.examples;
 
 import java.util.ArrayList;
 
@@ -10,15 +10,12 @@ import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
 
 
-public class TestIncrement {
+public class ExampleIncrement {
 
     public static void main(String[] args) throws Exception {
         Client client = new ClientBuilder()
-            .key("myagley")
-            .secret("opensesame")
-            .host("localhost")
-            .port(4242)
-            .secure(false)
+            .key("your-api-key")
+            .secret("your-api-secret")
             .build();
 
         String key = "increment-java";
