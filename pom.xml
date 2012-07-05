@@ -4,7 +4,7 @@
   <groupId>com.tempodb</groupId>
   <artifactId>tempodb-java</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <name>tempodb-java</name>
   <url>http://maven.apache.org</url>
   <properties>
