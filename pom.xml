@@ -11,6 +11,13 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <name>libs-release-local</name>
+      <url>http://maven.tempo-db.com/artifactory/libs-release-local</url>
+    </repository>
+  </distributionManagement>
   <dependencies>
 
     <dependency>
