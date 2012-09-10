@@ -2,7 +2,9 @@ package com.tempodb.client;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.http.HttpHost;
@@ -192,6 +194,27 @@ public class Client {
      *  @return A list of DataSets
      */
     public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval, String function) throws Exception {
+        Map options = new HashMap();
+
+        if(interval != null)
+            options.put("interval", interval);
+
+        if(function != null)
+            options.put("function", function);
+
+        return read(start, end, filter, options);
+    }
+
+    /**
+     *  Reads a list of DataSet by the provided filter and rolluped by the interval
+     *
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param filter A Filter instance to filter the series
+     *  @param options A map of rollup options (interval, function, tz ...)
+     *  @return A list of DataSets
+     */
+    public List<DataSet> read(DateTime start, DateTime end, Filter filter, Map<String, String> options) throws Exception {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
         params.add(new BasicNameValuePair("end", end.toString(iso8601)));
@@ -199,11 +222,16 @@ public class Client {
         if (filter != null)
             params.addAll(filter.getParams());
 
-        if (interval != null)
-            params.add(new BasicNameValuePair("interval", interval));
+        if(options != null) {
+            if(options.get("interval") != null)
+                params.add(new BasicNameValuePair("interval", options.get("interval")));
 
-        if (function != null)
-            params.add(new BasicNameValuePair("function", function));
+            if(options.get("function") != null)
+                params.add(new BasicNameValuePair("function", options.get("function")));
+
+            if(options.get("tz") != null)
+                params.add(new BasicNameValuePair("tz", options.get("tz")));
+        }
 
         String qsParams = URLEncodedUtils.format(params, "UTF-8");
         String url = String.format("/data/?%s", qsParams);
@@ -250,10 +278,31 @@ public class Client {
      *  @return A DataSet
      */
     public DataSet readId(String seriesId, DateTime start, DateTime end, String interval, String function) throws Exception {
-        return readOne("id", seriesId, start, end, interval, function);
+        Map<String, String> options = new HashMap();
+
+        if(interval != null)
+            options.put("interval", interval);
+
+        if(function != null)
+            options.put("function", function);
+
+        return readId(seriesId, start, end, options);
     }
 
     /**
+     *  Reads a DataSet by id
+     *
+     *  @param seriesId The id of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param options A map of rollup options (interval, function, tz ...)
+     *  @return A DataSet
+     */
+    public DataSet readId(String seriesId, DateTime start, DateTime end, Map<String, String> options) throws Exception {
+        return readOne("id", seriesId, start, end, options);
+    }
+
+   /**
      *  Reads a DataSet by key
      *
      *  @param seriesKey The key of the series
@@ -289,10 +338,31 @@ public class Client {
      *  @return A DataSet
      */
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
-        return readOne("key", seriesKey, start, end, interval, function);
+        Map<String, String> options = new HashMap();
+
+        if(interval != null)
+            options.put("interval", interval);
+
+        if(function != null)
+            options.put("function", function);
+
+        return readKey(seriesKey, start, end, options);
     }
 
     /**
+     *  Reads a DataSet by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param start The start time of the range
+     *  @param end The end time of the range
+     *  @param options A map of rollup options (interval, function, tz, ...)
+     *  @return A DataSet
+     */
+    public DataSet readKey(String seriesKey, DateTime start, DateTime end, Map<String, String> options) throws Exception {
+        return readOne("key", seriesKey, start, end, options);
+    }
+
+   /**
      *  Writes a DataSet by id
      *
      *  @param seriesId The id of the series
@@ -365,16 +435,21 @@ public class Client {
         request(url, HttpMethod.POST, json);
     }
 
-    private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, String interval, String function) throws Exception {
+    private DataSet readOne(String seriesType, String seriesValue, DateTime start, DateTime end, Map<String, String> options) throws Exception {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
         params.add(new BasicNameValuePair("end", end.toString(iso8601)));
 
-        if (interval != null)
-            params.add(new BasicNameValuePair("interval", interval));
+        if(options != null) {
+            if(options.get("interval") != null)
+                params.add(new BasicNameValuePair("interval", options.get("interval")));
 
-        if (function != null)
-            params.add(new BasicNameValuePair("function", function));
+            if(options.get("function") != null)
+                params.add(new BasicNameValuePair("function", options.get("function")));
+
+            if(options.get("tz") != null)
+                params.add(new BasicNameValuePair("tz", options.get("tz")));
+        }
 
         String qsParams = URLEncodedUtils.format(params, "UTF-8");
 
