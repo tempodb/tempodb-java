@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.joda.time.DateTime;
 
@@ -17,6 +18,7 @@ import org.joda.time.DateTime;
  *  a list of the DataPoints and a statistics summary table. The Summary table contains
  *  statistics for the time range (sum, mean, min, max, count, etc.)
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class DataSet {
     private final Series series;
     private final DateTime start;

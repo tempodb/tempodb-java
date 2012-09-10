@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *  Attributes are key/value pairs. Both the key and attribute must be strings.
  *  Tags are keys with no values. Tags must also be strings.
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Series {
     private final String id;
     private final String key;
