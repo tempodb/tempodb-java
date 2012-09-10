@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.joda.time.DateTime;
 
@@ -12,6 +13,7 @@ import org.joda.time.DateTime;
 /**
  *  Represents one timestamp/value pair. This class uses a Joda Time DateTime.
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class DataPoint {
     private final DateTime timestamp;
     private final Number value;

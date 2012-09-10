@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
@@ -17,12 +18,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *  Attributes are key/value pairs. Both the key and attribute must be strings.
  *  Tags are keys with no values. Tags must also be strings.
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Series {
-    private final String id;
-    private final String key;
-    private final String name;
-    private final List<String> tags;
-    private final Map<String, String> attributes;
+    private String id;
+    private String key;
+    private String name;
+    private List<String> tags;
+    private Map<String, String> attributes;
 
     /**
      *  @param id unique series id (String)
@@ -51,10 +53,19 @@ public class Series {
     }
 
     public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getKey() { return key; }
+    public void setKey(String key) { this.key = key; }
+
     public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
     public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+
     public Map<String, String> getAttributes() { return attributes; }
+    public void setAttributes(Map<String, String> attributes) { this.attributes = attributes; }
 
     @Override
     public String toString() {
