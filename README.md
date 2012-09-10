@@ -1,6 +1,13 @@
 ## TempoDB Java API Client
-A release can be downloaded [here](https://github.com/tempodb/tempodb-java/downloads) or
-you can clone the repository and build with maven.
+Releases are available on our maven server. Add the following dependency to your pom.
+
+    <dependency>
+      <groupId>com.tempodb</groupId>
+      <artifactId>tempodb-java</artifactId>
+      <version>0.5.0</version>
+    </dependency>
+
+Or, you can clone the repository and build with maven.
 
     mvn compile
 
