@@ -20,11 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Series {
-    private final String id;
-    private final String key;
-    private final String name;
-    private final List<String> tags;
-    private final Map<String, String> attributes;
+    private String id;
+    private String key;
+    private String name;
+    private List<String> tags;
+    private Map<String, String> attributes;
 
     /**
      *  @param id unique series id (String)
@@ -53,10 +53,19 @@ public class Series {
     }
 
     public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getKey() { return key; }
+    public void setKey(String key) { this.key = key; }
+
     public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
     public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+
     public Map<String, String> getAttributes() { return attributes; }
+    public void setAttributes(Map<String, String> attributes) { this.attributes = attributes; }
 
     @Override
     public String toString() {
