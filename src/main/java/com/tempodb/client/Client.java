@@ -196,11 +196,13 @@ public class Client {
     public List<DataSet> read(DateTime start, DateTime end, Filter filter, String interval, String function) throws Exception {
         Map options = new HashMap();
 
-        if(interval != null)
+        if(interval != null) {
             options.put("interval", interval);
+        }
 
-        if(function != null)
+        if(function != null) {
             options.put("function", function);
+        }
 
         return read(start, end, filter, options);
     }
@@ -219,18 +221,22 @@ public class Client {
         params.add(new BasicNameValuePair("start", start.toString(iso8601)));
         params.add(new BasicNameValuePair("end", end.toString(iso8601)));
 
-        if (filter != null)
+        if (filter != null) {
             params.addAll(filter.getParams());
+        }
 
         if(options != null) {
-            if(options.get("interval") != null)
+            if(options.get("interval") != null) {
                 params.add(new BasicNameValuePair("interval", options.get("interval")));
+            }
 
-            if(options.get("function") != null)
+            if(options.get("function") != null) {
                 params.add(new BasicNameValuePair("function", options.get("function")));
+            }
 
-            if(options.get("tz") != null)
+            if(options.get("tz") != null) {
                 params.add(new BasicNameValuePair("tz", options.get("tz")));
+            }
         }
 
         String qsParams = URLEncodedUtils.format(params, "UTF-8");
@@ -280,11 +286,13 @@ public class Client {
     public DataSet readId(String seriesId, DateTime start, DateTime end, String interval, String function) throws Exception {
         Map<String, String> options = new HashMap();
 
-        if(interval != null)
+        if(interval != null) {
             options.put("interval", interval);
+        }
 
-        if(function != null)
+        if(function != null) {
             options.put("function", function);
+        }
 
         return readId(seriesId, start, end, options);
     }
@@ -340,11 +348,13 @@ public class Client {
     public DataSet readKey(String seriesKey, DateTime start, DateTime end, String interval, String function) throws Exception {
         Map<String, String> options = new HashMap();
 
-        if(interval != null)
+        if(interval != null) {
             options.put("interval", interval);
+        }
 
-        if(function != null)
+        if(function != null) {
             options.put("function", function);
+        }
 
         return readKey(seriesKey, start, end, options);
     }
@@ -441,14 +451,17 @@ public class Client {
         params.add(new BasicNameValuePair("end", end.toString(iso8601)));
 
         if(options != null) {
-            if(options.get("interval") != null)
+            if(options.get("interval") != null) {
                 params.add(new BasicNameValuePair("interval", options.get("interval")));
+            }
 
-            if(options.get("function") != null)
+            if(options.get("function") != null) {
                 params.add(new BasicNameValuePair("function", options.get("function")));
+            }
 
-            if(options.get("tz") != null)
+            if(options.get("tz") != null) {
                 params.add(new BasicNameValuePair("tz", options.get("tz")));
+            }
         }
 
         String qsParams = URLEncodedUtils.format(params, "UTF-8");
