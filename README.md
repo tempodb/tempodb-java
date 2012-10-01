@@ -1,4 +1,7 @@
 ## TempoDB Java API Client
+
+[![Build Status](https://secure.travis-ci.org/tempodb/tempodb-java.png)](http://travis-ci.org/tempodb/tempodb-java)
+
 Releases are available on our maven server. Add the following dependency to your pom.
 
     <dependency>
