@@ -645,9 +645,7 @@ public class Client {
 
             // Add gzip header to all requests
             _client.addRequestInterceptor(new HttpRequestInterceptor() {
-                public void process(
-                        final HttpRequest request,
-                        final HttpContext context) throws HttpException, IOException {
+                public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                     if (!request.containsHeader("Accept-Encoding")) {
                         request.addHeader("Accept-Encoding", "gzip");
                     }
@@ -656,9 +654,7 @@ public class Client {
 
             // Decompress all gzip responses
             _client.addResponseInterceptor(new HttpResponseInterceptor() {
-                public void process(
-                        final HttpResponse response,
-                        final HttpContext context) throws HttpException, IOException {
+                public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         Header ceheader = entity.getContentEncoding();
