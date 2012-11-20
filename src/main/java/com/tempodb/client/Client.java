@@ -643,6 +643,7 @@ public class Client {
                 new AuthScope(host, port),
                 new UsernamePasswordCredentials(key, secret));
 
+            // Add gzip header to all requests
             _client.addRequestInterceptor(new HttpRequestInterceptor() {
                 public void process(
                         final HttpRequest request,
@@ -653,6 +654,7 @@ public class Client {
                 }
             });
 
+            // Decompress all gzip responses
             _client.addResponseInterceptor(new HttpResponseInterceptor() {
                 public void process(
                         final HttpResponse response,
