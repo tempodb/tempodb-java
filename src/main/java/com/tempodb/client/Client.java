@@ -14,6 +14,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -372,6 +373,56 @@ public class Client {
         return readOne("key", seriesKey, start, end, options);
     }
 
+    /**
+     *  Deletes a range of data from a series by id
+     *
+     *  @param seriesId The id of the series
+     *  @param start The start time of the range (inclusive)
+     *  @param end The end time of the range (exclusive)
+     *  @return void
+     */
+    public void deleteId(String seriesId, DateTime start, DateTime end) throws Exception {
+        delete("id", seriesId, start, end, null);
+    }
+
+    /**
+     *  Deletes a range of data from a series by id
+     *
+     *  @param seriesId The id of the series
+     *  @param start The start time of the range (inclusive)
+     *  @param end The end time of the range (exclusive)
+     *  @param options A map of options
+     *  @return void
+     */
+    public void deleteId(String seriesId, DateTime start, DateTime end, Map<String, String> options) throws Exception {
+        delete("id", seriesId, start, end, options);
+    }
+
+    /**
+     *  Deletes a range of data from a series by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param start The start time of the range (inclusive)
+     *  @param end The end time of the range (exclusive)
+     *  @return void
+     */
+    public void deleteKey(String seriesKey, DateTime start, DateTime end) throws Exception {
+        delete("key", seriesKey, start, end, null);
+    }
+
+    /**
+     *  Deletes a range of data from a series by key
+     *
+     *  @param seriesKey The key of the series
+     *  @param start The start time of the range (inclusive)
+     *  @param end The end time of the range (exclusive)
+     *  @param options A map of options
+     *  @return void
+     */
+    public void deleteKey(String seriesKey, DateTime start, DateTime end, Map<String, String> options) throws Exception {
+        delete("key", seriesKey, start, end, options);
+    }
+
    /**
      *  Writes a DataSet by id
      *
@@ -494,6 +545,26 @@ public class Client {
         return data;
     }
 
+    private void delete(String seriesType, String seriesValue, DateTime start, DateTime end, Map<String, String> options) throws Exception {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("start", start.toString(iso8601)));
+        params.add(new BasicNameValuePair("end", end.toString(iso8601)));
+
+        if(options != null) {
+            for (String key : options.keySet()) {
+                if(options.get(key) != null) {
+                    params.add(new BasicNameValuePair(key, options.get(key)));
+                }
+            }
+        }
+
+        String qsParams = URLEncodedUtils.format(params, "UTF-8");
+
+        String url = String.format("/series/%s/%s/data/?%s", seriesType, seriesValue, qsParams);
+        request(url, HttpMethod.DELETE);
+        return;
+    }
+
     private String request(String url) throws Exception {
         return request(url, HttpMethod.GET, "");
     }
@@ -519,6 +590,11 @@ public class Client {
                 HttpPut put = new HttpPut(uri);
                 put.setEntity(new StringEntity(body));
                 rv = execute(put);
+                break;
+
+            case DELETE:
+                HttpDelete delete = new HttpDelete(uri);
+                rv = execute(delete);
                 break;
 
             case GET:
