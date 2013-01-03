@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
 
 
 /**
- *  Respresents data from a time range of a series. This is essentially a list
+ *  Represents data from a time range of a series. This is essentially a list
  *  of DataPoints with some added metadata. This is the object returned from a query.
  *  The DataSet contains series metadata, the start/end times for the queried range,
  *  a list of the DataPoints and a statistics summary table. The Summary table contains
