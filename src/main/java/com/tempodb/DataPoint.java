@@ -1,18 +1,26 @@
 package com.tempodb;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 
-import static com.tempodb.Preconditions.*;
+import static com.tempodb.util.Preconditions.*;
 
-public class DataPoint {
 
-  private DateTime timestamp = null;
-  private Number value = null;
+public class DataPoint implements Serializable {
 
-  public DataPoint() { }
+  private DateTime timestamp;
+  private Number value;
+
+  /** Serialization lock */
+  private static final long serialVersionUID = 0L;
+
+  public DataPoint() {
+    this(new DateTime(), 0.0);
+  }
 
   public DataPoint(@JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
     this.timestamp = checkNotNull(timestamp);

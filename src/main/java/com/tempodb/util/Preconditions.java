@@ -1,4 +1,5 @@
-package com.tempodb;
+package com.tempodb.util;
+
 
 public final class Preconditions {
   private Preconditions() {}

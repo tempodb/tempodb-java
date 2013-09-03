@@ -1,18 +1,25 @@
 package com.tempodb;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Period;
 
-import static com.tempodb.Preconditions.*;
+import static com.tempodb.util.Preconditions.*;
 
 
-public class Rollup {
-  private Period period = null;
-  private Fold fold = null;
+public class Rollup implements Serializable {
+  private Period period;
+  private Fold fold;
 
-  public Rollup() { }
+  /** Serialization lock */
+  private static final long serialVersionUID = 0L;
+
+  public Rollup() {
+    this(Period.minutes(1), Fold.SUM);
+  }
 
   public Rollup(@JsonProperty("period") Period period, @JsonProperty("fold") Fold fold) {
     this.period = checkNotNull(period);
