@@ -11,6 +11,7 @@ public class Json {
   public static ObjectMapper newObjectMapper() {
     final ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JodaModule());
+    mapper.registerModule(new FoldModule());
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     return mapper;
   }
