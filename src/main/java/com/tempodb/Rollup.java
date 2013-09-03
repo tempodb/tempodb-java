@@ -5,21 +5,27 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Period;
 
+import static com.tempodb.Preconditions.*;
+
 
 public class Rollup {
-  private final Period period;
-  private final Fold fold;
+  private Period period = null;
+  private Fold fold = null;
+
+  public Rollup() { }
 
   public Rollup(@JsonProperty("period") Period period, @JsonProperty("fold") Fold fold) {
-    this.period = period;
-    this.fold = fold;
+    this.period = checkNotNull(period);
+    this.fold = checkNotNull(fold);
   }
 
   @JsonProperty("period")
-  public Period period() { return period; }
+  public Period getPeriod() { return period; }
+  public void setPeriod(Period period) { this.period = checkNotNull(period); }
 
   @JsonProperty("fold")
-  public Fold fold() { return fold; }
+  public Fold getFold() { return fold; }
+  public void setFold(Fold fold) { this.fold = checkNotNull(fold); }
 
   @Override
   public String toString() {

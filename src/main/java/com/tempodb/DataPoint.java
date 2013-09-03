@@ -5,22 +5,27 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 
+import static com.tempodb.Preconditions.*;
 
 public class DataPoint {
 
-  private DateTime timestamp;
-  private Number value;
+  private DateTime timestamp = null;
+  private Number value = null;
+
+  public DataPoint() { }
 
   public DataPoint(@JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
-    this.timestamp = timestamp;
-    this.value = value;
+    this.timestamp = checkNotNull(timestamp);
+    this.value = checkNotNull(value);
   }
 
   @JsonProperty("t")
-  public DateTime timestamp() { return timestamp; }
+  public DateTime getTimestamp() { return timestamp; }
+  public void setTimestamp(DateTime timestamp) { this.timestamp = checkNotNull(timestamp); }
 
   @JsonProperty("v")
-  public Number value() { return value; }
+  public Number getValue() { return value; }
+  public void setValue(Number value) { this.value = checkNotNull(value); }
 
   @Override
   public String toString() {
