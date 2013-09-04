@@ -15,17 +15,15 @@ public class RollupTest {
 
   @Test
   public void testDeserialize() throws IOException {
-    ObjectMapper mapper = Json.newObjectMapper();
-    Rollup rollup = mapper.readValue("{\"period\":\"PT1M\",\"fold\":\"sum\"}", Rollup.class);
+    Rollup rollup = Json.loads("{\"period\":\"PT1M\",\"fold\":\"sum\"}", Rollup.class);
     Rollup expected = new Rollup(Period.minutes(1), Fold.SUM);
     assertEquals(expected, rollup);
   }
 
   @Test
   public void testSerialize() throws IOException {
-    ObjectMapper mapper = Json.newObjectMapper();
     Rollup rollup = new Rollup(Period.minutes(1), Fold.SUM);
     String expected = "{\"period\":\"PT1M\",\"fold\":\"sum\"}";
-    assertEquals(expected, mapper.writeValueAsString(rollup));
+    assertEquals(expected, Json.dumps(rollup));
   }
 }
