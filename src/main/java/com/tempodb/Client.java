@@ -11,7 +11,7 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.*;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.*;
 import org.apache.http.protocol.*;
@@ -98,7 +98,7 @@ public class Client {
       HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_TIMEOUT_MILLIS);
       HttpProtocolParams.setUserAgent(httpParams, String.format("tempodb-java/%s", getVersion()));
 
-      DefaultHttpClient defaultClient = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
+      DefaultHttpClient defaultClient = new DefaultHttpClient(new PoolingClientConnectionManager(), httpParams);
       defaultClient.getCredentialsProvider().setCredentials(
           new AuthScope(host, port),
           new UsernamePasswordCredentials(key, secret));
@@ -151,6 +151,4 @@ public class Client {
   private String getVersion() {
     return VERSION;
   }
-
-
 }
