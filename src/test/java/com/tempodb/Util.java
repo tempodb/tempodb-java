@@ -1,7 +1,7 @@
 package com.tempodb;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
@@ -36,12 +36,7 @@ public class Util {
     StatusLine statusLine = new BasicStatusLine(version, expectedStatus, "");
     HttpResponse response = new BasicHttpResponse(statusLine);
     response.setStatusCode(expectedStatus);
-
-    try {
-      response.setEntity(new StringEntity(expectedBody));
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalArgumentException(e);
-    }
+    response.setEntity(new StringEntity(expectedBody, Charset.forName("UTF-8")));
     return response;
   }
 }

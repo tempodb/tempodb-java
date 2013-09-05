@@ -1,7 +1,5 @@
 package com.tempodb;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -28,24 +26,16 @@ public class SegmentIterator<T extends Segment<?>> implements Iterator<T> {
     }
     T rv = this.segment;
 
-    try {
-      if(!this.segment.equals(null) && !this.segment.equals("")) {
-        HttpRequest request = client.buildRequest(this.segment.getNext());
-        Result<T> result = client.execute(request, klass);
-        if(result.isSuccessful()) {
-          this.segment = result.getValue();
-        } else {
-          throw new TempoDBApiException();
-        }
+    if(!this.segment.equals(null) && !this.segment.equals("")) {
+      HttpRequest request = client.buildRequest(this.segment.getNext());
+      Result<T> result = client.execute(request, klass);
+      if(result.isSuccessful()) {
+        this.segment = result.getValue();
       } else {
-        this.segment = null;
+        throw new TempoDBException();
       }
-    }
-    catch (UnsupportedEncodingException e) {
-      throw new TempoDBApiException();
-    }
-    catch (IOException e) {
-      throw new TempoDBApiException();
+    } else {
+      this.segment = null;
     }
     return rv;
   }

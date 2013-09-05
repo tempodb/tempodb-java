@@ -1,13 +1,17 @@
 package com.tempodb;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Iterator;
 
 import org.apache.http.*;
 import org.apache.http.auth.*;
 import org.apache.http.client.*;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.*;
@@ -15,6 +19,12 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.*;
 import org.apache.http.protocol.*;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import static com.tempodb.util.Preconditions.*;
 
 
 public class Client {
@@ -28,10 +38,13 @@ public class Client {
   private HttpClient client = null;
   private HttpHost target = null;
 
+  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
   // Timeout on milliseconds
   private static final int DEFAULT_TIMEOUT_MILLIS = 50000;  // 50 seconds
+  private static final int GENERIC_ERROR_CODE = 600;
   private static final String VERSION = "1.0-SNAPSHOT";
   private static final String API_VERSION = "v1";
+  private final DateTimeFormatter iso8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   private enum HttpMethod { GET, POST, PUT, DELETE }
 
@@ -50,28 +63,87 @@ public class Client {
     this.secure = secure;
   }
 
-  protected HttpRequest buildRequest(String uri) throws UnsupportedEncodingException {
+  /**
+   *  Returns an iterator of datapoints specified by series id.
+   *
+   *  @param id The series id
+   *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
+   *  @param rollup The rollup for the read query. This can be null. @see Rollup
+   *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
+   *  @return An Iterator of DataPoints. The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *          if an error occurs while making a request.
+   *  @throws TempoDBApiException {@link TempoDBApiException} if an error occurs retrieving the first batch of datapoints
+   */
+  public Iterator<DataPoint> readDataPointsById(String id, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
+    checkNotNull(interval);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/id/%s/data/segment/", API_VERSION, id));
+      addIntervalToURI(builder, interval);
+      addRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: id: %s, interval: %s, rollup: %s, timezone: %s", id, interval, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.GET);
+    Result<DataPointSegment> result = execute(request, DataPointSegment.class);
+    Cursor<DataPoint> cursor = null;
+    if(result.isSuccessful()) {
+      SegmentIterator<DataPointSegment> segments = new SegmentIterator(this, result.getValue(), DataPointSegment.class);
+      cursor = new Cursor(segments);
+    } else {
+      throw new TempoDBException();
+    }
+    return cursor;
+  }
+
+  private void addIntervalToURI(URIBuilder builder, Interval interval) {
+    if(interval != null) {
+      builder.addParameter("start", interval.getStart().toString(iso8601));
+      builder.addParameter("end", interval.getEnd().toString(iso8601));
+    }
+  }
+
+  private void addRollupToURI(URIBuilder builder, Rollup rollup) {
+    if(rollup != null) {
+      builder.addParameter("rollup.period", rollup.getPeriod().toString());
+      builder.addParameter("rollup.fold", rollup.getFold().toString());
+    }
+  }
+
+  private void addTimeZoneToURI(URIBuilder builder, DateTimeZone timezone) {
+    if(timezone != null) {
+      builder.addParameter("tz", timezone.toString());
+    }
+  }
+
+  protected HttpRequest buildRequest(String uri) {
     return buildRequest(uri, HttpMethod.GET, null);
   }
 
-  protected HttpRequest buildRequest(String uri, HttpMethod method) throws UnsupportedEncodingException {
+  protected HttpRequest buildRequest(String uri, HttpMethod method) {
     return buildRequest(uri, method, null);
   }
 
-  protected HttpRequest buildRequest(String uri, HttpMethod method, String body) throws UnsupportedEncodingException {
+  protected HttpRequest buildRequest(String uri, HttpMethod method, String body) {
     HttpRequest request = null;
 
     switch(method) {
       case POST:
         HttpPost post = new HttpPost(uri);
         if(body != null) {
-          post.setEntity(new StringEntity(body));
+          post.setEntity(new StringEntity(body, DEFAULT_CHARSET));
         }
         request = post;
       case PUT:
         HttpPut put = new HttpPut(uri);
         if(body != null) {
-          put.setEntity(new StringEntity(body));
+          put.setEntity(new StringEntity(body, DEFAULT_CHARSET));
         }
         request = put;
         break;
@@ -94,9 +166,14 @@ public class Client {
     return response;
   }
 
-  protected <T> Result<T> execute(HttpRequest request, Class<T> klass) throws IOException {
-    HttpResponse response = execute(request);
-    Result<T> result = new Result(response, klass);
+  protected <T> Result<T> execute(HttpRequest request, Class<T> klass) {
+    Result<T> result = null;
+    try {
+      HttpResponse response = execute(request);
+      result = new Result(response, klass);
+    } catch (IOException e) {
+      result = new Result(null, GENERIC_ERROR_CODE, e.getMessage());
+    }
     return result;
   }
 
