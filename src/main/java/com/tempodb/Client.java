@@ -97,7 +97,7 @@ public class Client {
       SegmentIterator<DataPointSegment> segments = new SegmentIterator(this, result.getValue(), DataPointSegment.class);
       cursor = new Cursor(segments);
     } else {
-      throw new TempoDBException();
+      throw new TempoDBException(result.getMessage(), result.getCode());
     }
     return cursor;
   }

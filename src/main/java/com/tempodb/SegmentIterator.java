@@ -32,7 +32,7 @@ public class SegmentIterator<T extends Segment<?>> implements Iterator<T> {
       if(result.isSuccessful()) {
         this.segment = result.getValue();
       } else {
-        throw new TempoDBException();
+        throw new TempoDBException(result.getMessage(), result.getCode());
       }
     } else {
       this.segment = null;
