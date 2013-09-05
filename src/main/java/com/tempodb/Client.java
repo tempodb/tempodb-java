@@ -75,18 +75,37 @@ public class Client {
    *  @throws TempoDBApiException {@link TempoDBApiException} if an error occurs retrieving the first batch of datapoints
    */
   public Iterator<DataPoint> readDataPointsById(String id, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
+    return readDataPointsOne("id", id, interval, rollup, timezone);
+  }
+
+  /**
+   *  Returns an iterator of datapoints specified by series key.
+   *
+   *  @param key The series key
+   *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
+   *  @param rollup The rollup for the read query. This can be null. @see Rollup
+   *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
+   *  @return An Iterator of DataPoints. The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *          if an error occurs while making a request.
+   *  @throws TempoDBApiException {@link TempoDBApiException} if an error occurs retrieving the first batch of datapoints
+   */
+  public Iterator<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
+    return readDataPointsOne("key", key, interval, rollup, timezone);
+  }
+
+  private Iterator<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
     checkNotNull(interval);
     checkNotNull(timezone);
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/id/%s/data/segment/", API_VERSION, id));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/%s/%s/data/segment/", API_VERSION, type, value));
       addIntervalToURI(builder, interval);
       addRollupToURI(builder, rollup);
       addTimeZoneToURI(builder, timezone);
       uri = builder.build();
     } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: id: %s, interval: %s, rollup: %s, timezone: %s", id, interval, rollup, timezone);
+      String message = String.format("Could not build URI with inputs: %s: %s, interval: %s, rollup: %s, timezone: %s", type, value, interval, rollup, timezone);
       throw new IllegalArgumentException(message, e);
     }
 
