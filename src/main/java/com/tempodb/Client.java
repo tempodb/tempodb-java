@@ -50,13 +50,16 @@ public class Client {
     this.secure = secure;
   }
 
-  private HttpRequest buildRequest(String url, HttpMethod method) throws UnsupportedEncodingException {
-    return buildRequest(url, method, null);
+  protected HttpRequest buildRequest(String uri) throws UnsupportedEncodingException {
+    return buildRequest(uri, HttpMethod.GET, null);
   }
 
-  private HttpRequest buildRequest(String url, HttpMethod method, String body) throws UnsupportedEncodingException {
+  protected HttpRequest buildRequest(String uri, HttpMethod method) throws UnsupportedEncodingException {
+    return buildRequest(uri, method, null);
+  }
+
+  protected HttpRequest buildRequest(String uri, HttpMethod method, String body) throws UnsupportedEncodingException {
     HttpRequest request = null;
-    String uri = String.format("/%s%s", API_VERSION, url);
 
     switch(method) {
       case POST:
@@ -84,11 +87,17 @@ public class Client {
     return request;
   }
 
-  public HttpResponse execute(HttpRequest request) throws IOException {
+  protected HttpResponse execute(HttpRequest request) throws IOException {
     HttpClient client = getHttpClient();
     HttpHost target = getTarget();
     HttpResponse response = client.execute(target, request);
     return response;
+  }
+
+  protected <T> Result<T> execute(HttpRequest request, Class<T> klass) throws IOException {
+    HttpResponse response = execute(request);
+    Result<T> result = new Result(response, klass);
+    return result;
   }
 
   private synchronized HttpClient getHttpClient() {

@@ -7,7 +7,7 @@ public class Cursor<T> implements Iterator<T> {
   private Iterator<Segment<T>> segments;
   private Iterator<T> currentSegment;
 
-  public Cursor(SegmentIterator<T> segments) {
+  public Cursor(SegmentIterator<Segment<T>> segments) {
     this.segments = segments;
     currentSegment = null;
   }

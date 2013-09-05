@@ -1,5 +1,6 @@
 package com.tempodb;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +8,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTimeZone;
 
+import com.tempodb.http.PageLinks;
+import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
@@ -29,6 +34,17 @@ public class DataPointSegment extends Segment<DataPoint> {
   public DataPointSegment(List<DataPoint> data, String next, DateTimeZone timezone, Rollup rollup) {
     super(data, next);
     this.timezone = checkNotNull(timezone);
+    this.rollup = rollup;
+  }
+
+  public DataPointSegment(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity());
+    DataPointSegment segment = Json.loads(body, DataPointSegment.class);
+    PageLinks links = new PageLinks(response);
+
+    this.data = checkNotNull(segment.data);
+    this.next = links.getNext();
+    this.timezone = checkNotNull(segment.timezone);
     this.rollup = rollup;
   }
 

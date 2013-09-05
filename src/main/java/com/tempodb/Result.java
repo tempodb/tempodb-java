@@ -1,7 +1,12 @@
 package com.tempodb;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
 
 public class Result<T> {
@@ -16,10 +21,39 @@ public class Result<T> {
     this.message = message;
   }
 
+  protected Result(HttpResponse response, Class<T> klass) throws IOException {
+    int code = response.getStatusLine().getStatusCode();
+    this.code = code;
+    if(isSuccessful(code)) {
+      this.value = newInstanceFromResponse(response, klass);
+      this.message = "";
+    } else {
+      this.value = null;
+      this.message = EntityUtils.toString(response.getEntity());
+    }
+  }
+
+  protected static <T> T newInstanceFromResponse(HttpResponse response, Class<T> klass) throws IOException {
+    Throwable cause = null;
+    try {
+      return klass.getConstructor(HttpResponse.class).newInstance(response);
+    }
+    catch (InstantiationException e) { cause = e; }
+    catch (IllegalAccessException e) { cause = e; }
+    catch (InvocationTargetException e) { cause = e;  }
+    catch (NoSuchMethodException e) { cause = e; }
+
+    throw new IllegalArgumentException("Unknown class: " + klass, cause);
+  }
+
   public T getValue() { return value; }
-  public boolean isSuccessful() { return (code / 100) == 2; }
+  public boolean isSuccessful() { return isSuccessful(code); }
   public int getCode() { return code; }
   public String getMessage() { return message; }
+
+  private boolean isSuccessful(int code) {
+    return (code / 100) == 2;
+  }
 
   @Override
   public int hashCode() {

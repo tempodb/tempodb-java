@@ -16,7 +16,7 @@ public class DataPoint implements Serializable {
   private Number value;
 
   /** Serialization lock */
-  private static final long serialVersionUID = 0L;
+  private static final long serialVersionUID = 1L;
 
   public DataPoint() {
     this(new DateTime(), 0.0);

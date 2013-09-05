@@ -15,7 +15,7 @@ public class Rollup implements Serializable {
   private Fold fold;
 
   /** Serialization lock */
-  private static final long serialVersionUID = 0L;
+  private static final long serialVersionUID = 1L;
 
   public Rollup() {
     this(Period.minutes(1), Fold.SUM);
