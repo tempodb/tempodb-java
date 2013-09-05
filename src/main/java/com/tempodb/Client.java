@@ -131,7 +131,7 @@ public class Client {
   private void addRollupToURI(URIBuilder builder, Rollup rollup) {
     if(rollup != null) {
       builder.addParameter("rollup.period", rollup.getPeriod().toString());
-      builder.addParameter("rollup.fold", rollup.getFold().toString());
+      builder.addParameter("rollup.fold", rollup.getFold().toString().toLowerCase());
     }
   }
 

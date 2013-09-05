@@ -26,7 +26,7 @@ public class SegmentIterator<T extends Segment<?>> implements Iterator<T> {
     }
     T rv = this.segment;
 
-    if(!this.segment.equals(null) && !this.segment.equals("")) {
+    if(!this.segment.getNext().equals(null) && !this.segment.getNext().equals("")) {
       HttpRequest request = client.buildRequest(this.segment.getNext());
       Result<T> result = client.execute(request, klass);
       if(result.isSuccessful()) {
