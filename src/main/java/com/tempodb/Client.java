@@ -64,36 +64,34 @@ public class Client {
   }
 
   /**
-   *  Returns an iterator of datapoints specified by series id.
+   *  Returns a cursor of datapoints specified by series id.
    *
    *  @param id The series id
    *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
    *  @param rollup The rollup for the read query. This can be null. @see Rollup
    *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
-   *  @return An Iterator of DataPoints. The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *  @return A Cursor of DataPoints. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
    *          if an error occurs while making a request.
-   *  @throws TempoDBApiException {@link TempoDBApiException} if an error occurs retrieving the first batch of datapoints
    */
-  public Iterator<DataPoint> readDataPointsById(String id, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
+  public Cursor<DataPoint> readDataPointsById(String id, Interval interval, Rollup rollup, DateTimeZone timezone) {
     return readDataPointsOne("id", id, interval, rollup, timezone);
   }
 
   /**
-   *  Returns an iterator of datapoints specified by series key.
+   *  Returns a cursor of datapoints specified by series key.
    *
    *  @param key The series key
    *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
    *  @param rollup The rollup for the read query. This can be null. @see Rollup
    *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
-   *  @return An Iterator of DataPoints. The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *  @return A Cursor of DataPoints. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
    *          if an error occurs while making a request.
-   *  @throws TempoDBApiException {@link TempoDBApiException} if an error occurs retrieving the first batch of datapoints
    */
-  public Iterator<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
+  public Cursor<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) {
     return readDataPointsOne("key", key, interval, rollup, timezone);
   }
 
-  private Iterator<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) throws TempoDBException {
+  private Cursor<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(interval);
     checkNotNull(timezone);
 
@@ -109,15 +107,7 @@ public class Client {
       throw new IllegalArgumentException(message, e);
     }
 
-    HttpRequest request = buildRequest(uri.toString(), HttpMethod.GET);
-    Result<DataPointSegment> result = execute(request, DataPointSegment.class);
-    Cursor<DataPoint> cursor = null;
-    if(result.isSuccessful()) {
-      SegmentIterator<DataPointSegment> segments = new SegmentIterator(this, result.getValue(), DataPointSegment.class);
-      cursor = new Cursor(segments);
-    } else {
-      throw new TempoDBException(result.getMessage(), result.getCode());
-    }
+    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
     return cursor;
   }
 

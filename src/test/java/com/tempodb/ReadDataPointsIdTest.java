@@ -69,10 +69,10 @@ public class ReadDataPointsIdTest {
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
 
-    Iterator<DataPoint> iterator = client.readDataPointsById("id1", new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", new Interval(start, end), null, zone);
     List<DataPoint> output = new ArrayList();
-    while(iterator.hasNext()) {
-      output.add(iterator.next());
+    for(DataPoint dp : cursor) {
+      output.add(dp);
     }
     assertEquals(expected, output);
   }
@@ -83,7 +83,11 @@ public class ReadDataPointsIdTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    client.readDataPointsById("id1", interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", interval, null, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
 
     ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
@@ -96,7 +100,11 @@ public class ReadDataPointsIdTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    client.readDataPointsById("id1", interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", interval, null, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
 
     ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
@@ -111,7 +119,11 @@ public class ReadDataPointsIdTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    client.readDataPointsById("id1", interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", interval, null, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
 
     ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
@@ -130,7 +142,11 @@ public class ReadDataPointsIdTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    client.readDataPointsById("id1", interval, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", interval, rollup, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
 
     ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
