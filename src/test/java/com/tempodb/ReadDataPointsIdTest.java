@@ -18,12 +18,16 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.junit.*;
 import static org.junit.Assert.*;
+import org.junit.rules.ExpectedException;
 import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 
 
 public class ReadDataPointsIdTest {
   private static final DateTimeZone zone = DateTimeZone.UTC;
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   private static final String json = "{" +
     "\"rollup\":{" +
@@ -159,5 +163,16 @@ public class ReadDataPointsIdTest {
     assertTrue(params.contains(new BasicNameValuePair("rollup.period", "PT1M")));
     assertTrue(params.contains(new BasicNameValuePair("rollup.fold", "sum")));
     assertEquals(5, params.size());
+  }
+
+  @Test
+  public void testError() throws IOException {
+    HttpResponse response = Util.getResponse(403, "You are forbidden");
+    HttpClient mockClient = Util.getMockHttpClient(response);
+    Client client = Util.getClient(mockClient);
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", interval, rollup, zone);
+
+    thrown.expect(TempoDBException.class);
+    cursor.iterator().next();
   }
 }
