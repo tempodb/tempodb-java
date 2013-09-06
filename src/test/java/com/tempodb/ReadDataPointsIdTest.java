@@ -54,7 +54,15 @@ public class ReadDataPointsIdTest {
     "\"rollup\":null," +
     "\"tz\":\"UTC\"," +
     "\"data\":[" +
-      "{\"t\":\"2012-03-27T00:02:00.000-05:00\",\"v\":34.45}" +
+      "{\"t\":\"2012-03-27T00:02:00.000-05:00\",\"v\":34.56}" +
+    "]" +
+  "}";
+
+  private static final String jsonTz = "{" +
+    "\"rollup\":null," +
+    "\"tz\":\"America/Chicago\"," +
+    "\"data\":[" +
+      "{\"t\":\"2012-01-01T00:00:00.000-06:00\",\"v\":34.56}" +
     "]" +
   "}";
 
@@ -72,6 +80,24 @@ public class ReadDataPointsIdTest {
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
+
+    Cursor<DataPoint> cursor = client.readDataPointsById("id1", new Interval(start, end), null, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
+    assertEquals(expected, output);
+  }
+
+  @Test
+  public void smokeTestTz() throws IOException {
+    DateTimeZone zone = DateTimeZone.forID("America/Chicago");
+    HttpResponse response = Util.getResponse(200, jsonTz);
+    Client client = Util.getClient(response);
+    DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, zone);
+    DateTime end = new DateTime(2012, 1, 1, 0, 0, 0, zone);
+
+    List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
     Cursor<DataPoint> cursor = client.readDataPointsById("id1", new Interval(start, end), null, zone);
     List<DataPoint> output = new ArrayList();

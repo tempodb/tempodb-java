@@ -33,7 +33,7 @@ public class DataPointSegmentTest {
       "}";
 
     DateTimeZone zone = DateTimeZone.UTC;
-    DataPointSegment segment = Json.loads(json, DataPointSegment.class, zone);
+    DataPointSegment segment = Json.loads(json, DataPointSegment.class);
 
     List<DataPoint> data = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34));
     Rollup rollup = new Rollup(Period.hours(1), Fold.SUM);
@@ -55,7 +55,7 @@ public class DataPointSegmentTest {
       "}";
 
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
-    DataPointSegment segment = Json.loads(json, DataPointSegment.class, zone);
+    DataPointSegment segment = Json.loads(json, DataPointSegment.class);
 
     List<DataPoint> data = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34));
     Rollup rollup = new Rollup(Period.hours(1), Fold.SUM);
@@ -74,7 +74,7 @@ public class DataPointSegmentTest {
       "}";
 
     DateTimeZone zone = DateTimeZone.forID("UTC");
-    DataPointSegment segment = Json.loads(json, DataPointSegment.class, zone);
+    DataPointSegment segment = Json.loads(json, DataPointSegment.class);
 
     List<DataPoint> data = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34));
     Rollup rollup = null;

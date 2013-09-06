@@ -56,6 +56,11 @@ public class DataPointSegment extends Segment<DataPoint> {
   public void setRollup(Rollup rollup) { this.rollup = rollup; }
 
   @Override
+  public String toString() {
+    return String.format("DataPointSegment(data=%s, next=%s, timezone=%s, rollup=%s", data, next, timezone, rollup);
+  }
+
+  @Override
   public int hashCode() {
     return new HashCodeBuilder(11, 43)
       .append(data)
