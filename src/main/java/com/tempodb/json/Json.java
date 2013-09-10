@@ -24,7 +24,6 @@ public class Json {
       _mapper.registerModule(new DateTimeZoneModule());
       _mapper.registerModule(new FoldModule());
       _mapper.registerModule(new DataPointSegmentModule());
-      _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       mapper = _mapper;
     }
     return mapper;
