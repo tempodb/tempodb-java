@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.http.*;
 import org.apache.http.auth.*;
@@ -91,6 +91,32 @@ public class Client {
     return readDataPointsOne("key", key, interval, rollup, timezone);
   }
 
+
+  public Cursor<DataPoint> readDataPointsByFilter(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup, DateTimeZone timezone) {
+    checkNotNull(filter);
+    checkNotNull(interval);
+    checkNotNull(aggregation);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/data/segment/", API_VERSION));
+      addFilterToURI(builder, filter);
+      addIntervalToURI(builder, interval);
+      addAggregationToURI(builder, aggregation);
+      addRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: filter: %s, interval: %s, aggregation: %s, rollup: %s, timezone: %s", filter, interval, aggregation, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
+    return cursor;
+  }
+
+
   private Cursor<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(interval);
     checkNotNull(timezone);
@@ -111,10 +137,36 @@ public class Client {
     return cursor;
   }
 
+  private void addFilterToURI(URIBuilder builder, Filter filter) {
+    if(filter != null) {
+      for(String id : filter.getIds()) {
+        builder.addParameter("id", id);
+      }
+
+      for(String key : filter.getKeys()) {
+        builder.addParameter("key", key);
+      }
+
+      for(String tag : filter.getTags()) {
+        builder.addParameter("tag", tag);
+      }
+
+      for(Map.Entry<String, String> attribute : filter.getAttributes().entrySet()) {
+        builder.addParameter(String.format("attr[%s]", attribute.getKey()), attribute.getValue());
+      }
+    }
+  }
+
   private void addIntervalToURI(URIBuilder builder, Interval interval) {
     if(interval != null) {
       builder.addParameter("start", interval.getStart().toString(iso8601));
       builder.addParameter("end", interval.getEnd().toString(iso8601));
+    }
+  }
+
+  private void addAggregationToURI(URIBuilder builder, Aggregation aggregation) {
+    if(aggregation != null) {
+      builder.addParameter("aggregation.fold", aggregation.getFold().toString().toLowerCase());
     }
   }
 
