@@ -59,6 +59,7 @@ import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
 import com.tempodb.models.DeleteSummary;
 import com.tempodb.models.Filter;
+import com.tempodb.models.MultiPoint;
 import com.tempodb.models.Series;
 
 
@@ -500,6 +501,20 @@ public class Client {
     }
 
     /**
+     *  Writes a set of datapoints for different series at different timestamps
+     *
+     *  @param datapoints A list of MultiPoints to write
+     */
+    public void multiWrite(List<MultiPoint> datapoints) throws Exception {
+        String url = "/multi/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(datapoints);
+
+        request(url, HttpMethod.POST, json);
+    }
+
+    /**
      *  Increments a DataSet by id
      *
      *  @param seriesId The id of the series
@@ -532,6 +547,20 @@ public class Client {
 
         ObjectMapper mapper = getMapper();
         String json = mapper.writeValueAsString(dataset);
+
+        request(url, HttpMethod.POST, json);
+    }
+
+    /**
+     *  Increments a set of datapoints for different series at different timestamps
+     *
+     *  @param datapoints A list of MultiPoints to increment
+     */
+    public void multiIncrement(List<MultiPoint> datapoints) throws Exception {
+        String url = "/multi/increment/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(datapoints);
 
         request(url, HttpMethod.POST, json);
     }
