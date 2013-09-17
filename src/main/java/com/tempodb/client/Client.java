@@ -57,6 +57,7 @@ import org.joda.time.format.DateTimeFormatter;
 import com.tempodb.models.BulkDataSet;
 import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
+import com.tempodb.models.DeleteSummary;
 import com.tempodb.models.Filter;
 import com.tempodb.models.Series;
 
@@ -151,6 +152,34 @@ public class Client {
         ObjectMapper mapper = getMapper();
 
         ArrayList<Series> result = mapper.readValue(json, new TypeReference<ArrayList<Series>>() {});
+        return result;
+    }
+
+    /**
+     *  Deletes all series in the table
+     *
+     *  @return A DeleteSummary
+     */
+    public DeleteSummary deleteAllSeries() throws Exception {
+        String json = request("/series/?allow_truncation=true", HttpMethod.DELETE);
+        ObjectMapper mapper = getMapper();
+
+        DeleteSummary result = mapper.readValue(json, new TypeReference<DeleteSummary>() {});
+        return result;
+    }
+
+    /**
+     *  Deletes a list of series matching the provided Filter.
+     *
+     *  @param filter A Filter instance to filter the list
+     *  @return A DeleteSummary
+     */
+    public DeleteSummary deleteSeries(Filter filter) throws Exception {
+        String filterString = URLEncodedUtils.format(filter.getParams(), "UTF-8");
+        String json = request(String.format("/series/?%s", filterString), HttpMethod.DELETE);
+        ObjectMapper mapper = getMapper();
+
+        DeleteSummary result = mapper.readValue(json, new TypeReference<DeleteSummary>() {});
         return result;
     }
 
