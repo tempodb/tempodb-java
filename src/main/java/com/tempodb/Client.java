@@ -116,6 +116,20 @@ public class Client {
     return cursor;
   }
 
+  public Cursor<Series> getSeriesByFilter(Filter filter) {
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
+      addFilterToURI(builder, filter);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with input - filter: %s", filter);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<Series> cursor = new SeriesCursor(uri, this);
+    return cursor;
+  }
 
   private Cursor<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(interval);

@@ -40,7 +40,6 @@ public class ReadDataPointsFilterTest {
     "]" +
   "}";
 
-
   private static final String json1 = "{" +
     "\"rollup\":null," +
     "\"tz\":\"UTC\"," +
