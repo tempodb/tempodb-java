@@ -91,7 +91,18 @@ public class Client {
     return readDataPointsOne("key", key, interval, rollup, timezone);
   }
 
-
+  /**
+   *  Returns a cursor of datapoints specified by a series filter.
+   *  This endpoint allows one to request multiple series and apply an aggregation function.
+   *
+   *  @param filter The series filter @see Filter
+   *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
+   *  @param aggregation The aggregation for the read query. This is required. @see Aggregation
+   *  @param rollup The rollup for the read query. This can be null. @see Rollup
+   *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
+   *  @return A Cursor of DataPoints. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *          if an error occurs while making a request.
+   */
   public Cursor<DataPoint> readDataPointsByFilter(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(filter);
     checkNotNull(interval);
@@ -116,6 +127,13 @@ public class Client {
     return cursor;
   }
 
+  /**
+   *  Returns a cursor of series specified by a filter.
+   *
+   *  @param filter The series filter @see Filter
+   *  @return A Cursor of Series. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *          if an error occurs while making a request.
+   */
   public Cursor<Series> getSeriesByFilter(Filter filter) {
     URI uri = null;
     try {
