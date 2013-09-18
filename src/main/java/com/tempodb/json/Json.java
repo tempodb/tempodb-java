@@ -24,6 +24,7 @@ public class Json {
       _mapper.registerModule(new DateTimeZoneModule());
       _mapper.registerModule(new FoldModule());
       _mapper.registerModule(new DataPointSegmentModule());
+      _mapper.registerModule(new MultiDataPointModule());
       mapper = _mapper;
     }
     return mapper;

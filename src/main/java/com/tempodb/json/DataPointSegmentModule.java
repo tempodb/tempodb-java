@@ -38,10 +38,10 @@ public class DataPointSegmentModule extends SimpleModule {
       JsonNode rollupNode = root.get("rollup");
 
       if(tzNode == null) {
-        throw context.mappingException("Missing 'tz' field in DataPointSegment");
+        throw context.mappingException("Missing 'tz' field in DataPointSegment.");
       }
       if(dataNode == null) {
-        throw context.mappingException("Missing 'data' field in DataPointSegment");
+        throw context.mappingException("Missing 'data' field in DataPointSegment.");
       }
 
       DateTimeZone timezone = Json.getObjectMapper()
