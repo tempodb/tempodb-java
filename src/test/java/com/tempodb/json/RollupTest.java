@@ -2,7 +2,6 @@ package com.tempodb.json;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.Period;
 import org.junit.*;
 import static org.junit.Assert.*;

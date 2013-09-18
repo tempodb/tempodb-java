@@ -9,10 +9,6 @@ import org.joda.time.Period;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import com.tempodb.DataPoint;
-import com.tempodb.Fold;
-import com.tempodb.Rollup;
-
 
 public class DataPointSegmentTest {
 

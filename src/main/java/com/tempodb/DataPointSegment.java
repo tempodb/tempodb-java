@@ -1,6 +1,7 @@
 package com.tempodb;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,8 @@ import static com.tempodb.util.Preconditions.*;
 
 
 public class DataPointSegment extends Segment<DataPoint> {
+
+  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   private DateTimeZone timezone;
   private Rollup rollup;
@@ -38,7 +41,7 @@ public class DataPointSegment extends Segment<DataPoint> {
   }
 
   public DataPointSegment(HttpResponse response) throws IOException {
-    String body = EntityUtils.toString(response.getEntity());
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
     DataPointSegment segment = Json.loads(body, DataPointSegment.class);
     PageLinks links = new PageLinks(response);
 
