@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.*;
 import org.apache.http.auth.*;
 import org.apache.http.client.*;
@@ -24,6 +26,7 @@ import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
@@ -149,6 +152,37 @@ public class Client {
     return cursor;
   }
 
+  /**
+   *  Writes datapoints
+   *
+   */
+  public Result<Nothing> writeDataPoints(List<MultiDataPoint> data) {
+    checkNotNull(data);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/data/", API_VERSION));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = "Could not build URI.";
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Result<Nothing> result = null;
+    String body = null;
+    try {
+      body = Json.dumps(data);
+    } catch (JsonProcessingException e) {
+      String message = "Error serializing the body of the request. More detail: " + e.getMessage();
+      result = new Result(null, GENERIC_ERROR_CODE, message);
+      return result;
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
+    result = execute(request, Nothing.class);
+    return result;
+  }
+
   private Cursor<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(interval);
     checkNotNull(timezone);
@@ -233,6 +267,7 @@ public class Client {
           post.setEntity(new StringEntity(body, DEFAULT_CHARSET));
         }
         request = post;
+        break;
       case PUT:
         HttpPut put = new HttpPut(uri);
         if(body != null) {
