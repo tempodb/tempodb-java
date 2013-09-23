@@ -1,10 +1,15 @@
 package com.tempodb;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
+import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
@@ -15,12 +20,21 @@ public class DeleteSummary implements Serializable {
   /** Serialization lock */
   private static final long serialVersionUID = 1L;
 
+  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
   public DeleteSummary() {
     this(0);
   }
 
   public DeleteSummary(int deleted) {
     this.deleted = deleted;
+  }
+
+  public DeleteSummary(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
+    DeleteSummary summary = Json.loads(body, DeleteSummary.class);
+
+    this.deleted = checkNotNull(summary.deleted);
   }
 
   public int getDeleted() { return deleted; }
