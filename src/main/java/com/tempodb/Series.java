@@ -1,6 +1,8 @@
 package com.tempodb;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -9,7 +11,10 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
+import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
@@ -23,6 +28,8 @@ public class Series implements Serializable {
 
   /** Serialization lock */
   private static final long serialVersionUID = 1L;
+
+  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public Series() {
     this("", "", "", new LinkedHashSet(), new HashMap());
@@ -38,6 +45,17 @@ public class Series implements Serializable {
     this.name = checkNotNull(name);
     this.tags = checkNotNull(tags);
     this.attributes = checkNotNull(attributes);
+  }
+
+  public Series(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
+    Series series = Json.loads(body, Series.class);
+
+    this.id = series.id;
+    this.key = checkNotNull(series.key);
+    this.name = checkNotNull(series.name);
+    this.tags = checkNotNull(series.tags);
+    this.attributes = checkNotNull(series.attributes);
   }
 
   public String getId() { return id; }

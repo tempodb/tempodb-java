@@ -133,6 +133,27 @@ public class Client {
   }
 
   /**
+   *  Returns a Series referenced by key.
+   *
+   *  @param key The Series key to retrieve
+   *  @return The requested Series.
+   */
+  public Result<Series> getSeriesByKey(String key) {
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, key));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s", key);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString());
+    Result<Series> result = execute(request, Series.class);
+    return result;
+  }
+
+  /**
    *  Returns a cursor of series specified by a filter.
    *
    *  @param filter The series filter @see Filter
