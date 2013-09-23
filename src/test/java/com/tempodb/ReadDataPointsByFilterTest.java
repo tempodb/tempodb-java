@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 
 
-public class ReadDataPointsKeyTest {
+public class ReadDataPointsByFilterTest {
   private static final DateTimeZone zone = DateTimeZone.UTC;
 
   @Rule
@@ -39,7 +39,6 @@ public class ReadDataPointsKeyTest {
       "{\"t\":1325376001000,\"v\":12.34}" +
     "]" +
   "}";
-
 
   private static final String json1 = "{" +
     "\"rollup\":null," +
@@ -70,6 +69,7 @@ public class ReadDataPointsKeyTest {
   private static final DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0, zone);
   private static final Interval interval = new Interval(start, end);
   private static final Rollup rollup = new Rollup(Period.minutes(1), Fold.SUM);
+  private static final Aggregation aggregation = new Aggregation(Fold.SUM);
 
   @Test
   public void smokeTest() throws IOException {
@@ -77,11 +77,13 @@ public class ReadDataPointsKeyTest {
     Client client = Util.getClient(response);
     DateTime start = new DateTime(2012, 3, 27, 0, 0, 0, zone);
     DateTime end = new DateTime(2012, 3, 28, 0, 0, 0, zone);
+    Filter filter = new Filter();
+    filter.addKey("key1");
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, new Interval(start, end), aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -96,10 +98,12 @@ public class ReadDataPointsKeyTest {
     Client client = Util.getClient(response);
     DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, zone);
     DateTime end = new DateTime(2012, 1, 1, 0, 0, 0, zone);
+    Filter filter = new Filter();
+    filter.addKey("key1");
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, new Interval(start, end), aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -113,7 +117,10 @@ public class ReadDataPointsKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
+    Filter filter = new Filter();
+    filter.addKey("key1");
+
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -130,7 +137,10 @@ public class ReadDataPointsKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
+    Filter filter = new Filter();
+    filter.addKey("key1");
+
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -140,7 +150,7 @@ public class ReadDataPointsKeyTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
-    assertEquals("/v1/series/key/key1/data/segment/", uri.getPath());
+    assertEquals("/v1/data/segment/", uri.getPath());
   }
 
   @Test
@@ -149,7 +159,10 @@ public class ReadDataPointsKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
+    Filter filter = new Filter();
+    filter.addKey("key1");
+
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -160,10 +173,12 @@ public class ReadDataPointsKeyTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
     assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
-    assertEquals(3, params.size());
+    assertEquals(5, params.size());
   }
 
   @Test
@@ -172,7 +187,10 @@ public class ReadDataPointsKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, rollup, zone);
+    Filter filter = new Filter();
+    filter.addKey("key1");
+
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, rollup, zone);
     List<DataPoint> output = new ArrayList();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -183,12 +201,49 @@ public class ReadDataPointsKeyTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
     assertTrue(params.contains(new BasicNameValuePair("rollup.period", "PT1M")));
     assertTrue(params.contains(new BasicNameValuePair("rollup.fold", "sum")));
-    assertEquals(5, params.size());
+    assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
+    assertEquals(7, params.size());
+  }
+
+  @Test
+  public void testParametersFullFilter() throws IOException, URISyntaxException {
+    HttpResponse response = Util.getResponse(200, json);
+    HttpClient mockClient = Util.getMockHttpClient(response);
+    Client client = Util.getClient(mockClient);
+
+    Filter filter = new Filter();
+    filter.addKey("key1");
+    filter.addTag("tag1");
+    filter.addTag("tag1");
+    filter.addAttribute("key1", "value1");
+    filter.addAttribute("key2", "value2");
+
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
+
+    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
+    verify(mockClient).execute(any(HttpHost.class), argument.capture());
+
+    URI uri = new URI(argument.getValue().getRequestLine().getUri());
+    List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
+    assertTrue(params.contains(new BasicNameValuePair("tag", "tag1")));
+    assertTrue(params.contains(new BasicNameValuePair("attr[key1]", "value1")));
+    assertTrue(params.contains(new BasicNameValuePair("attr[key2]", "value2")));
+    assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
+    assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
+    assertEquals(8, params.size());
   }
 
   @Test
@@ -196,7 +251,11 @@ public class ReadDataPointsKeyTest {
     HttpResponse response = Util.getResponse(403, "You are forbidden");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, rollup, zone);
+
+    Filter filter = new Filter();
+    filter.addKey("key1");
+
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, rollup, zone);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();
