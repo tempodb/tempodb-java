@@ -22,13 +22,13 @@ import org.mockito.ArgumentCaptor;
 public class WriteDataPointsTest {
 
   private static final String json = "[" +
-    "{\"id\":\"id1\",\"t\":1332824400000,\"v\":12.34}," +
-    "{\"key\":\"key1\",\"t\":1332824460000,\"v\":23.45}" +
+    "{\"key\":\"key1\",\"t\":1332824400000,\"v\":12.34}," +
+    "{\"key\":\"key2\",\"t\":1332824460000,\"v\":23.45}" +
   "]";
 
   private static final DateTimeZone timezone = DateTimeZone.UTC;
-  private static final List<MultiDataPoint> data = Arrays.asList(MultiDataPoint.forId("id1", new DateTime(2012, 3, 27, 5, 0, 0, 0, timezone), 12.34),
-                                                                 MultiDataPoint.forKey("key1", new DateTime(2012, 3, 27, 5, 1, 0, 0, timezone), 23.45));
+  private static final List<MultiDataPoint> data = Arrays.asList(new MultiDataPoint("key1", new DateTime(2012, 3, 27, 5, 0, 0, 0, timezone), 12.34),
+                                                                 new MultiDataPoint("key2", new DateTime(2012, 3, 27, 5, 1, 0, 0, timezone), 23.45));
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   @Test
