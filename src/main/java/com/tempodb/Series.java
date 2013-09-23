@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -18,9 +19,9 @@ import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Series implements Serializable {
 
-  private String id;
   private String key;
   private String name;
   private Set<String> tags;
@@ -32,15 +33,10 @@ public class Series implements Serializable {
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public Series() {
-    this("", "", "", new LinkedHashSet(), new HashMap());
+    this("", "", new LinkedHashSet(), new HashMap());
   }
 
   public Series(String key, String name, Set<String> tags, Map<String, String> attributes) {
-    this("", key, name, tags, attributes);
-  }
-
-  public Series(String id, String key, String name, Set<String> tags, Map<String, String> attributes) {
-    this.id = checkNotNull(id);
     this.key = checkNotNull(key);
     this.name = checkNotNull(name);
     this.tags = checkNotNull(tags);
@@ -51,15 +47,11 @@ public class Series implements Serializable {
     String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
     Series series = Json.loads(body, Series.class);
 
-    this.id = series.id;
     this.key = checkNotNull(series.key);
     this.name = checkNotNull(series.name);
     this.tags = checkNotNull(series.tags);
     this.attributes = checkNotNull(series.attributes);
   }
-
-  public String getId() { return id; }
-  public void setId(String id) { this.id = checkNotNull(id); }
 
   public String getKey() { return key; }
   public void setKey(String key) { this.key = checkNotNull(key); }
@@ -75,13 +67,12 @@ public class Series implements Serializable {
 
   @Override
   public String toString() {
-    return String.format("Series(id=%s, key=%s, name=%s, tags=%s, attributes=%s)", id, key, name, tags, attributes);
+    return String.format("Series(key=%s, name=%s, tags=%s, attributes=%s)", key, name, tags, attributes);
   }
 
   @Override
   public int hashCode() {
     return new HashCodeBuilder(119, 123)
-      .append(id)
       .append(key)
       .append(name)
       .append(tags)
@@ -97,7 +88,6 @@ public class Series implements Serializable {
 
     Series rhs = (Series)obj;
     return new EqualsBuilder()
-      .append(id, rhs.id)
       .append(key, rhs.key)
       .append(name, rhs.name)
       .append(tags, rhs.tags)

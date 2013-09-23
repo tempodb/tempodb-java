@@ -33,7 +33,7 @@ public class SeriesSegmentTest {
     "]";
 
     SeriesSegment segment = Json.loads(json, SeriesSegment.class);
-    List<Series> data = Arrays.asList(new Series("id1", "key1", "name1", tags, attributes));
+    List<Series> data = Arrays.asList(new Series("key1", "name1", tags, attributes));
     SeriesSegment expected = new SeriesSegment(data, null);
     assertEquals(expected, segment);
   }

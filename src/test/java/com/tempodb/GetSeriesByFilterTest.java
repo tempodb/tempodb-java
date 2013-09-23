@@ -38,9 +38,9 @@ public class GetSeriesByFilterTest {
     "{\"id\":\"id3\",\"key\":\"key3\",\"name\":\"name3\",\"tags\":[],\"attributes\":{}}" +
   "]";
 
-  private static final Series series1 = new Series("id1", "key1", "name1", new HashSet(), new HashMap());
-  private static final Series series2 = new Series("id2", "key2", "name2", new HashSet(), new HashMap());
-  private static final Series series3 = new Series("id3", "key3", "name3", new HashSet(), new HashMap());
+  private static final Series series1 = new Series("key1", "name1", new HashSet(), new HashMap());
+  private static final Series series2 = new Series("key2", "name2", new HashSet(), new HashMap());
+  private static final Series series3 = new Series("key3", "name3", new HashSet(), new HashMap());
   private static final Filter filter = new Filter();
 
   @Test
@@ -101,7 +101,6 @@ public class GetSeriesByFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
     filter.addKey("key1");
     filter.addTag("tag1");
     filter.addTag("tag1");
@@ -119,12 +118,11 @@ public class GetSeriesByFilterTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
-    assertTrue(params.contains(new BasicNameValuePair("id", "id1")));
     assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("tag", "tag1")));
     assertTrue(params.contains(new BasicNameValuePair("attr[key1]", "value1")));
     assertTrue(params.contains(new BasicNameValuePair("attr[key2]", "value2")));
-    assertEquals(5, params.size());
+    assertEquals(4, params.size());
   }
 
   @Test

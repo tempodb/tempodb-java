@@ -208,10 +208,6 @@ public class Client {
 
   private void addFilterToURI(URIBuilder builder, Filter filter) {
     if(filter != null) {
-      for(String id : filter.getIds()) {
-        builder.addParameter("id", id);
-      }
-
       for(String key : filter.getKeys()) {
         builder.addParameter("key", key);
       }

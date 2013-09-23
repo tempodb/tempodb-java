@@ -11,9 +11,6 @@ public class FilterTest {
     Filter f1 = new Filter();
     Filter f2 = new Filter();
 
-    f1.addId("id");
-    f2.addId("id");
-
     f1.addTag("tag");
     f2.addTag("tag");
 
@@ -21,15 +18,6 @@ public class FilterTest {
     f2.addAttribute("key", "value");
 
     assertEquals(f1, f2);
-  }
-
-  @Test
-  public void testNotEquals_Ids() {
-    Filter f1 = new Filter();
-    Filter f2 = new Filter();
-    f1.addId("id1");
-    f1.addId("id2");
-    assertFalse(f1.equals(f2));
   }
 
   @Test

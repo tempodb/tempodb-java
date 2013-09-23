@@ -24,29 +24,22 @@ public class SeriesTest {
 
   @Test
   public void testEquals() {
-    Series s1 = new Series("id", "key", "name", tags, attributes);
-    Series s2 = new Series("id", "key", "name", tags, attributes);
+    Series s1 = new Series("key", "name", tags, attributes);
+    Series s2 = new Series("key", "name", tags, attributes);
     assertEquals(s1, s2);
   }
 
   @Test
-  public void testNotEquals_Id() {
-    Series s1 = new Series("id1", "key", "name", tags, attributes);
-    Series s2 = new Series("id2", "key", "name", tags, attributes);
-    assertFalse(s1.equals(s2));
-  }
-
-  @Test
   public void testNotEquals_Key() {
-    Series s1 = new Series("id", "key1", "name", tags, attributes);
-    Series s2 = new Series("id", "key2", "name", tags, attributes);
+    Series s1 = new Series("key1", "name", tags, attributes);
+    Series s2 = new Series("key2", "name", tags, attributes);
     assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testNotEquals_Name() {
-    Series s1 = new Series("id", "key", "name1", tags, attributes);
-    Series s2 = new Series("id", "key", "name2", tags, attributes);
+    Series s1 = new Series("key", "name1", tags, attributes);
+    Series s2 = new Series("key", "name2", tags, attributes);
     assertFalse(s1.equals(s2));
   }
 
@@ -55,8 +48,8 @@ public class SeriesTest {
     Set<String> tags2 = new LinkedHashSet<String>();
     tags.add("tag1");
 
-    Series s1 = new Series("id", "key", "name", tags, attributes);
-    Series s2 = new Series("id", "key", "name", tags2, attributes);
+    Series s1 = new Series("key", "name", tags, attributes);
+    Series s2 = new Series("key", "name", tags2, attributes);
     assertFalse(s1.equals(s2));
   }
 
@@ -65,14 +58,14 @@ public class SeriesTest {
     Map<String, String> attributes2 = new HashMap<String, String>();
     attributes2.put("key1", "value1");
 
-    Series s1 = new Series("id", "key", "name", tags, attributes);
-    Series s2 = new Series("id", "key", "name", tags, attributes2);
+    Series s1 = new Series("key", "name", tags, attributes);
+    Series s2 = new Series("key", "name", tags, attributes2);
     assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testNotEquals_Null() {
-    Series s1 = new Series("id", "key", "name1", tags, attributes);
+    Series s1 = new Series("key", "name1", tags, attributes);
     assertFalse(s1.equals(null));
   }
 }

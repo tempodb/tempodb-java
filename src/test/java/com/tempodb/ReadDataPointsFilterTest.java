@@ -78,7 +78,7 @@ public class ReadDataPointsFilterTest {
     DateTime start = new DateTime(2012, 3, 27, 0, 0, 0, zone);
     DateTime end = new DateTime(2012, 3, 28, 0, 0, 0, zone);
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
@@ -99,7 +99,7 @@ public class ReadDataPointsFilterTest {
     DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, zone);
     DateTime end = new DateTime(2012, 1, 1, 0, 0, 0, zone);
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
@@ -118,7 +118,7 @@ public class ReadDataPointsFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
@@ -138,7 +138,7 @@ public class ReadDataPointsFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
@@ -160,7 +160,7 @@ public class ReadDataPointsFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, zone);
     List<DataPoint> output = new ArrayList();
@@ -173,7 +173,7 @@ public class ReadDataPointsFilterTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
-    assertTrue(params.contains(new BasicNameValuePair("id", "id1")));
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
@@ -188,7 +188,7 @@ public class ReadDataPointsFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, rollup, zone);
     List<DataPoint> output = new ArrayList();
@@ -201,7 +201,7 @@ public class ReadDataPointsFilterTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
-    assertTrue(params.contains(new BasicNameValuePair("id", "id1")));
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
@@ -218,7 +218,6 @@ public class ReadDataPointsFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
     filter.addKey("key1");
     filter.addTag("tag1");
     filter.addTag("tag1");
@@ -236,7 +235,6 @@ public class ReadDataPointsFilterTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
-    assertTrue(params.contains(new BasicNameValuePair("id", "id1")));
     assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("tag", "tag1")));
     assertTrue(params.contains(new BasicNameValuePair("attr[key1]", "value1")));
@@ -245,7 +243,7 @@ public class ReadDataPointsFilterTest {
     assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
     assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
     assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
-    assertEquals(9, params.size());
+    assertEquals(8, params.size());
   }
 
   @Test
@@ -255,7 +253,7 @@ public class ReadDataPointsFilterTest {
     Client client = Util.getClient(mockClient);
 
     Filter filter = new Filter();
-    filter.addId("id1");
+    filter.addKey("key1");
 
     Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, rollup, zone);
 

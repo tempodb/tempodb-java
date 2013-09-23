@@ -23,22 +23,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *  </pre>
  */
 public class Filter {
-  private final Set<String> ids = new LinkedHashSet<String>();
   private final Set<String> keys = new LinkedHashSet<String>();
   private final Set<String> tags = new LinkedHashSet<String>();
   private final Map<String, String> attributes = new HashMap<String, String>();
 
-  public Set<String> getIds() { return ids; }
   public Set<String> getKeys() { return keys; }
   public Set<String> getTags() { return tags; }
   public Map<String, String> getAttributes() { return attributes; }
-
-  /**
-   *  Adds an id to the filter.
-   *
-   *  @param id The id to add
-   */
-  public synchronized void addId(String id) { ids.add(id); }
 
   /**
    *  Adds a key to the filter.
@@ -64,13 +55,12 @@ public class Filter {
 
   @Override
   public String toString() {
-    return String.format("Filter(ids=%s, keys=%s, tags=%s, attributes=%s", ids, keys, tags, attributes);
+    return String.format("Filter(keys=%s, tags=%s, attributes=%s", keys, tags, attributes);
   }
 
   @Override
   public int hashCode() {
     return new HashCodeBuilder(113, 117)
-      .append(ids)
       .append(keys)
       .append(tags)
       .append(attributes)
@@ -85,7 +75,6 @@ public class Filter {
 
     Filter rhs = (Filter)obj;
     return new EqualsBuilder()
-      .append(ids, rhs.ids)
       .append(keys, rhs.keys)
       .append(tags, rhs.tags)
       .append(attributes, rhs.attributes)
