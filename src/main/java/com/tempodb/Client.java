@@ -244,6 +244,37 @@ public class Client {
   }
 
   /**
+   *  Replaces Series metadata
+   *
+   *  @param series The series to replace @see Series
+   *  @return The updated Series
+   */
+  public Result<Series> replaceSeries(Series series) {
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, series.getKey()));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = "Could not build URI";
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Result<Series> result = null;
+    String body = null;
+    try {
+      body = Json.dumps(series);
+    } catch (JsonProcessingException e) {
+      String message = "Error serializing the body of the request. More detail: " + e.getMessage();
+      result = new Result(null, GENERIC_ERROR_CODE, message);
+      return result;
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.PUT, body);
+    result = execute(request, Series.class);
+    return result;
+  }
+
+  /**
    *  Writes datapoints
    *
    */
