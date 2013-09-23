@@ -133,12 +133,37 @@ public class Client {
   }
 
   /**
+   *  Deletes a Series referenced by key.
+   *
+   *  @param key The Series key to delete
+   *  @return The Series to delete.
+   */
+  public Result<Nothing> deleteSeriesByKey(String key) {
+    checkNotNull(key);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, key));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s", key);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.DELETE);
+    Result<Nothing> result = execute(request, Nothing.class);
+    return result;
+  }
+
+  /**
    *  Returns a Series referenced by key.
    *
    *  @param key The Series key to retrieve
    *  @return The requested Series.
    */
   public Result<Series> getSeriesByKey(String key) {
+    checkNotNull(key);
+
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, key));
