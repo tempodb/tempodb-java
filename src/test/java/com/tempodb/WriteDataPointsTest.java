@@ -65,7 +65,7 @@ public class WriteDataPointsTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
-    assertEquals("/v1/data/", argument.getValue().getRequestLine().getUri());
+    assertEquals("/v1/multi/", argument.getValue().getRequestLine().getUri());
   }
 
   @Test

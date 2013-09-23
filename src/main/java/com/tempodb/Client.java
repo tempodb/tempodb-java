@@ -161,7 +161,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/data/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/multi/", API_VERSION));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = "Could not build URI.";
