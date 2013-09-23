@@ -67,20 +67,6 @@ public class Client {
   }
 
   /**
-   *  Returns a cursor of datapoints specified by series id.
-   *
-   *  @param id The series id
-   *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
-   *  @param rollup The rollup for the read query. This can be null. @see Rollup
-   *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
-   *  @return A Cursor of DataPoints. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
-   *          if an error occurs while making a request.
-   */
-  public Cursor<DataPoint> readDataPointsById(String id, Interval interval, Rollup rollup, DateTimeZone timezone) {
-    return readDataPointsOne("id", id, interval, rollup, timezone);
-  }
-
-  /**
    *  Returns a cursor of datapoints specified by series key.
    *
    *  @param key The series key
@@ -91,7 +77,23 @@ public class Client {
    *          if an error occurs while making a request.
    */
   public Cursor<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) {
-    return readDataPointsOne("key", key, interval, rollup, timezone);
+    checkNotNull(interval);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/segment/", API_VERSION, key));
+      addIntervalToURI(builder, interval);
+      addRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s, rollup: %s, timezone: %s", key, interval, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
+    return cursor;
   }
 
   /**
@@ -181,26 +183,6 @@ public class Client {
     HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
     result = execute(request, Nothing.class);
     return result;
-  }
-
-  private Cursor<DataPoint> readDataPointsOne(String type, String value, Interval interval, Rollup rollup, DateTimeZone timezone) {
-    checkNotNull(interval);
-    checkNotNull(timezone);
-
-    URI uri = null;
-    try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/%s/%s/data/segment/", API_VERSION, type, value));
-      addIntervalToURI(builder, interval);
-      addRollupToURI(builder, rollup);
-      addTimeZoneToURI(builder, timezone);
-      uri = builder.build();
-    } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: %s: %s, interval: %s, rollup: %s, timezone: %s", type, value, interval, rollup, timezone);
-      throw new IllegalArgumentException(message, e);
-    }
-
-    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
-    return cursor;
   }
 
   private void addFilterToURI(URIBuilder builder, Filter filter) {

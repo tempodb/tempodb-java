@@ -28,6 +28,10 @@ public class Series implements Serializable {
     this("", "", "", new LinkedHashSet(), new HashMap());
   }
 
+  public Series(String key, String name, Set<String> tags, Map<String, String> attributes) {
+    this("", key, name, tags, attributes);
+  }
+
   public Series(String id, String key, String name, Set<String> tags, Map<String, String> attributes) {
     this.id = checkNotNull(id);
     this.key = checkNotNull(key);
