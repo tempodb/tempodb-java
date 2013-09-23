@@ -28,11 +28,9 @@ public class SeriesSegmentTest {
 
   @Test
   public void testDeserialize() throws IOException {
-    String json = "{" +
-      "\"data\":[" +
-          "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[\"tag1\",\"tag2\"],\"attributes\":{\"key1\":\"value1\"}}" +
-        "]" +
-      "}";
+    String json = "[" +
+      "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[\"tag1\",\"tag2\"],\"attributes\":{\"key1\":\"value1\"}}" +
+    "]";
 
     SeriesSegment segment = Json.loads(json, SeriesSegment.class);
     List<Series> data = Arrays.asList(new Series("id1", "key1", "name1", tags, attributes));

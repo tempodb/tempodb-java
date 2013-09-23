@@ -25,24 +25,18 @@ public class GetSeriesByFilterTest {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  private static final String json = "{" +
-    "\"data\":[" +
-      "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}" +
-    "]" +
-  "}";
+  private static final String json = "[" +
+    "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}" +
+  "]";
 
-  private static final String json1 = "{" +
-    "\"data\":[" +
-      "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}" +
-      "{\"id\":\"id2\",\"key\":\"key2\",\"name\":\"name2\",\"tags\":[],\"attributes\":{}}" +
-    "]" +
-  "}";
+  private static final String json1 = "[" +
+    "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}," +
+    "{\"id\":\"id2\",\"key\":\"key2\",\"name\":\"name2\",\"tags\":[],\"attributes\":{}}" +
+  "]";
 
-  private static final String json2 = "{" +
-    "\"data\":[" +
-      "{\"id\":\"id3\",\"key\":\"key3\",\"name\":\"name3\",\"tags\":[],\"attributes\":{}}" +
-    "]" +
-  "}";
+  private static final String json2 = "[" +
+    "{\"id\":\"id3\",\"key\":\"key3\",\"name\":\"name3\",\"tags\":[],\"attributes\":{}}" +
+  "]";
 
   private static final Series series1 = new Series("id1", "key1", "name1", new HashSet(), new HashMap());
   private static final Series series2 = new Series("id2", "key2", "name2", new HashSet(), new HashMap());
