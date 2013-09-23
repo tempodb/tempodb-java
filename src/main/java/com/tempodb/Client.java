@@ -201,6 +201,27 @@ public class Client {
   }
 
   /**
+   *  Deletes all Series in a database.
+   *
+   *  @return A DeleteSummary providing information about the series deleted.
+   */
+  public Result<DeleteSummary> deleteAllSeries() {
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
+      builder.addParameter("allow_truncation", "true");
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = "Could not build URI";
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.DELETE);
+    Result<DeleteSummary> result = execute(request, DeleteSummary.class);
+    return result;
+  }
+
+  /**
    *  Returns a cursor of series specified by a filter.
    *
    *  @param filter The series filter @see Filter
