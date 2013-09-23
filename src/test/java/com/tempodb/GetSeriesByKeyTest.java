@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 
+
 public class GetSeriesByKeyTest {
 
   private static final String json = "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
@@ -52,7 +53,7 @@ public class GetSeriesByKeyTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
-    assertEquals("/v1/series/key/key1/", argument.getValue().getRequestLine().getUri());
+    assertEquals("/v1/series/key/key1/", uri.getPath());
   }
 
   @Test

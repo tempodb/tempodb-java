@@ -55,7 +55,7 @@ public class DeleteSeriesByFilterTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
-    assertEquals("/v1/series/", argument.getValue().getRequestLine().getUri());
+    assertEquals("/v1/series/", uri.getPath());
   }
 
   @Test

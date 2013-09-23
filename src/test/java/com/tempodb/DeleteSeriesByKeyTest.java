@@ -49,7 +49,7 @@ public class DeleteSeriesByKeyTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
-    assertEquals("/v1/series/key/key1/", argument.getValue().getRequestLine().getUri());
+    assertEquals("/v1/series/key/key1/", uri.getPath());
   }
 
   @Test
