@@ -305,6 +305,42 @@ public class Client {
     return result;
   }
 
+
+  /**
+   *  Writes datapoints by key
+   *
+   *  @param key The key of the series to write to.
+   *  @param data A list of datapoints
+   *  @return Nothing
+   */
+  public Result<Nothing> writeDataPointsByKey(String key, List<DataPoint> data) {
+    checkNotNull(key);
+    checkNotNull(data);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, key));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s", key);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Result<Nothing> result = null;
+    String body = null;
+    try{
+      body = Json.dumps(data);
+    } catch (JsonProcessingException e) {
+      String message = "Error serializing the body of the request. More detail: " + e.getMessage();
+      result = new Result(null, GENERIC_ERROR_CODE, message);
+      return result;
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
+    result = execute(request, Nothing.class);
+    return result;
+  }
+
   private void addFilterToURI(URIBuilder builder, Filter filter) {
     if(filter != null) {
       for(String key : filter.getKeys()) {
