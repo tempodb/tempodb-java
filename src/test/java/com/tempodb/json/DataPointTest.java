@@ -15,7 +15,7 @@ public class DataPointTest {
   @Test
   public void testDeserializeUTC() throws IOException {
     DateTimeZone zone = DateTimeZone.UTC;
-    DataPoint datapoint = Json.loads("{\"t\":1325376001000,\"v\":12.34}", DataPoint.class, zone);
+    DataPoint datapoint = Json.loads("{\"t\":\"2012-01-01T00:00:01.000Z\",\"v\":12.34}", DataPoint.class, zone);
     DataPoint expected = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34);
     assertEquals(expected, datapoint);
   }
@@ -23,7 +23,7 @@ public class DataPointTest {
   @Test
   public void testDeserializeTZ() throws IOException {
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
-    DataPoint datapoint = Json.loads("{\"t\":1325397601000,\"v\":12.34}", DataPoint.class, zone);
+    DataPoint datapoint = Json.loads("{\"t\":\"2012-01-01T00:00:01.000-06:00\",\"v\":12.34}", DataPoint.class, zone);
     DataPoint expected = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34);
     assertEquals(expected, datapoint);
   }
@@ -33,7 +33,7 @@ public class DataPointTest {
     DateTimeZone zone = DateTimeZone.UTC;
     DataPoint datapoint = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34);
 
-    String expected = "{\"t\":1325376001000,\"v\":12.34}";
+    String expected = "{\"t\":\"2012-01-01T00:00:01.000Z\",\"v\":12.34}";
     assertEquals(expected, Json.dumps(datapoint));
   }
 
@@ -42,7 +42,7 @@ public class DataPointTest {
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
     DataPoint datapoint = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34);
 
-    String expected = "{\"t\":1325397601000,\"v\":12.34}";
+    String expected = "{\"t\":\"2012-01-01T00:00:01.000-06:00\",\"v\":12.34}";
     assertEquals(expected, Json.dumps(datapoint));
   }
 }

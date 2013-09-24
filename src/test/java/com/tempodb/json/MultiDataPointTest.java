@@ -20,7 +20,7 @@ public class MultiDataPointTest {
 
   @Test
   public void testDeserialize_Key() throws IOException {
-    MultiDataPoint datapoint = Json.loads("{\"key\":\"key1\",\"t\":1325376001000,\"v\":12.34}", MultiDataPoint.class, timezone);
+    MultiDataPoint datapoint = Json.loads("{\"key\":\"key1\",\"t\":\"2012-01-01T00:00:01.000Z\",\"v\":12.34}", MultiDataPoint.class, timezone);
     MultiDataPoint expected = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 0, 1, 0, timezone), 12.34);
     assertEquals(expected, datapoint);
   }
@@ -28,13 +28,13 @@ public class MultiDataPointTest {
   @Test
   public void testDeserialize_MissingKey() throws IOException {
     thrown.expect(JsonMappingException.class);
-    MultiDataPoint datapoint = Json.loads("{\"t\":1325376001000,\"v\":12.34}", MultiDataPoint.class, timezone);
+    MultiDataPoint datapoint = Json.loads("{\"t\":\"2012-01-01T00:00:01.000Z\",\"v\":12.34}", MultiDataPoint.class, timezone);
   }
 
   @Test
   public void testDeserialize_NullKey() throws IOException {
     thrown.expect(JsonMappingException.class);
-    MultiDataPoint datapoint = Json.loads("{\"key\":null,\"t\":1325376001000,\"v\":12.34}", MultiDataPoint.class, timezone);
+    MultiDataPoint datapoint = Json.loads("{\"key\":null,\"t\":\"2012-01-01T00:00:01.000Z\",\"v\":12.34}", MultiDataPoint.class, timezone);
   }
 
   @Test
@@ -42,7 +42,7 @@ public class MultiDataPointTest {
     DateTimeZone zone = DateTimeZone.UTC;
     MultiDataPoint datapoint = new MultiDataPoint("key1",new DateTime(2012, 1, 1, 0, 0, 1, 0, timezone), 12.34);
 
-    String expected = "{\"key\":\"key1\",\"t\":1325376001000,\"v\":12.34}";
+    String expected = "{\"key\":\"key1\",\"t\":\"2012-01-01T00:00:01.000Z\",\"v\":12.34}";
     assertEquals(expected, Json.dumps(datapoint));
   }
 }

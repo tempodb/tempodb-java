@@ -22,8 +22,8 @@ import org.mockito.ArgumentCaptor;
 public class WriteDataPointsTest {
 
   private static final String json = "[" +
-    "{\"key\":\"key1\",\"t\":1332824400000,\"v\":12.34}," +
-    "{\"key\":\"key2\",\"t\":1332824460000,\"v\":23.45}" +
+    "{\"key\":\"key1\",\"t\":\"2012-03-27T05:00:00.000Z\",\"v\":12.34}," +
+    "{\"key\":\"key2\",\"t\":\"2012-03-27T05:01:00.000Z\",\"v\":23.45}" +
   "]";
 
   private static final DateTimeZone timezone = DateTimeZone.UTC;
