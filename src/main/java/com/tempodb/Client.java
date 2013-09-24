@@ -70,10 +70,10 @@ public class Client {
    *  Returns a cursor of datapoints specified by series key.
    *
    *  @param key The series key
-   *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
-   *  @param rollup The rollup for the read query. This can be null. @see Rollup
-   *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
-   *  @return A Cursor of DataPoints. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
    *          if an error occurs while making a request.
    */
   public Cursor<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) {
@@ -383,15 +383,15 @@ public class Client {
     }
   }
 
-  protected HttpRequest buildRequest(String uri) {
+  HttpRequest buildRequest(String uri) {
     return buildRequest(uri, HttpMethod.GET, null);
   }
 
-  protected HttpRequest buildRequest(String uri, HttpMethod method) {
+  HttpRequest buildRequest(String uri, HttpMethod method) {
     return buildRequest(uri, method, null);
   }
 
-  protected HttpRequest buildRequest(String uri, HttpMethod method, String body) {
+  HttpRequest buildRequest(String uri, HttpMethod method, String body) {
     HttpRequest request = null;
 
     switch(method) {
@@ -421,14 +421,14 @@ public class Client {
     return request;
   }
 
-  protected HttpResponse execute(HttpRequest request) throws IOException {
+  HttpResponse execute(HttpRequest request) throws IOException {
     HttpClient client = getHttpClient();
     HttpHost target = getTarget();
     HttpResponse response = client.execute(target, request);
     return response;
   }
 
-  protected <T> Result<T> execute(HttpRequest request, Class<T> klass) {
+  <T> Result<T> execute(HttpRequest request, Class<T> klass) {
     Result<T> result = null;
     try {
       HttpResponse response = execute(request);
@@ -491,7 +491,7 @@ public class Client {
     return target;
   }
 
-  public synchronized Client setHttpClient(HttpClient httpClient) {
+  synchronized Client setHttpClient(HttpClient httpClient) {
     this.client = httpClient;
     return this;
   }

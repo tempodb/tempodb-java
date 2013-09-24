@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class Segment<T> implements Iterable<T> {
+class Segment<T> implements Iterable<T> {
   protected List<T> data;
   protected String next;
 

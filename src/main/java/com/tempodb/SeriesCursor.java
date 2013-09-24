@@ -8,7 +8,7 @@ import org.apache.http.HttpRequest;
 import static com.tempodb.util.Preconditions.*;
 
 
-public class SeriesCursor implements Cursor<Series> {
+class SeriesCursor implements Cursor<Series> {
   private final URI uri;
   private final Client client;
 

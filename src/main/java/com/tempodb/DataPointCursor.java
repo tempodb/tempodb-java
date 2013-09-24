@@ -8,7 +8,7 @@ import org.apache.http.HttpRequest;
 import static com.tempodb.util.Preconditions.*;
 
 
-public class DataPointCursor implements Cursor<DataPoint> {
+class DataPointCursor implements Cursor<DataPoint> {
   private final URI uri;
   private final Client client;
 

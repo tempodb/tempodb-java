@@ -3,7 +3,7 @@ package com.tempodb;
 import java.util.Iterator;
 
 
-public class SegmentInnerIterator<T> implements Iterator<T> {
+class SegmentInnerIterator<T> implements Iterator<T> {
   private Iterator<Segment<T>> segments;
   private Iterator<T> currentSegment;
 

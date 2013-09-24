@@ -7,7 +7,7 @@ import static com.tempodb.util.Preconditions.*;
 import org.apache.http.HttpRequest;
 
 
-public class SegmentIterator<T extends Segment<?>> implements Iterator<T> {
+class SegmentIterator<T extends Segment<?>> implements Iterator<T> {
 
   private final Client client;
   private T segment;
