@@ -23,7 +23,7 @@ public class GetSeriesByKeyTest {
     HttpResponse response = Util.getResponse(200, json);
     Client client = Util.getClient(response);
 
-    Result<Series> expected = new Result(new Series("key1", "name1", new HashSet(), new HashMap()), 200, "");
+    Result<Series> expected = new Result(new Series("key1", "name1", new HashSet(), new HashMap()), 200, "OK");
     Result<Series> result = client.getSeriesByKey("key1");
     assertEquals(expected, result);
   }
@@ -54,15 +54,5 @@ public class GetSeriesByKeyTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     assertEquals("/v1/series/key/key1/", uri.getPath());
-  }
-
-  @Test
-  public void testError() throws IOException, URISyntaxException {
-    HttpResponse response = Util.getResponse(403, "");
-    HttpClient mockClient = Util.getMockHttpClient(response);
-    Client client = Util.getClient(mockClient);
-
-    Result<Series> result = client.getSeriesByKey("key1");
-    assertFalse(result.isSuccessful());
   }
 }

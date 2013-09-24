@@ -76,14 +76,4 @@ public class ReplaceSeriesTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
     assertEquals(body, EntityUtils.toString(argument.getValue().getEntity(), DEFAULT_CHARSET));
   }
-
-  @Test
-  public void testError() throws IOException {
-    HttpResponse response = Util.getResponse(403, "");
-    Client client = Util.getClient(response);
-
-    Result<Series> result = client.replaceSeries(series);
-
-    assertFalse(result.isSuccessful());
-  }
 }

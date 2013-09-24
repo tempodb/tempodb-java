@@ -25,7 +25,7 @@ public class DeleteAllSeriesTest {
     Client client = Util.getClient(response);
 
     Result<DeleteSummary> result = client.deleteAllSeries();
-    Result<DeleteSummary> expected = new Result(new DeleteSummary(127), 200, "");
+    Result<DeleteSummary> expected = new Result(new DeleteSummary(127), 200, "OK");
     assertEquals(expected, result);
   }
 

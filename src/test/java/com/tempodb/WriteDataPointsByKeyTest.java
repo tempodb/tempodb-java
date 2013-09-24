@@ -79,12 +79,4 @@ public class WriteDataPointsByKeyTest {
     verify(mockClient).execute(any(HttpHost.class), argument.capture());
     assertEquals(json, EntityUtils.toString(argument.getValue().getEntity(), DEFAULT_CHARSET));
   }
-
-  @Test
-  public void testError() throws IOException {
-    HttpResponse response = Util.getResponse(403, "Forbidden");
-    Client client = Util.getClient(response);
-    Result<Nothing> result = client.writeDataPointsByKey("key1", data);
-    assertFalse(result.isSuccessful());
-  }
 }

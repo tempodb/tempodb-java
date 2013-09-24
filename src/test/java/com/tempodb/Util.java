@@ -2,11 +2,13 @@ package com.tempodb;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.message.*;
 import org.mockito.Mockito;
 
@@ -33,9 +35,8 @@ public class Util {
 
   public static HttpResponse getResponse(int expectedStatus, String expectedBody) {
     ProtocolVersion version = new ProtocolVersion("HTTP", 1, 1);
-    StatusLine statusLine = new BasicStatusLine(version, expectedStatus, "");
+    StatusLine statusLine = new BasicStatusLine(version, expectedStatus, EnglishReasonPhraseCatalog.INSTANCE.getReason(expectedStatus, Locale.US));
     HttpResponse response = new BasicHttpResponse(statusLine);
-    response.setStatusCode(expectedStatus);
     response.setEntity(new StringEntity(expectedBody, Charset.forName("UTF-8")));
     return response;
   }

@@ -19,7 +19,7 @@ public class DeleteSeriesByKeyTest {
     HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
 
-    Result<Nothing> expected = new Result(new Nothing(), 200, "");
+    Result<Nothing> expected = new Result(new Nothing(), 200, "OK");
     Result<Nothing> result = client.deleteSeriesByKey("key1");
     assertEquals(expected, result);
   }
@@ -50,15 +50,5 @@ public class DeleteSeriesByKeyTest {
 
     URI uri = new URI(argument.getValue().getRequestLine().getUri());
     assertEquals("/v1/series/key/key1/", uri.getPath());
-  }
-
-  @Test
-  public void testError() throws IOException, URISyntaxException {
-    HttpResponse response = Util.getResponse(403, "");
-    HttpClient mockClient = Util.getMockHttpClient(response);
-    Client client = Util.getClient(mockClient);
-
-    Result<Nothing> result = client.deleteSeriesByKey("key1");
-    assertFalse(result.isSuccessful());
   }
 }

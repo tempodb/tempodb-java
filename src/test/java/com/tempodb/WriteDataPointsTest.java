@@ -26,6 +26,8 @@ public class WriteDataPointsTest {
     "{\"key\":\"key2\",\"t\":\"2012-03-27T05:01:00.000Z\",\"v\":23.45}" +
   "]";
 
+  private static final String multistatus_json = "{\"multistatus\":[{\"status\":403,\"messages\":[\"Forbidden\"]}]}";
+
   private static final DateTimeZone timezone = DateTimeZone.UTC;
   private static final List<MultiDataPoint> data = Arrays.asList(new MultiDataPoint("key1", new DateTime(2012, 3, 27, 5, 0, 0, 0, timezone), 12.34),
                                                                  new MultiDataPoint("key2", new DateTime(2012, 3, 27, 5, 1, 0, 0, timezone), 23.45));
@@ -33,16 +35,17 @@ public class WriteDataPointsTest {
 
   @Test
   public void smokeTest() throws IOException {
-    HttpResponse response = Util.getResponse(207, "");
+    HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
     Result<Nothing> result = client.writeDataPoints(data);
 
     assertTrue(result.isSuccessful());
+    assertEquals("OK", result.getMessage());
   }
 
   @Test
   public void testMethod() throws IOException {
-    HttpResponse response = Util.getResponse(207, "");
+    HttpResponse response = Util.getResponse(200, "");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
@@ -55,7 +58,7 @@ public class WriteDataPointsTest {
 
   @Test
   public void testUri() throws IOException, URISyntaxException {
-    HttpResponse response = Util.getResponse(207, "");
+    HttpResponse response = Util.getResponse(200, "");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
@@ -70,7 +73,7 @@ public class WriteDataPointsTest {
 
   @Test
   public void testBody() throws IOException {
-    HttpResponse response = Util.getResponse(207, "");
+    HttpResponse response = Util.getResponse(200, "");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
@@ -82,11 +85,14 @@ public class WriteDataPointsTest {
   }
 
   @Test
-  public void testError() throws IOException {
-    HttpResponse response = Util.getResponse(403, "Forbidden");
+  public void testMultiStatus() throws IOException {
+    HttpResponse response = Util.getResponse(207, multistatus_json);
     Client client = Util.getClient(response);
+
     Result<Nothing> result = client.writeDataPoints(data);
+    MultiStatus expected = new MultiStatus(Arrays.asList(new Status(403, Arrays.asList("Forbidden"))));
 
     assertFalse(result.isSuccessful());
+    assertEquals(expected, result.getMultiStatus());
   }
 }
