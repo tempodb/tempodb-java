@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -22,10 +23,11 @@ public class MultiStatus implements Iterable<Status>, Serializable {
     this(new ArrayList<Status>());
   }
 
-  public MultiStatus(List<Status> statuses) {
+  public MultiStatus(@JsonProperty("multistatus") List<Status> statuses) {
     this.statuses = checkNotNull(statuses);
   }
 
+  @JsonProperty("multistatus")
   public List<Status> getStatuses() { return statuses; }
   public void setStatuses(List<Status> statuses) { this.statuses = checkNotNull(statuses); }
 
