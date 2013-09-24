@@ -22,7 +22,7 @@ public class SeriesCursor implements Cursor<Series> {
     Result<SeriesSegment> result = client.execute(request, SeriesSegment.class);
 
     Iterator<Series> iterator = null;
-    if(result.isSuccessful()) {
+    if(result.getState() == State.SUCCESS) {
       SegmentIterator<Segment<Series>> segments = new SegmentIterator(client, result.getValue(), SeriesSegment.class);
       iterator = new SegmentInnerIterator(segments);
     } else {

@@ -22,7 +22,7 @@ public class DataPointCursor implements Cursor<DataPoint> {
     Result<DataPointSegment> result = client.execute(request, DataPointSegment.class);
 
     Iterator<DataPoint> iterator = null;
-    if(result.isSuccessful()) {
+    if(result.getState() == State.SUCCESS) {
       SegmentIterator<Segment<DataPoint>> segments = new SegmentIterator(client, result.getValue(), DataPointSegment.class);
       iterator = new SegmentInnerIterator(segments);
     } else {

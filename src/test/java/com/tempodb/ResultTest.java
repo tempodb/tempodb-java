@@ -41,7 +41,7 @@ public class ResultTest {
     Result<Nothing> result = new Result(response, Nothing.class);
     Result<Nothing> expected = new Result(new Nothing(), 200, "OK", null);
     assertEquals(expected, result);
-    assertTrue(result.isSuccessful());
+    assertTrue(result.getState() == State.SUCCESS);
   }
 
   @Test
@@ -50,7 +50,7 @@ public class ResultTest {
     Result<Nothing> result = new Result(response, Nothing.class);
     Result<Nothing> expected = new Result(null, 403, "You are forbidden", null);
     assertEquals(expected, result);
-    assertFalse(result.isSuccessful());
+    assertTrue(result.getState() == State.FAILURE);
   }
 
   @Test
@@ -59,7 +59,7 @@ public class ResultTest {
     Result<Nothing> result = new Result(response, Nothing.class);
     Result<Nothing> expected = new Result(null, 403, "Forbidden", null);
     assertEquals(expected, result);
-    assertFalse(result.isSuccessful());
+    assertTrue(result.getState() == State.FAILURE);
   }
 
   @Test
@@ -71,6 +71,6 @@ public class ResultTest {
     MultiStatus multistatus = new MultiStatus(Arrays.asList(new Status(403, Arrays.asList("Forbidden"))));
     Result<Nothing> expected = new Result(null, 207, "Multi-Status", multistatus);
     assertEquals(expected, result);
-    assertFalse(result.isSuccessful());
+    assertTrue(result.getState() == State.PARTIAL_SUCCESS);
   }
 }

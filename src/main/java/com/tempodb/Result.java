@@ -39,14 +39,16 @@ public class Result<T> {
     String message = response.getStatusLine().getReasonPhrase();
     MultiStatus multistatus = null;
 
-    if(isSuccessful(code)) {
-      value = newInstanceFromResponse(response, klass);
-    } else {
-      if(code == 207) {
+    switch(getState(code)) {
+      case SUCCESS:
+        value = newInstanceFromResponse(response, klass);
+        break;
+      case PARTIAL_SUCCESS:
         multistatus = Json.loads(EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET), MultiStatus.class);
-      } else {
+        break;
+      case FAILURE:
         message = messageFromResponse(response);
-      }
+        break;
     }
 
     this.value = value;
@@ -77,13 +79,21 @@ public class Result<T> {
   }
 
   public T getValue() { return value; }
-  public boolean isSuccessful() { return isSuccessful(code); }
   public int getCode() { return code; }
   public String getMessage() { return message; }
   public MultiStatus getMultiStatus() { return multistatus; }
+  public State getState() { return getState(code); }
 
-  private boolean isSuccessful(int code) {
-    return ((code / 100) == 2) && (code != 207);
+  private State getState(int code) {
+    State state = null;
+    if(((code / 100) == 2) && (code != 207)) {
+      state = State.SUCCESS;
+    } else if(code == 207) {
+      state = State.PARTIAL_SUCCESS;
+    } else {
+      state = State.FAILURE;
+    }
+    return state;
   }
 
   @Override

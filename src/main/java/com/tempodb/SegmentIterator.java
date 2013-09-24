@@ -29,7 +29,7 @@ public class SegmentIterator<T extends Segment<?>> implements Iterator<T> {
     if(!this.segment.getNext().equals(null) && !this.segment.getNext().equals("")) {
       HttpRequest request = client.buildRequest(this.segment.getNext());
       Result<T> result = client.execute(request, klass);
-      if(result.isSuccessful()) {
+      if(result.getState() == State.SUCCESS) {
         this.segment = result.getValue();
       } else {
         throw new TempoDBException(result.getMessage(), result.getCode());

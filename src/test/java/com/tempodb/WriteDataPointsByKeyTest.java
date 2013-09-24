@@ -36,7 +36,9 @@ public class WriteDataPointsByKeyTest {
     HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
     Result<Nothing> result = client.writeDataPointsByKey("key1", data);
-    assertTrue(result.isSuccessful());
+
+    Result<Nothing> expected = new Result(new Nothing(), 200, "OK");
+    assertEquals(expected, result);
   }
 
   @Test

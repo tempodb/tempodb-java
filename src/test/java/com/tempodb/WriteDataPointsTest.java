@@ -39,7 +39,8 @@ public class WriteDataPointsTest {
     Client client = Util.getClient(response);
     Result<Nothing> result = client.writeDataPoints(data);
 
-    assertTrue(result.isSuccessful());
+    Result<Nothing> expected = new Result(new Nothing(), 200, "OK");
+    assertEquals(expected, result);
     assertEquals("OK", result.getMessage());
   }
 
@@ -90,9 +91,9 @@ public class WriteDataPointsTest {
     Client client = Util.getClient(response);
 
     Result<Nothing> result = client.writeDataPoints(data);
-    MultiStatus expected = new MultiStatus(Arrays.asList(new Status(403, Arrays.asList("Forbidden"))));
+    MultiStatus multistatus = new MultiStatus(Arrays.asList(new Status(403, Arrays.asList("Forbidden"))));
 
-    assertFalse(result.isSuccessful());
-    assertEquals(expected, result.getMultiStatus());
+    Result<Nothing> expected = new Result(null, 207, "Multi-Status", multistatus);
+    assertEquals(expected, result);
   }
 }
