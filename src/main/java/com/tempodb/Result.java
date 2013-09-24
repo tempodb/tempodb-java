@@ -84,7 +84,7 @@ public class Result<T> {
   public MultiStatus getMultiStatus() { return multistatus; }
   public State getState() { return getState(code); }
 
-  private State getState(int code) {
+  private static State getState(int code) {
     State state = null;
     if(((code / 100) == 2) && (code != 207)) {
       state = State.SUCCESS;
