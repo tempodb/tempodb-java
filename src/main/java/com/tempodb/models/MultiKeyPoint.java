@@ -18,9 +18,9 @@ public class MultiKeyPoint extends MultiPoint {
      *  @param value The datapoint value
      */
     @JsonCreator
-    public MultiKeyPoint(@JsonProperty("t") DateTime timestamp, @JsonProperty("key") String key, @JsonProperty("v") Number value) {
-        this.timestamp = timestamp;
+    public MultiKeyPoint(@JsonProperty("key") String key, @JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
         this.key = key;
+        this.timestamp = timestamp;
         this.value = value;
     }
 

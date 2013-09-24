@@ -24,9 +24,9 @@ public class ExampleMultiIncrement{
         DateTime ts2 = new DateTime(2012, 3, 30, 3, 0, 0, 0);
 
         ArrayList<MultiPoint> points = new ArrayList<MultiPoint>();
-        points.add(new MultiKeyPoint(ts, "myagley-1", 1));
-        points.add(new MultiKeyPoint(ts1, "myagley-2", 3));
-        points.add(new MultiKeyPoint(ts2, "myagley-3", 2));
+        points.add(new MultiKeyPoint("myagley-1", ts, 1));
+        points.add(new MultiKeyPoint("myagley-2", ts1, 3));
+        points.add(new MultiKeyPoint("myagley-3", ts2, 2));
 
         client.multiIncrement(points);
     }

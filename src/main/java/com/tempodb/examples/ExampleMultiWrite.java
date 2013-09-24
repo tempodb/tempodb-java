@@ -24,9 +24,9 @@ public class ExampleMultiWrite {
         DateTime ts2 = new DateTime(2012, 3, 30, 3, 0, 0, 0);
 
         ArrayList<MultiPoint> points = new ArrayList<MultiPoint>();
-        points.add(new MultiKeyPoint(ts, "myagley-1", 123.6));
-        points.add(new MultiKeyPoint(ts1, "myagley-2", 3.4));
-        points.add(new MultiKeyPoint(ts2, "myagley-3", 23.4));
+        points.add(new MultiKeyPoint("myagley-1", ts, 123.6));
+        points.add(new MultiKeyPoint("myagley-2", ts1, 3.4));
+        points.add(new MultiKeyPoint("myagley-3", ts2, 23.4));
 
         client.multiWrite(points);
     }

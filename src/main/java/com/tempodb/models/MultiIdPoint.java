@@ -18,9 +18,9 @@ public class MultiIdPoint extends MultiPoint {
      *  @param value The datapoint value
      */
     @JsonCreator
-    public MultiIdPoint(@JsonProperty("t") DateTime timestamp, @JsonProperty("id") String id, @JsonProperty("v") Number value) {
-        this.timestamp = timestamp;
+    public MultiIdPoint(@JsonProperty("id") String id, @JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
         this.id = id;
+        this.timestamp = timestamp;
         this.value = value;
     }
 
