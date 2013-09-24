@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -22,14 +23,16 @@ public class Status implements Serializable {
     this(0, new ArrayList());
   }
 
-  public Status(int code, List<String> messages) {
+  public Status(@JsonProperty("status") int code, @JsonProperty("messages") List<String> messages) {
     this.code = checkNotNull(code);
     this.messages = checkNotNull(messages);
   }
 
+  @JsonProperty("status")
   public int getCode() { return code; }
   public void setCode(int code) { this.code = checkNotNull(code); }
 
+  @JsonProperty("messages")
   public List<String> getMessages() { return messages; }
   public void setMessages(List<String> messages) { this.messages = checkNotNull(messages); }
 
