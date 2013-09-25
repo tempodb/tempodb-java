@@ -29,7 +29,49 @@ import org.joda.time.format.DateTimeFormatter;
 import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
-
+/**
+ *  The main object used to make calls to the TempoDB api.
+ *
+ *  It is a thin wrapper around the <a target="_blank" href="http://tempo-db.com/docs/api/">TempoDB Rest API</a>
+ *
+ *  <p>A client object holds the session information required to authenticate and connect to the Rest api. An api key and secret
+ *  are required. These can be obtained by signing up at <a href="http://tempo-db.com">http://tempo-db.com</a>. The client
+ *  also lets you specify a different hostname (for instance, if you are on a dedicated cluster), the port, and whether to
+ *  use SSL encryption on the connection.
+ *
+ *  <p>Using the client, you can:
+ *  <ul>
+ *    <li>Retrieve a filtered list of Series</li>
+ *    <li>Retrieve a Series by key</li>
+ *    <li>Retrieve datapoints for a single series in a specific time interval</li>
+ *    <li>Write datapoints for a single series</li>
+ *    <li>Retrieve datapoints aggregated across multiple Series</li>
+ *    <li>Write datapoints to multiple Series</li>
+ *  </ul>
+ *
+ *  <p>The following example initializes a Client object and retrieves datapoints for a Series referenced by the key "my-key"
+ *  for the time period <tt>2012-01-01</tt> to <tt>2010-01-02</tt>, returning the hourly average. This calls returns a <tt>Cursor&lt;DataPoint&gt;</tt>
+ *  which provides a lazily loaded iterable of DataPoints.
+ *
+ *  <pre><code>
+ *    import org.joda.time.DateTime;
+ *    import org.joda.time.DateTimeZone;
+ *    import org.joda.time.Interval;
+ *    import org.joda.time.Period;
+ *
+ *    Client client = new Client("api-key", "api-secret", "api.tempo-db.com", 443, true);
+ *
+ *    DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, 0);
+ *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
+ *    Rollup rollup = new Rollup(Period.hours(1), Fold.MEAN);
+ *
+ *    Cursor<DataPoint> datapoints = client.readDataPointsByKey("my-key", new Interval(start, end), rollup, DateTimeZone.UTC);
+ *  </code></pre>
+ *
+ *  <p>The TempoDB Rest API supports http keep-alive, and the Client object is designed to be thread-safe. It is recommended
+ *  that a Client object be created and then reused for subsequent calls. This help to amoritize the cost of setting up the
+ *  http client across many calls.
+ */
 public class Client {
 
   private final String key;
@@ -52,6 +94,8 @@ public class Client {
   private enum HttpMethod { GET, POST, PUT, DELETE }
 
   /**
+   *  Base constructor for a Client object.
+   *
    *  @param key Api key
    *  @param secret Api secret
    *  @param host Hostname of the api server
@@ -73,8 +117,10 @@ public class Client {
    *  @param interval An interval of time for the query (start/end datetimes)
    *  @param rollup The rollup for the read query. This can be null.
    *  @param timezone The time zone for the returned datapoints.
-   *  @return A Cursor of DataPoints. The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
-   *          if an error occurs while making a request.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(interval);
@@ -98,15 +144,21 @@ public class Client {
 
   /**
    *  Returns a cursor of datapoints specified by a series filter.
+   *
    *  This endpoint allows one to request multiple series and apply an aggregation function.
    *
-   *  @param filter The series filter @see Filter
-   *  @param interval An interval of time for the query (start/end datetimes) @see org.joda.time.Iterval
-   *  @param aggregation The aggregation for the read query. This is required. @see Aggregation
-   *  @param rollup The rollup for the read query. This can be null. @see Rollup
-   *  @param timezone The time zone for the returned datapoints. @see org.joda.time.DateTimeZone
-   *  @return A Cursor of DataPoints. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
-   *          if an error occurs while making a request.
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param aggregation The aggregation for the read query. This is required.
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Aggregation
+   *  @see Cursor
+   *  @see Filter
+   *  @see Rollup
+   *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPointsByFilter(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup, DateTimeZone timezone) {
     checkNotNull(filter);
@@ -136,7 +188,8 @@ public class Client {
    *  Deletes a Series referenced by key.
    *
    *  @param key The Series key to delete
-   *  @return The Series to delete.
+   *  @return {@link Nothing}
+   *  @since 1.0.0
    */
   public Result<Nothing> deleteSeriesByKey(String key) {
     checkNotNull(key);
@@ -160,6 +213,7 @@ public class Client {
    *
    *  @param key The Series key to retrieve
    *  @return The requested Series.
+   *  @since 1.0.0
    */
   public Result<Series> getSeriesByKey(String key) {
     checkNotNull(key);
@@ -183,6 +237,10 @@ public class Client {
    *
    *  @param filter The series filter @see Filter
    *  @return A DeleteSummary providing information about the series deleted.
+   *
+   *  @see DeleteSummary
+   *  @see Filter
+   *  @since 1.0.0
    */
   public Result<DeleteSummary> deleteSeriesByFilter(Filter filter) {
     URI uri = null;
@@ -204,6 +262,9 @@ public class Client {
    *  Deletes all Series in a database.
    *
    *  @return A DeleteSummary providing information about the series deleted.
+   *
+   *  @see DeleteSummary
+   *  @since 1.0.0
    */
   public Result<DeleteSummary> deleteAllSeries() {
     URI uri = null;
@@ -224,9 +285,12 @@ public class Client {
   /**
    *  Returns a cursor of series specified by a filter.
    *
-   *  @param filter The series filter @see Filter
-   *  @return A Cursor of Series. @see Cursor The @{link java.util.Iterator#next next} may throw a @{link TempoDBApiException}
-   *          if an error occurs while making a request.
+   *  @param filter The series filter
+   *  @return A Cursor of Series. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see Filter
+   *  @since 1.0.0
    */
   public Cursor<Series> getSeriesByFilter(Filter filter) {
     URI uri = null;
@@ -244,10 +308,13 @@ public class Client {
   }
 
   /**
-   *  Replaces Series metadata
+   *  Replaces all of a Series metadata
    *
-   *  @param series The series to replace @see Series
+   *  @param series The series to replace
    *  @return The updated Series
+   *
+   *  @see Series
+   *  @since 1.0.0
    */
   public Result<Series> replaceSeries(Series series) {
     URI uri = null;
@@ -275,8 +342,18 @@ public class Client {
   }
 
   /**
-   *  Writes datapoints
+   *  Writes datapoints to multiple Series.
    *
+   *  <p>This request can partially succeed. You should check the {@link Result#getState()} to check if the request was
+   *  successful. If the request was partially successful, the result's {@link MultiStatus} can be inspected to determine
+   *  what failed.
+   *
+   *  @param data List of MultiDataPoint's to write
+   *  @return {@link Nothing}
+   *
+   *  @see MultiDataPoint
+   *  @see MultiStatus
+   *  @since 1.0.0
    */
   public Result<Nothing> writeDataPoints(List<MultiDataPoint> data) {
     checkNotNull(data);
@@ -307,11 +384,15 @@ public class Client {
 
 
   /**
-   *  Writes datapoints by key
+   *  Writes datapoints to single Series, referenced by key.
    *
    *  @param key The key of the series to write to.
    *  @param data A list of datapoints
-   *  @return Nothing
+   *  @return {@link Nothing}
+   *
+   *  @see DataPoint
+   *  @see Nothing
+   *  @since 1.0.0
    */
   public Result<Nothing> writeDataPointsByKey(String key, List<DataPoint> data) {
     checkNotNull(key);
