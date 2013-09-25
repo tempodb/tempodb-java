@@ -33,6 +33,12 @@ public class Util {
     return mockHttpClient;
   }
 
+  public static HttpClient getMockHttpClient(HttpResponse response, HttpResponse... responses) throws IOException {
+    HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(mockHttpClient.execute(Mockito.any(HttpHost.class), Mockito.any(HttpRequest.class))).thenReturn(response, responses);
+    return mockHttpClient;
+  }
+
   public static HttpResponse getResponse(int expectedStatus, String expectedBody) {
     ProtocolVersion version = new ProtocolVersion("HTTP", 1, 1);
     StatusLine statusLine = new BasicStatusLine(version, expectedStatus, EnglishReasonPhraseCatalog.INSTANCE.getReason(expectedStatus, Locale.US));

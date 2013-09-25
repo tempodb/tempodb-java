@@ -36,17 +36,16 @@ public class ReadDataPointsByKeyTest {
     "}," +
     "\"tz\":\"UTC\"," +
     "\"data\":[" +
-      "{\"t\":1325376001000,\"v\":12.34}" +
+      "{\"t\":\"2012-01-01T00:00:00.000Z\",\"v\":12.34}" +
     "]" +
   "}";
-
 
   private static final String json1 = "{" +
     "\"rollup\":null," +
     "\"tz\":\"UTC\"," +
     "\"data\":[" +
-      "{\"t\":1332824400000,\"v\":12.34}," +
-      "{\"t\":1332824460000,\"v\":23.45}" +
+      "{\"t\":\"2012-03-27T05:00:00.000Z\",\"v\":12.34}," +
+      "{\"t\":\"2012-03-27T05:01:00.000Z\",\"v\":23.45}" +
     "]" +
   "}";
 
@@ -54,7 +53,7 @@ public class ReadDataPointsByKeyTest {
     "\"rollup\":null," +
     "\"tz\":\"UTC\"," +
     "\"data\":[" +
-      "{\"t\":1332824520000,\"v\":34.56}" +
+      "{\"t\":\"2012-03-27T05:02:00.000Z\",\"v\":34.56}" +
     "]" +
   "}";
 
@@ -62,7 +61,7 @@ public class ReadDataPointsByKeyTest {
     "\"rollup\":null," +
     "\"tz\":\"America/Chicago\"," +
     "\"data\":[" +
-      "{\"t\":1325397600000,\"v\":34.56}" +
+      "{\"t\":\"2012-01-01T00:00:00.000-06:00\",\"v\":34.56}" +
     "]" +
   "}";
 
@@ -98,6 +97,28 @@ public class ReadDataPointsByKeyTest {
     DateTime end = new DateTime(2012, 1, 1, 0, 0, 0, zone);
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
+
+    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
+    List<DataPoint> output = new ArrayList();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
+    assertEquals(expected, output);
+  }
+
+  @Test
+  public void smokeTestMultipleClientCalls() throws IOException {
+    HttpResponse response1 = Util.getResponse(200, json1);
+    response1.addHeader("Link", "</v1/series/key/key1/data/segment/?start=2012-03-27T00:02:00.000-05:00&end=2012-03-28>; rel=\"next\"");
+    HttpResponse response2 = Util.getResponse(200, json2);
+    HttpClient mockClient = Util.getMockHttpClient(response1, response2);
+    Client client = Util.getClient(mockClient);
+    DateTime start = new DateTime(2012, 3, 27, 0, 0, 0, 0, zone);
+    DateTime end = new DateTime(2012, 3, 28, 0, 0, 0, 0, zone);
+
+    List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
+                                             new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45),
+                                             new DataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), 34.56));
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
     List<DataPoint> output = new ArrayList();

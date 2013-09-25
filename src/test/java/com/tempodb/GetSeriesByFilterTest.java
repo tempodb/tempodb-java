@@ -59,6 +59,24 @@ public class GetSeriesByFilterTest {
   }
 
   @Test
+  public void smokeTestMultipleClientCalls() throws IOException {
+    HttpResponse response1 = Util.getResponse(200, json1);
+    response1.addHeader("Link", "</v1/series/>; rel=\"next\"");
+    HttpResponse response2 = Util.getResponse(200, json2);
+    HttpClient mockClient = Util.getMockHttpClient(response1, response2);
+    Client client = Util.getClient(mockClient);
+
+    List<Series> expected = Arrays.asList(series1, series2, series3);
+
+    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    List<Series> output = new ArrayList();
+    for(Series series : cursor) {
+      output.add(series);
+    }
+    assertEquals(expected, output);
+  }
+
+  @Test
   public void testMethod() throws IOException {
     HttpResponse response = Util.getResponse(200, json);
     HttpClient mockClient = Util.getMockHttpClient(response);
