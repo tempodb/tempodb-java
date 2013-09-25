@@ -4,6 +4,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.http.HttpResponse;
 
 
+/**
+ *  Represents nothing returned from an API call.
+ *
+ *  <p>This is required for the type parameter of the {@link Result}.
+ *  @since 1.0.0
+ */
 public class Nothing {
 
   public Nothing() { super(); }

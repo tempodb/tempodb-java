@@ -53,7 +53,7 @@ import static com.tempodb.util.Preconditions.*;
  *  for the time period <tt>2012-01-01</tt> to <tt>2010-01-02</tt>, returning the hourly average. This calls returns a <tt>Cursor&lt;DataPoint&gt;</tt>
  *  which provides a lazily loaded iterable of DataPoints.
  *
- *  <pre><code>
+ *  <p><pre>
  *    import org.joda.time.DateTime;
  *    import org.joda.time.DateTimeZone;
  *    import org.joda.time.Interval;
@@ -65,8 +65,8 @@ import static com.tempodb.util.Preconditions.*;
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
  *    Rollup rollup = new Rollup(Period.hours(1), Fold.MEAN);
  *
- *    Cursor<DataPoint> datapoints = client.readDataPointsByKey("my-key", new Interval(start, end), rollup, DateTimeZone.UTC);
- *  </code></pre>
+ *    Cursor&lt;DataPoint&gt; datapoints = client.readDataPointsByKey("my-key", new Interval(start, end), rollup, DateTimeZone.UTC);
+ *  </pre>
  *
  *  <p>The TempoDB Rest API supports http keep-alive, and the Client object is designed to be thread-safe. It is recommended
  *  that a Client object be created and then reused for subsequent calls. This help to amoritize the cost of setting up the

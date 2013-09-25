@@ -10,6 +10,12 @@ import org.joda.time.DateTime;
 import static com.tempodb.util.Preconditions.*;
 
 
+/**
+ *  DataPoint for a Series, used for bulk writing of DataPoints.
+ *  <p>This class allows you to specify a timestamp/value pair, as well as the {@link Series} key
+ *  that it is associated with.
+ *  @since 1.0.0
+ */
 public class MultiDataPoint implements Serializable {
 
   private String key;
@@ -23,22 +29,62 @@ public class MultiDataPoint implements Serializable {
     this("", new DateTime(), 0.0);
   }
 
+  /**
+   *  Base constructor
+   *  @param key {@link Series} key for the DataPoint
+   *  @param timestamp Timestamp for the DataPoint
+   *  @param value Value for the DataPoint
+   *  @since 1.0.0
+   */
   public MultiDataPoint(@JsonProperty("key") String key, @JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
     this.key = checkNotNull(key);
     this.timestamp = checkNotNull(timestamp);
     this.value = checkNotNull(value);
   }
 
+  /**
+   *  Returns the {@link Series} key of this MultiDataPoint.
+   *  @return the {@link Series} key
+   *  @since 1.0.0
+   */
   @JsonProperty("key")
   public String getKey() { return key; }
+
+  /**
+   *  Sets the {@link Series} key of this MultiDataPoint.
+   *  @param key The {@link Series} key
+   *  @since 1.0.0
+   */
   public void setKey(String key) { this.key = checkNotNull(key); }
 
+  /**
+   *  Returns the timestamp of this MultiDataPoint.
+   *  @return the timestamp
+   *  @since 1.0.0
+   */
   @JsonProperty("t")
   public DateTime getTimestamp() { return timestamp; }
+
+  /**
+   *  Sets the timestamp of this MultiDataPoint.
+   *  @param timestamp The timestamp of this MultiDataPoint
+   *  @since 1.0.0
+   */
   public void setTimestamp(DateTime timestamp) { this.timestamp = checkNotNull(timestamp); }
 
+  /**
+   *  Returns the value of this MultiDataPoint.
+   *  @return the value
+   *  @since 1.0.0
+   */
   @JsonProperty("v")
   public Number getValue() { return value; }
+
+  /**
+   *  Sets the value of this MultiDataPoint.
+   *  @param value The value of this MultiDataPoint
+   *  @since 1.0.0
+   */
   public void setValue(Number value) { this.value = checkNotNull(value); }
 
   @Override

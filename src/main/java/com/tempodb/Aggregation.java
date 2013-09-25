@@ -8,6 +8,19 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import static com.tempodb.util.Preconditions.*;
 
 
+/**
+ *  The representation of an aggregation between multiple Series.
+ *
+ *  An Aggregation allows you to specify a new Series that is a mathematical
+ *  operation across multiple Series. For instance, the following Aggregation
+ *  specifies the sum of multiple Series:
+ *
+ *  <p><pre>
+ *  Aggregation aggregation = new Aggregation(Fold.SUM);
+ *  </pre>
+ *  @see Fold
+ *  @since 1.0.0
+ */
 public class Aggregation implements Serializable {
   private Fold fold;
 
@@ -18,11 +31,27 @@ public class Aggregation implements Serializable {
     this(Fold.SUM);
   }
 
+  /**
+   *  Base constructor
+   *  @param fold The aggregation's folding function.
+   *  @since 1.0.0
+   */
   public Aggregation(Fold fold) {
     this.fold = checkNotNull(fold);
   }
 
+  /**
+   *  Returns the {@link Fold}.
+   *  @return The aggregation's folding function.
+   *  @since 1.0.0
+   */
   public Fold getFold() { return fold; }
+
+  /**
+   *  Sets the {@link Fold}.
+   *  @param fold The folding function to use.
+   *  @since 1.0.0
+   */
   public void setFold(Fold fold) { this.fold = checkNotNull(fold); }
 
   @Override

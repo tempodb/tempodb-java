@@ -11,6 +11,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import static com.tempodb.util.Preconditions.*;
 
 
+/**
+ *  Information about the success of a single request in an API call that can partially succeed.
+ *  A bulk write of {@link DataPoint}s can partially succeed. This object provides information about
+ *  the cause of the failure for a single request.
+ *
+ *  @since 1.0.0
+ */
 public class Status implements Serializable {
 
   private int code;
@@ -23,17 +30,46 @@ public class Status implements Serializable {
     this(0, new ArrayList());
   }
 
+  /**
+   *  Base constructor
+   *
+   *  @param code The status code of the request.
+   *  @param messages A list of validation error messages.
+   *  @since 1.0.0
+   */
   public Status(@JsonProperty("status") int code, @JsonProperty("messages") List<String> messages) {
     this.code = checkNotNull(code);
     this.messages = checkNotNull(messages);
   }
 
+  /**
+   *  Returns the status code.
+   *  @return The status code.
+   *  @since 1.0.0
+   */
   @JsonProperty("status")
   public int getCode() { return code; }
+
+  /**
+   *  Sets the status code.
+   *  @param code The status code.
+   *  @since 1.0.0
+   */
   public void setCode(int code) { this.code = checkNotNull(code); }
 
+  /**
+   *  Returns the validation error messages.
+   *  @return A list of validation error messages.
+   *  @since 1.0.0
+   */
   @JsonProperty("messages")
   public List<String> getMessages() { return messages; }
+
+  /**
+   *  Sets the validation error messages.
+   *  @param messages A list of validation error messages.
+   *  @since 1.0.0
+   */
   public void setMessages(List<String> messages) { this.messages = checkNotNull(messages); }
 
   @Override

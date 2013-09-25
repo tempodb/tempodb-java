@@ -9,7 +9,10 @@ import org.joda.time.DateTime;
 
 import static com.tempodb.util.Preconditions.*;
 
-
+/**
+ *  A timestamp/value pair.
+ *  @since 1.0.0
+ */
 public class DataPoint implements Serializable {
 
   private DateTime timestamp;
@@ -22,17 +25,45 @@ public class DataPoint implements Serializable {
     this(new DateTime(), 0.0);
   }
 
+  /**
+   *  Base constructor
+   *  @param timestamp The timestamp of the datapoint
+   *  @param value The numeric value of the datapoint
+   *  @since 1.0.0
+   */
   public DataPoint(@JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
     this.timestamp = checkNotNull(timestamp);
     this.value = checkNotNull(value);
   }
 
+  /**
+   *  Returns the timestamp of this DataPoint.
+   *  @return the timestamp
+   *  @since 1.0.0
+   */
   @JsonProperty("t")
   public DateTime getTimestamp() { return timestamp; }
+
+  /**
+   *  Sets the timestamp of this datapoint.
+   *  @param timestamp The timestamp of this DataPoint
+   *  @since 1.0.0
+   */
   public void setTimestamp(DateTime timestamp) { this.timestamp = checkNotNull(timestamp); }
 
+  /**
+   *  Returns the value of this DataPoint.
+   *  @return the value
+   *  @since 1.0.0
+   */
   @JsonProperty("v")
   public Number getValue() { return value; }
+
+  /**
+   *  Sets the value of this DataPoint.
+   *  @param value The value of this DataPoint
+   *  @since 1.0.0
+   */
   public void setValue(Number value) { this.value = checkNotNull(value); }
 
   @Override

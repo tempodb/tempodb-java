@@ -13,6 +13,10 @@ import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
+/**
+ *  Information about a delete series operation.
+ *  @since 1.0.0
+ */
 public class DeleteSummary implements Serializable {
 
   private int deleted;
@@ -26,6 +30,12 @@ public class DeleteSummary implements Serializable {
     this(0);
   }
 
+  /**
+   *  Base constructor.
+   *  @param deleted The number of Series deleted.
+   *  @see Series
+   *  @since 1.0.0
+   */
   public DeleteSummary(int deleted) {
     this.deleted = deleted;
   }
@@ -37,7 +47,20 @@ public class DeleteSummary implements Serializable {
     this.deleted = checkNotNull(summary.deleted);
   }
 
+  /**
+   *  Returns the number of Series deleted.
+   *  @return Number of Series deleted.
+   *  @see Series
+   *  @since 1.0.0
+   */
   public int getDeleted() { return deleted; }
+
+  /**
+   *  Sets the number of Series deleted.
+   *  @param deleted The number of Series deleted.
+   *  @see Series
+   *  @since 1.0.0
+   */
   public void setDeleted(int deleted) { this.deleted = deleted; }
 
   @Override
