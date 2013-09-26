@@ -6,15 +6,15 @@ import org.apache.http.HttpResponse;
 
 public class PageLinks {
 
-  private static final String HEADER_LINK = "Link"; //$NON-NLS-1$
+  private static final String HEADER_LINK = "Link";
 
   private static final String META_REL = "rel";
 
-  private static final String META_NEXT = "next"; //$NON-NLS-1$
+  private static final String META_NEXT = "next";
 
-  private static final String DELIM_LINKS = ","; //$NON-NLS-1$
+  private static final String DELIM_LINKS = ",";
 
-  private static final String DELIM_LINK_PARAM = ";"; //$NON-NLS-1$
+  private static final String DELIM_LINK_PARAM = ";";
 
   private String next = "";
 
