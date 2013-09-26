@@ -57,7 +57,9 @@ import org.joda.time.format.DateTimeFormatter;
 import com.tempodb.models.BulkDataSet;
 import com.tempodb.models.DataPoint;
 import com.tempodb.models.DataSet;
+import com.tempodb.models.DeleteSummary;
 import com.tempodb.models.Filter;
+import com.tempodb.models.MultiPoint;
 import com.tempodb.models.Series;
 
 
@@ -151,6 +153,34 @@ public class Client {
         ObjectMapper mapper = getMapper();
 
         ArrayList<Series> result = mapper.readValue(json, new TypeReference<ArrayList<Series>>() {});
+        return result;
+    }
+
+    /**
+     *  Deletes all series in the table
+     *
+     *  @return A DeleteSummary
+     */
+    public DeleteSummary deleteAllSeries() throws Exception {
+        String json = request("/series/?allow_truncation=true", HttpMethod.DELETE);
+        ObjectMapper mapper = getMapper();
+
+        DeleteSummary result = mapper.readValue(json, new TypeReference<DeleteSummary>() {});
+        return result;
+    }
+
+    /**
+     *  Deletes a list of series matching the provided Filter.
+     *
+     *  @param filter A Filter instance to filter the list
+     *  @return A DeleteSummary
+     */
+    public DeleteSummary deleteSeries(Filter filter) throws Exception {
+        String filterString = URLEncodedUtils.format(filter.getParams(), "UTF-8");
+        String json = request(String.format("/series/?%s", filterString), HttpMethod.DELETE);
+        ObjectMapper mapper = getMapper();
+
+        DeleteSummary result = mapper.readValue(json, new TypeReference<DeleteSummary>() {});
         return result;
     }
 
@@ -471,6 +501,20 @@ public class Client {
     }
 
     /**
+     *  Writes a set of datapoints for different series at different timestamps
+     *
+     *  @param datapoints A list of MultiPoints to write
+     */
+    public void multiWrite(List<MultiPoint> datapoints) throws Exception {
+        String url = "/multi/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(datapoints);
+
+        request(url, HttpMethod.POST, json);
+    }
+
+    /**
      *  Increments a DataSet by id
      *
      *  @param seriesId The id of the series
@@ -503,6 +547,20 @@ public class Client {
 
         ObjectMapper mapper = getMapper();
         String json = mapper.writeValueAsString(dataset);
+
+        request(url, HttpMethod.POST, json);
+    }
+
+    /**
+     *  Increments a set of datapoints for different series at different timestamps
+     *
+     *  @param datapoints A list of MultiPoints to increment
+     */
+    public void multiIncrement(List<MultiPoint> datapoints) throws Exception {
+        String url = "/multi/increment/";
+
+        ObjectMapper mapper = getMapper();
+        String json = mapper.writeValueAsString(datapoints);
 
         request(url, HttpMethod.POST, json);
     }
