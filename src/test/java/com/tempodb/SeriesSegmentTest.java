@@ -11,9 +11,9 @@ import static org.junit.Assert.*;
 
 public class SeriesSegmentTest {
 
-  private static final List<Series> data1 = Arrays.asList(new Series("key", "name", new HashSet(), new HashMap()));
-  private static final List<Series> data2 = Arrays.asList(new Series("key", "name", new HashSet(), new HashMap()));
-  private static final List<Series> data3 = Arrays.asList(new Series("key3", "name3", new HashSet(), new HashMap()));
+  private static final List<Series> data1 = Arrays.asList(new Series("key", "name", new HashSet<String>(), new HashMap<String, String>()));
+  private static final List<Series> data2 = Arrays.asList(new Series("key", "name", new HashSet<String>(), new HashMap<String, String>()));
+  private static final List<Series> data3 = Arrays.asList(new Series("key3", "name3", new HashSet<String>(), new HashMap<String, String>()));
 
   @Test
   public void testEquals() {

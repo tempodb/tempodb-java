@@ -81,7 +81,7 @@ public class ReadDataPointsByKeyTest {
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
@@ -99,7 +99,7 @@ public class ReadDataPointsByKeyTest {
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
@@ -121,7 +121,7 @@ public class ReadDataPointsByKeyTest {
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), 34.56));
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
@@ -135,7 +135,7 @@ public class ReadDataPointsByKeyTest {
     Client client = Util.getClient(mockClient);
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
@@ -152,7 +152,7 @@ public class ReadDataPointsByKeyTest {
     Client client = Util.getClient(mockClient);
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
@@ -171,7 +171,7 @@ public class ReadDataPointsByKeyTest {
     Client client = Util.getClient(mockClient);
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
@@ -194,7 +194,7 @@ public class ReadDataPointsByKeyTest {
     Client client = Util.getClient(mockClient);
 
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, rollup, zone);
-    List<DataPoint> output = new ArrayList();
+    List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }

@@ -21,8 +21,8 @@ public class ReplaceSeriesTest {
 
   private static final String json = "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
   private static final String body = "{\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
-  private static final Series series = new Series("key1", "name1", new HashSet(), new HashMap());
-  private static final Series series1 = new Series("key1", "name1", new HashSet(), new HashMap());
+  private static final Series series = new Series("key1", "name1", new HashSet<String>(), new HashMap<String, String>());
+  private static final Series series1 = new Series("key1", "name1", new HashSet<String>(), new HashMap<String, String>());
 
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 

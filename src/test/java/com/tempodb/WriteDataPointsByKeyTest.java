@@ -37,7 +37,7 @@ public class WriteDataPointsByKeyTest {
     Client client = Util.getClient(response);
     Result<Nothing> result = client.writeDataPointsByKey("key1", data);
 
-    Result<Nothing> expected = new Result(new Nothing(), 200, "OK");
+    Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK");
     assertEquals(expected, result);
   }
 

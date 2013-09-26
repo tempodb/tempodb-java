@@ -23,7 +23,7 @@ public class GetSeriesByKeyTest {
     HttpResponse response = Util.getResponse(200, json);
     Client client = Util.getClient(response);
 
-    Result<Series> expected = new Result(new Series("key1", "name1", new HashSet(), new HashMap()), 200, "OK");
+    Result<Series> expected = new Result<Series>(new Series("key1", "name1", new HashSet<String>(), new HashMap<String, String>()), 200, "OK");
     Result<Series> result = client.getSeriesByKey("key1");
     assertEquals(expected, result);
   }

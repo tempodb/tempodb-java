@@ -38,9 +38,9 @@ public class GetSeriesByFilterTest {
     "{\"id\":\"id3\",\"key\":\"key3\",\"name\":\"name3\",\"tags\":[],\"attributes\":{}}" +
   "]";
 
-  private static final Series series1 = new Series("key1", "name1", new HashSet(), new HashMap());
-  private static final Series series2 = new Series("key2", "name2", new HashSet(), new HashMap());
-  private static final Series series3 = new Series("key3", "name3", new HashSet(), new HashMap());
+  private static final Series series1 = new Series("key1", "name1", new HashSet<String>(), new HashMap<String, String>());
+  private static final Series series2 = new Series("key2", "name2", new HashSet<String>(), new HashMap<String, String>());
+  private static final Series series3 = new Series("key3", "name3", new HashSet<String>(), new HashMap<String, String>());
   private static final Filter filter = new Filter();
 
   @Test
@@ -51,7 +51,7 @@ public class GetSeriesByFilterTest {
     List<Series> expected = Arrays.asList(series1);
 
     Cursor<Series> cursor = client.getSeriesByFilter(filter);
-    List<Series> output = new ArrayList();
+    List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
     }
@@ -69,7 +69,7 @@ public class GetSeriesByFilterTest {
     List<Series> expected = Arrays.asList(series1, series2, series3);
 
     Cursor<Series> cursor = client.getSeriesByFilter(filter);
-    List<Series> output = new ArrayList();
+    List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
     }
@@ -83,7 +83,7 @@ public class GetSeriesByFilterTest {
     Client client = Util.getClient(mockClient);
 
     Cursor<Series> cursor = client.getSeriesByFilter(filter);
-    List<Series> output = new ArrayList();
+    List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
     }
@@ -100,7 +100,7 @@ public class GetSeriesByFilterTest {
     Client client = Util.getClient(mockClient);
 
     Cursor<Series> cursor = client.getSeriesByFilter(filter);
-    List<Series> output = new ArrayList();
+    List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
     }
@@ -126,7 +126,7 @@ public class GetSeriesByFilterTest {
     filter.addAttribute("key2", "value2");
 
     Cursor<Series> cursor = client.getSeriesByFilter(filter);
-    List<Series> output = new ArrayList();
+    List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
     }

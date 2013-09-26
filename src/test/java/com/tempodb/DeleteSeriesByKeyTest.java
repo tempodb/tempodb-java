@@ -19,7 +19,7 @@ public class DeleteSeriesByKeyTest {
     HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
 
-    Result<Nothing> expected = new Result(new Nothing(), 200, "OK");
+    Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK");
     Result<Nothing> result = client.deleteSeriesByKey("key1");
     assertEquals(expected, result);
   }
