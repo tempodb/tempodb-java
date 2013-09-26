@@ -40,13 +40,6 @@ public class DeleteSummary implements Serializable {
     this.deleted = deleted;
   }
 
-  public DeleteSummary(HttpResponse response) throws IOException {
-    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
-    DeleteSummary summary = Json.loads(body, DeleteSummary.class);
-
-    this.deleted = checkNotNull(summary.deleted);
-  }
-
   /**
    *  Returns the number of Series deleted.
    *  @return Number of Series deleted.
@@ -62,6 +55,12 @@ public class DeleteSummary implements Serializable {
    *  @since 1.0.0
    */
   public void setDeleted(int deleted) { this.deleted = deleted; }
+
+  static DeleteSummary make(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
+    DeleteSummary summary = Json.loads(body, DeleteSummary.class);
+    return summary;
+  }
 
   @Override
   public String toString() {

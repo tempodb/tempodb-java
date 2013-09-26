@@ -141,9 +141,9 @@ public class Result<T> {
   private static <T> T newInstanceFromResponse(HttpResponse response, Class<T> klass) throws IOException {
     Throwable cause = null;
     try {
-      return klass.getConstructor(HttpResponse.class).newInstance(response);
+      Method method = klass.getDeclaredMethod("make", HttpResponse.class);
+      return (T)method.invoke(null, response);
     }
-    catch (InstantiationException e) { cause = e; }
     catch (IllegalAccessException e) { cause = e; }
     catch (InvocationTargetException e) { cause = e;  }
     catch (NoSuchMethodException e) { cause = e; }

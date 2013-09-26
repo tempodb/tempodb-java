@@ -40,23 +40,20 @@ public class DataPointSegment extends Segment<DataPoint> {
     this.rollup = rollup;
   }
 
-  public DataPointSegment(HttpResponse response) throws IOException {
-    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
-    DataPointSegment segment = Json.loads(body, DataPointSegment.class);
-    PageLinks links = new PageLinks(response);
-
-    this.data = checkNotNull(segment.data);
-    this.next = links.getNext();
-    this.timezone = checkNotNull(segment.timezone);
-    this.rollup = rollup;
-  }
-
   @JsonProperty("tz")
   public DateTimeZone getTimeZone() { return this.timezone; }
   public void setTimeZone(DateTimeZone timezone) { this.timezone = checkNotNull(timezone); }
 
   public Rollup getRollup() { return this.rollup; }
   public void setRollup(Rollup rollup) { this.rollup = rollup; }
+
+  static DataPointSegment make(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
+    DataPointSegment segment = Json.loads(body, DataPointSegment.class);
+    PageLinks links = new PageLinks(response);
+    segment.next = links.getNext();
+    return segment;
+  }
 
   @Override
   public String toString() {

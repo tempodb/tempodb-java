@@ -34,13 +34,12 @@ public class SeriesSegment extends Segment<Series> {
     super(data, next);
   }
 
-  public SeriesSegment(HttpResponse response) throws IOException {
+ static SeriesSegment make(HttpResponse response) throws IOException {
     String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
     SeriesSegment segment = Json.loads(body, SeriesSegment.class);
     PageLinks links = new PageLinks(response);
-
-    this.data = checkNotNull(segment.data);
-    this.next = links.getNext();
+    segment.next = links.getNext();
+    return segment;
   }
 
   @Override

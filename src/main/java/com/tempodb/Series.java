@@ -57,16 +57,6 @@ public class Series implements Serializable {
     this.attributes = checkNotNull(attributes);
   }
 
-  public Series(HttpResponse response) throws IOException {
-    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
-    Series series = Json.loads(body, Series.class);
-
-    this.key = checkNotNull(series.key);
-    this.name = checkNotNull(series.name);
-    this.tags = checkNotNull(series.tags);
-    this.attributes = checkNotNull(series.attributes);
-  }
-
   /**
    *  Returns the key of this Series.
    *  @return Series key.
@@ -123,6 +113,12 @@ public class Series implements Serializable {
    *  @since 1.0.0
    */
   public void setAttributes(Map<String, String> attributes) { this.attributes = checkNotNull(attributes); }
+
+  static Series make(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
+    Series series = Json.loads(body, Series.class);
+    return series;
+  }
 
   @Override
   public String toString() {

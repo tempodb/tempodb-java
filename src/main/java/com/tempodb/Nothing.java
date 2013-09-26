@@ -11,10 +11,11 @@ import org.apache.http.HttpResponse;
  *  @since 1.0.0
  */
 public class Nothing {
+  private static final Nothing nothing = new Nothing();
 
   public Nothing() { super(); }
 
-  public Nothing(HttpResponse response) { }
+  static Nothing make(HttpResponse response) { return nothing; }
 
   @Override
   public String toString() {
