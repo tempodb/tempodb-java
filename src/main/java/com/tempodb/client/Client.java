@@ -22,6 +22,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -681,9 +682,17 @@ public class Client {
 
         HttpHost targetHost = getTargetHost();
         BasicHttpContext context = getContext();
-
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
-        String responseBody = client.execute(targetHost, uri, responseHandler, context);
+
+        HttpResponse httpResponse = client.execute(targetHost, uri, context);
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+        String responseBody = responseHandler.handleResponse(httpResponse);
+
+        if(statusCode == 207) {
+          ObjectMapper mapper = getMapper();
+          throw mapper.readValue(responseBody, MultiStatusException.class);
+        }
+
         return responseBody;
     }
 
