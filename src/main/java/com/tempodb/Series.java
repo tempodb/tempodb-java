@@ -19,6 +19,11 @@ import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 
+/**
+ *  A data series and it's metadata.
+ *
+ *  @since 1.0.0
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Series implements Serializable {
 
@@ -36,6 +41,15 @@ public class Series implements Serializable {
     this("", "", new LinkedHashSet(), new HashMap());
   }
 
+  /**
+   *  Base constructor
+   *
+   *  @param key Series key
+   *  @param name Human readable name for the Series
+   *  @param tags Set of tags
+   *  @param attributes Map of key/value pair metadata
+   *  @since 1.0.0
+   */
   public Series(String key, String name, Set<String> tags, Map<String, String> attributes) {
     this.key = checkNotNull(key);
     this.name = checkNotNull(name);
@@ -53,16 +67,61 @@ public class Series implements Serializable {
     this.attributes = checkNotNull(series.attributes);
   }
 
+  /**
+   *  Returns the key of this Series.
+   *  @return Series key.
+   *  @since 1.0.0
+   */
   public String getKey() { return key; }
+
+  /**
+   *  Sets the key of this Series.
+   *  @param key Series key.
+   *  @since 1.0.0
+   */
   public void setKey(String key) { this.key = checkNotNull(key); }
 
+  /**
+   *  Returns the name of this Series.
+   *  @return Series name.
+   *  @since 1.0.0
+   */
   public String getName() { return name; }
+
+  /**
+   *  Sets the name of this Series.
+   *  @param name Series name.
+   *  @since 1.0.0
+   */
   public void setName(String name) { this.name = checkNotNull(name); }
 
+
+  /**
+   *  Returns the tags of this Series.
+   *  @return Series tags.
+   *  @since 1.0.0
+   */
   public Set<String> getTags() { return tags; }
+
+  /**
+   *  Sets the tags of this Series.
+   *  @param tags Series tags.
+   *  @since 1.0.0
+   */
   public void setTags(Set<String> tags) { this.tags = checkNotNull(tags); }
 
+  /**
+   *  Returns the attributes of this Series.
+   *  @return Series attributes.
+   *  @since 1.0.0
+   */
   public Map<String, String> getAttributes() { return attributes; }
+
+  /**
+   *  Sets the attributes of this Series.
+   *  @param attributes Series attributes.
+   *  @since 1.0.0
+   */
   public void setAttributes(Map<String, String> attributes) { this.attributes = checkNotNull(attributes); }
 
   @Override

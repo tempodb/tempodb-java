@@ -12,7 +12,7 @@ import static com.tempodb.util.Preconditions.*;
 
 /**
  *  DataPoint for a Series, used for bulk writing of DataPoints.
- *  <p>This class allows you to specify a timestamp/value pair, as well as the {@link Series} key
+ *  <p>Allows you to specify a timestamp/value pair, as well as the {@link Series} key
  *  that it is associated with.
  *  @since 1.0.0
  */

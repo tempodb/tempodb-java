@@ -1,8 +1,9 @@
 package com.tempodb;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -13,6 +14,22 @@ import com.tempodb.MultiStatus;
 import com.tempodb.json.Json;
 
 
+/**
+ *  Response from an API call.
+ *
+ *  <p>The Result object returns the requested entity as well as provides
+ *  information about the success state of the request. The Result state (getState()) should
+ *  be inspected before trying to use the value.
+ *
+ *  <p>In the event of a failure, the value is set to null. The code and message will provide more
+ *  information about the failure.
+ *
+ *  <p>In some cases, a request can partially succeed. This is indicated with state PARTIAL_SUCCESS.
+ *  If a partial success occurs, the {@link MultiStatus} (member of Result) will be populated with
+ *  more information about which request failed.
+ *
+ *  @since 1.0.0
+ */
 public class Result<T> {
 
   private final T value;
@@ -26,13 +43,29 @@ public class Result<T> {
     this(value, code, message, null);
   }
 
-  protected Result(T value, int code, String message, MultiStatus multistatus) {
+  /**
+   *  Used mainly for testing.
+   *  @param value The returned value.
+   *  @param code The status code of the entire result.
+   *  @param message Message providing information about the state of the result.
+   *  @param multistatus Provides information about partially successful result
+   *  @since 1.0.0
+   */
+  public Result(T value, int code, String message, MultiStatus multistatus) {
     this.value = value;
     this.code = code;
     this.message = message;
     this.multistatus = multistatus;
   }
 
+  /**
+   *  Base constructor.
+   *
+   *  Uses the HttpResponse to generate the proper Result.
+   *  @param response Http response
+   *  @param klass Class of the value
+   *  @since 1.0.0
+   */
   protected Result(HttpResponse response, Class<T> klass) throws IOException {
     T value = null;
     int code = response.getStatusLine().getStatusCode();
@@ -57,6 +90,54 @@ public class Result<T> {
     this.multistatus = multistatus;
   }
 
+  /**
+   *  Returns the value of the Result.
+   *  @return Result value. Null if Result state is not SUCCESS.
+   *  @since 1.0.0
+   */
+  public T getValue() { return value; }
+
+  /**
+   *  Returns the status code of the Result.
+   *  @return Result status code.
+   *  @since 1.0.0
+   */
+  public int getCode() { return code; }
+
+  /**
+   *  Returns the message of the Result.
+   *  @return Result message.
+   *  @since 1.0.0
+   */
+  public String getMessage() { return message; }
+
+  /**
+   *  Returns the MultiStatus of the Result.
+   *  @return Result MultiStatus. Null if Result state is not PARTIAL_SUCCESS.
+   *  @since 1.0.0
+   */
+  public MultiStatus getMultiStatus() { return multistatus; }
+
+  /**
+   *  Returns the State of the Result.
+   *  The state should be used to determine the success state of the Result.
+   *  @return Result state
+   *  @since 1.0.0
+   */
+  public State getState() { return getState(code); }
+
+  private static State getState(int code) {
+    State state = null;
+    if(((code / 100) == 2) && (code != 207)) {
+      state = State.SUCCESS;
+    } else if(code == 207) {
+      state = State.PARTIAL_SUCCESS;
+    } else {
+      state = State.FAILURE;
+    }
+    return state;
+  }
+
   private static <T> T newInstanceFromResponse(HttpResponse response, Class<T> klass) throws IOException {
     Throwable cause = null;
     try {
@@ -76,24 +157,6 @@ public class Result<T> {
       message = response.getStatusLine().getReasonPhrase();
     }
     return message;
-  }
-
-  public T getValue() { return value; }
-  public int getCode() { return code; }
-  public String getMessage() { return message; }
-  public MultiStatus getMultiStatus() { return multistatus; }
-  public State getState() { return getState(code); }
-
-  private static State getState(int code) {
-    State state = null;
-    if(((code / 100) == 2) && (code != 207)) {
-      state = State.SUCCESS;
-    } else if(code == 207) {
-      state = State.PARTIAL_SUCCESS;
-    } else {
-      state = State.FAILURE;
-    }
-    return state;
   }
 
   @Override

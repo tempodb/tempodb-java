@@ -12,6 +12,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import static com.tempodb.util.Preconditions.*;
 
 
+/**
+ *  Provides information about a partially successful API request.
+ *  @since 1.0.0
+ */
 public class MultiStatus implements Iterable<Status>, Serializable {
 
   private List<Status> statuses;
@@ -23,14 +27,35 @@ public class MultiStatus implements Iterable<Status>, Serializable {
     this(new ArrayList<Status>());
   }
 
+  /**
+   *  Base constructor
+   *  @param statuses List of {@link Status} objects.
+   *  @since 1.0.0
+   */
   public MultiStatus(@JsonProperty("multistatus") List<Status> statuses) {
     this.statuses = checkNotNull(statuses);
   }
 
+  /**
+   *  Returns list of Statuses.
+   *  @return List of Statuses.
+   *  @since 1.0.0
+   */
   @JsonProperty("multistatus")
   public List<Status> getStatuses() { return statuses; }
+
+  /**
+   *  Sets list of Statuses.
+   *  @param statuses List of Statuses.
+   *  @since 1.0.0
+   */
   public void setStatuses(List<Status> statuses) { this.statuses = checkNotNull(statuses); }
 
+  /**
+   *  Returns iterator over the Statuses.
+   *  @return Iterator over Statueses.
+   *  @since 1.0.0
+   */
   public Iterator<Status> iterator() {
     return statuses.iterator();
   }
