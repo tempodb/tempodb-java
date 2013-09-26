@@ -27,7 +27,7 @@ public class Status implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public Status() {
-    this(0, new ArrayList());
+    this(0, new ArrayList<String>());
   }
 
   /**

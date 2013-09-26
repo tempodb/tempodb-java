@@ -332,7 +332,7 @@ public class Client {
       body = Json.dumps(series);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();
-      result = new Result(null, GENERIC_ERROR_CODE, message);
+      result = new Result<Series>(null, GENERIC_ERROR_CODE, message);
       return result;
     }
 
@@ -373,7 +373,7 @@ public class Client {
       body = Json.dumps(data);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();
-      result = new Result(null, GENERIC_ERROR_CODE, message);
+      result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
       return result;
     }
 
@@ -413,7 +413,7 @@ public class Client {
       body = Json.dumps(data);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();
-      result = new Result(null, GENERIC_ERROR_CODE, message);
+      result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
       return result;
     }
 
@@ -513,9 +513,9 @@ public class Client {
     Result<T> result = null;
     try {
       HttpResponse response = execute(request);
-      result = new Result(response, klass);
+      result = new Result<T>(response, klass);
     } catch (IOException e) {
-      result = new Result(null, GENERIC_ERROR_CODE, e.getMessage());
+      result = new Result<T>(null, GENERIC_ERROR_CODE, e.getMessage());
     }
     return result;
   }

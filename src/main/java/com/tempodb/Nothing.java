@@ -30,7 +30,7 @@ public class Nothing {
   @Override
   public boolean equals(Object obj) {
     if(obj == null) return false;
-    if(obj == null) return true;
+    if(obj == this) return true;
     if(!(obj instanceof Nothing)) return false;
     return true;
   }

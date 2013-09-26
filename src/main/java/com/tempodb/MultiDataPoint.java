@@ -104,7 +104,7 @@ public class MultiDataPoint implements Serializable {
   @Override
   public boolean equals(Object obj) {
     if(obj == null) return false;
-    if(obj == null) return true;
+    if(obj == this) return true;
     if(!(obj instanceof MultiDataPoint)) return false;
 
     MultiDataPoint rhs = (MultiDataPoint)obj;

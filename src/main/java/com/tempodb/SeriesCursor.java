@@ -24,7 +24,7 @@ class SeriesCursor implements Cursor<Series> {
     Iterator<Series> iterator = null;
     if(result.getState() == State.SUCCESS) {
       SegmentIterator<Segment<Series>> segments = new SegmentIterator(client, result.getValue(), SeriesSegment.class);
-      iterator = new SegmentInnerIterator(segments);
+      iterator = new SegmentInnerIterator<Series>(segments);
     } else {
       throw new TempoDBException(result.getMessage(), result.getCode());
     }

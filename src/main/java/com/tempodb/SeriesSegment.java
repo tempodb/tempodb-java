@@ -22,7 +22,7 @@ public class SeriesSegment extends Segment<Series> {
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public SeriesSegment() {
-    this(new ArrayList(), "");
+    this(new ArrayList<Series>(), "");
   }
 
   @JsonCreator

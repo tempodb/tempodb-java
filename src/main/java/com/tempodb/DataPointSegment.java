@@ -26,7 +26,7 @@ public class DataPointSegment extends Segment<DataPoint> {
   private Rollup rollup;
 
   public DataPointSegment() {
-    this(new ArrayList(), "", DateTimeZone.UTC, null);
+    this(new ArrayList<DataPoint>(), "", DateTimeZone.UTC, null);
   }
 
   @JsonCreator

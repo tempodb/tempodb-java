@@ -38,7 +38,7 @@ public class Series implements Serializable {
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public Series() {
-    this("", "", new LinkedHashSet(), new HashMap());
+    this("", "", new LinkedHashSet<String>(), new HashMap<String, String>());
   }
 
   /**

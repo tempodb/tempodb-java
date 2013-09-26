@@ -30,7 +30,7 @@ public class FoldModule extends SimpleModule {
     public FoldDeserializer() {
       super(Fold.class);
       this.constants = Fold.values();
-      this.acceptedValues = new ArrayList();
+      this.acceptedValues = new ArrayList<String>();
       for (Fold constant : constants) {
         acceptedValues.add(constant.name());
       }

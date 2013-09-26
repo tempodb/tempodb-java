@@ -138,11 +138,11 @@ public class Result<T> {
     return state;
   }
 
-  private static <T> T newInstanceFromResponse(HttpResponse response, Class<T> klass) throws IOException {
+  private static <T> T newInstanceFromResponse(HttpResponse response, Class<T> klass) {
     Throwable cause = null;
     try {
       Method method = klass.getDeclaredMethod("make", HttpResponse.class);
-      return (T)method.invoke(null, response);
+      return klass.cast(method.invoke(null, response));
     }
     catch (IllegalAccessException e) { cause = e; }
     catch (InvocationTargetException e) { cause = e;  }
@@ -153,7 +153,7 @@ public class Result<T> {
 
   private String messageFromResponse(HttpResponse response) throws IOException {
     String message = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
-    if(message.equals("") || message == null) {
+    if(message == null || message.equals("")) {
       message = response.getStatusLine().getReasonPhrase();
     }
     return message;
@@ -178,9 +178,9 @@ public class Result<T> {
   public boolean equals(Object obj) {
     if(obj == null) return false;
     if(obj == this) return true;
-    if(!(obj instanceof Result)) return false;
+    if(!(obj instanceof Result<?>)) return false;
 
-    Result<T> rhs = (Result<T>)obj;
+    Result<?> rhs = (Result<?>)obj;
     return new EqualsBuilder()
       .append(value, rhs.value)
       .append(code, rhs.code)
