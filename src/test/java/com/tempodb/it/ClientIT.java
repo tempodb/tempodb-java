@@ -14,17 +14,17 @@ import com.tempodb.*;
 
 
 public class ClientIT {
-  private Client client = new Client("dc6943b5ec9c48df9f027ffd4a5c9a43", "a7b88b6707cf481baefeb9de1f47479f", "api-staging.tempo-db.com", 443, true);
-  private DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0);
-  private DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0);
-  private DateTimeZone timezone = DateTimeZone.UTC;
+  private static final Client client = new Client("dc6943b5ec9c48df9f027ffd4a5c9a43", "a7b88b6707cf481baefeb9de1f47479f", "api-staging.tempo-db.com", 443, true);
+  private static final DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0);
+  private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0);
+  private static final DateTimeZone timezone = DateTimeZone.UTC;
 
-  @Before
-  public void setUp() {
+  @BeforeClass
+  static public void onetimeSetup() {
+    cleanup();
   }
 
-  @After
-  public void tearDown() {
+  static public void cleanup() {
     /* Delete all datapoints all series */
     Cursor<Series> cursor = client.getSeriesByFilter(new Filter());
     for(Series series : cursor) {
@@ -34,6 +34,9 @@ public class ClientIT {
     /* Delete all series */
     Result<DeleteSummary> result = client.deleteAllSeries();
   }
+
+  @After
+  public void tearDown() { cleanup(); }
 
   @Test
   public void testWriteDataPointKey() {
