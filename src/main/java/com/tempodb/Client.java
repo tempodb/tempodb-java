@@ -113,6 +113,16 @@ public class Client {
   }
 
   /**
+   *  Sets the underlying HttpClient.
+   *  @param httpClient The HttpClient
+   *  @since 1.0.0
+   */
+  public synchronized Client setHttpClient(HttpClient httpClient) {
+    this.client = httpClient;
+    return this;
+  }
+
+  /**
    *  Returns a cursor of datapoints specified by series key.
    *
    *  @param key The series key
@@ -592,11 +602,6 @@ public class Client {
       target = new HttpHost(host, port, scheme);
     }
     return target;
-  }
-
-  public synchronized Client setHttpClient(HttpClient httpClient) {
-    this.client = httpClient;
-    return this;
   }
 
   private String getVersion() {
