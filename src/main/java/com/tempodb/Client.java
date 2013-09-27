@@ -594,7 +594,7 @@ public class Client {
     return target;
   }
 
-  synchronized Client setHttpClient(HttpClient httpClient) {
+  public synchronized Client setHttpClient(HttpClient httpClient) {
     this.client = httpClient;
     return this;
   }

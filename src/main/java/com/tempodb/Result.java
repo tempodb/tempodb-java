@@ -39,7 +39,7 @@ public class Result<T> {
 
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
-  protected Result(T value, int code, String message) {
+  public Result(T value, int code, String message) {
     this(value, code, message, null);
   }
 
@@ -66,7 +66,7 @@ public class Result<T> {
    *  @param klass Class of the value
    *  @since 1.0.0
    */
-  protected Result(HttpResponse response, Class<T> klass) throws IOException {
+  public Result(HttpResponse response, Class<T> klass) throws IOException {
     T value = null;
     int code = response.getStatusLine().getStatusCode();
     String message = response.getStatusLine().getReasonPhrase();
