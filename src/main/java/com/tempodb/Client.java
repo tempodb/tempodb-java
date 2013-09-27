@@ -113,6 +113,34 @@ public class Client {
   }
 
   /**
+   *  Deletes a range of datapoints for a Series specified by key.
+   *
+   *  @param key The series key
+   *  @param interval The start/end datetime interval to delete.
+   *  @return Nothing
+   *
+   *  @since 1.0.0
+   */
+  public Result<Nothing> deleteDataPointsByKey(String key, Interval interval) {
+    checkNotNull(key);
+    checkNotNull(interval);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, key));
+      addIntervalToURI(builder, interval);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s", key, interval);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.DELETE);
+    Result<Nothing> result = execute(request, Nothing.class);
+    return result;
+  }
+
+  /**
    *  Returns a cursor of datapoints specified by series key.
    *
    *  @param key The series key
