@@ -34,7 +34,7 @@ public class SeriesSegment extends Segment<Series> {
     super(data, next);
   }
 
- static SeriesSegment make(HttpResponse response) throws IOException {
+  static SeriesSegment make(HttpResponse response) throws IOException {
     String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
     SeriesSegment segment = Json.loads(body, SeriesSegment.class);
     PageLinks links = new PageLinks(response);

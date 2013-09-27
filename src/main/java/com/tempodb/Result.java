@@ -72,16 +72,21 @@ public class Result<T> {
     String message = response.getStatusLine().getReasonPhrase();
     MultiStatus multistatus = null;
 
-    switch(getState(code)) {
-      case SUCCESS:
-        value = newInstanceFromResponse(response, klass);
-        break;
-      case PARTIAL_SUCCESS:
-        multistatus = Json.loads(EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET), MultiStatus.class);
-        break;
-      case FAILURE:
-        message = messageFromResponse(response);
-        break;
+    try {
+      switch(getState(code)) {
+        case SUCCESS:
+          value = newInstanceFromResponse(response, klass);
+          break;
+        case PARTIAL_SUCCESS:
+          multistatus = Json.loads(EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET), MultiStatus.class);
+          break;
+        case FAILURE:
+          message = messageFromResponse(response);
+          break;
+      }
+    } finally {
+      // Consume and close the content stream
+      EntityUtils.consume(response.getEntity());
     }
 
     this.value = value;
