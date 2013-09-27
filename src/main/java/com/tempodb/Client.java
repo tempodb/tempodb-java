@@ -15,10 +15,12 @@ import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.*;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.*;
 import org.apache.http.protocol.*;
@@ -87,6 +89,7 @@ public class Client {
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
   // Timeout on milliseconds
   private static final int DEFAULT_TIMEOUT_MILLIS = 50000;  // 50 seconds
+  private static final long DEFAULT_KEEPALIVE_TIMEOUT_MILLIS = 50000;  // 50 seconds
   private static final int GENERIC_ERROR_CODE = 600;
   private static final String VERSION = "1.0-SNAPSHOT";
   private static final String API_VERSION = "v1";
@@ -586,6 +589,25 @@ public class Client {
               }
             }
           }
+        }
+      });
+
+      defaultClient.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
+        public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+          HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+
+          while(it.hasNext()) {
+            HeaderElement he = it.nextElement();
+            String param = he.getName();
+            String value = he.getValue();
+            if(value != null && param.equalsIgnoreCase("timeout")) {
+              try {
+                return Long.parseLong(value) * 1000;
+              } catch (NumberFormatException ignore) {
+              }
+            }
+          }
+          return DEFAULT_KEEPALIVE_TIMEOUT_MILLIS;
         }
       });
 
