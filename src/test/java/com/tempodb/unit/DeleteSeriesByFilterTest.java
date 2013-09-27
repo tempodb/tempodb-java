@@ -16,6 +16,7 @@ import com.tempodb.Client;
 import com.tempodb.DeleteSummary;
 import com.tempodb.Filter;
 import com.tempodb.Result;
+import com.tempodb.Util;
 
 
 public class DeleteSeriesByFilterTest {

@@ -20,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 import com.tempodb.Client;
 import com.tempodb.Result;
 import com.tempodb.Series;
+import com.tempodb.Util;
 
 
 public class ReplaceSeriesTest {

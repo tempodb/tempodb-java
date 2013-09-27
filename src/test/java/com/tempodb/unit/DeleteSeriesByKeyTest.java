@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 import com.tempodb.Client;
 import com.tempodb.Nothing;
 import com.tempodb.Result;
+import com.tempodb.Util;
 
 
 public class DeleteSeriesByKeyTest {

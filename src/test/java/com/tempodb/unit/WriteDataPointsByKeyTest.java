@@ -23,6 +23,7 @@ import com.tempodb.Client;
 import com.tempodb.DataPoint;
 import com.tempodb.Nothing;
 import com.tempodb.Result;
+import com.tempodb.Util;
 
 
 public class WriteDataPointsByKeyTest {

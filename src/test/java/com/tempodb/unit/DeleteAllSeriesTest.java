@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 import com.tempodb.Client;
 import com.tempodb.DeleteSummary;
 import com.tempodb.Result;
+import com.tempodb.Util;
 
 
 public class DeleteAllSeriesTest {

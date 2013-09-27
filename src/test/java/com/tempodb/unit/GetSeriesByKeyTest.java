@@ -14,6 +14,7 @@ import static org.junit.Assert.*;
 import com.tempodb.Client;
 import com.tempodb.Result;
 import com.tempodb.Series;
+import com.tempodb.Util;
 
 
 public class GetSeriesByKeyTest {

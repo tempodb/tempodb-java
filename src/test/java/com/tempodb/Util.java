@@ -1,4 +1,4 @@
-package com.tempodb.unit;
+package com.tempodb;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -13,8 +13,6 @@ import org.apache.http.message.*;
 import org.apache.http.protocol.HttpContext;
 import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
-
-import com.tempodb.Client;
 
 
 public class Util {

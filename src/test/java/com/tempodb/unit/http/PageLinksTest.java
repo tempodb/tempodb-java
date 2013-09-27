@@ -5,7 +5,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import com.tempodb.http.PageLinks;
-import com.tempodb.unit.Util;
+import com.tempodb.Util;
 
 
 public class PageLinksTest {

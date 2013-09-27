@@ -22,6 +22,7 @@ import com.tempodb.Cursor;
 import com.tempodb.Filter;
 import com.tempodb.Series;
 import com.tempodb.TempoDBException;
+import com.tempodb.Util;
 
 
 public class GetSeriesByFilterTest {

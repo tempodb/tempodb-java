@@ -26,6 +26,7 @@ import com.tempodb.DataPoint;
 import com.tempodb.Fold;
 import com.tempodb.Rollup;
 import com.tempodb.TempoDBException;
+import com.tempodb.Util;
 
 
 public class ReadDataPointsByKeyTest {
