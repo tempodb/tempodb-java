@@ -82,7 +82,6 @@ public class Client {
   private final boolean secure;
 
   private HttpClient client = null;
-  private HttpContext context = null;
   private HttpHost target = null;
 
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -601,22 +600,19 @@ public class Client {
   }
 
   private HttpContext getContext() {
-    if(context == null) {
-      HttpHost targetHost = getTarget();
+    HttpHost targetHost = getTarget();
 
-      // Create AuthCache instance
-      AuthCache authCache = new BasicAuthCache();
-      // Generate BASIC scheme object and add it to the local
-      // auth cache
-      BasicScheme basicAuth = new BasicScheme();
-      authCache.put(targetHost, basicAuth);
+    // Create AuthCache instance
+    AuthCache authCache = new BasicAuthCache();
+    // Generate BASIC scheme object and add it to the local
+    // auth cache
+    BasicScheme basicAuth = new BasicScheme();
+    authCache.put(targetHost, basicAuth);
 
-      // Add AuthCache to the execution context
-      BasicHttpContext localcontext = new BasicHttpContext();
-      localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-      context = localcontext;
-    }
-    return context;
+    // Add AuthCache to the execution context
+    BasicHttpContext localcontext = new BasicHttpContext();
+    localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+    return localcontext;
   }
 
   private HttpHost getTarget() {
