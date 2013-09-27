@@ -10,8 +10,6 @@ import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.junit.*;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import org.mockito.ArgumentCaptor;
 
 
 public class GetSeriesByKeyTest {
@@ -36,9 +34,8 @@ public class GetSeriesByKeyTest {
 
     Result<Series> result = client.getSeriesByKey("key1");
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-    assertEquals("GET", argument.getValue().getRequestLine().getMethod());
+    HttpRequest request = Util.captureRequest(mockClient);
+    assertEquals("GET", request.getRequestLine().getMethod());
   }
 
   @Test
@@ -49,10 +46,8 @@ public class GetSeriesByKeyTest {
 
     Result<Series> result = client.getSeriesByKey("key1");
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-
-    URI uri = new URI(argument.getValue().getRequestLine().getUri());
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
     assertEquals("/v1/series/key/key1/", uri.getPath());
   }
 }

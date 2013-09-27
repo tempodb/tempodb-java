@@ -16,8 +16,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.junit.rules.ExpectedException;
-import static org.mockito.Mockito.*;
-import org.mockito.ArgumentCaptor;
 
 
 public class GetSeriesByFilterTest {
@@ -88,9 +86,8 @@ public class GetSeriesByFilterTest {
       output.add(series);
     }
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-    assertEquals("GET", argument.getValue().getRequestLine().getMethod());
+    HttpRequest request = Util.captureRequest(mockClient);
+    assertEquals("GET", request.getRequestLine().getMethod());
   }
 
   @Test
@@ -105,10 +102,8 @@ public class GetSeriesByFilterTest {
       output.add(series);
     }
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-
-    URI uri = new URI(argument.getValue().getRequestLine().getUri());
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
     assertEquals("/v1/series/", uri.getPath());
   }
 
@@ -131,10 +126,8 @@ public class GetSeriesByFilterTest {
       output.add(series);
     }
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-
-    URI uri = new URI(argument.getValue().getRequestLine().getUri());
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
     List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
     assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
     assertTrue(params.contains(new BasicNameValuePair("tag", "tag1")));

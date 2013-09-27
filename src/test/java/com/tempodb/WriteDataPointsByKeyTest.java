@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -49,9 +50,8 @@ public class WriteDataPointsByKeyTest {
 
     Result<Nothing> result = client.writeDataPointsByKey("key1", data);
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-    assertEquals("POST", argument.getValue().getRequestLine().getMethod());
+    HttpRequest request = Util.captureRequest(mockClient);
+    assertEquals("POST", request.getRequestLine().getMethod());
   }
 
   @Test
@@ -62,10 +62,8 @@ public class WriteDataPointsByKeyTest {
 
     Result<Nothing> result = client.writeDataPointsByKey("key1", data);
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-
-    URI uri = new URI(argument.getValue().getRequestLine().getUri());
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
     assertEquals("/v1/series/key/key1/data/", uri.getPath());
   }
 
@@ -78,7 +76,7 @@ public class WriteDataPointsByKeyTest {
     Result<Nothing> result = client.writeDataPointsByKey("key1", data);
 
     ArgumentCaptor<HttpPost> argument = ArgumentCaptor.forClass(HttpPost.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
+    verify(mockClient).execute(any(HttpHost.class), argument.capture(), any(HttpContext.class));
     assertEquals(json, EntityUtils.toString(argument.getValue().getEntity(), DEFAULT_CHARSET));
   }
 }

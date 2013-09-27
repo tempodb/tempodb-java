@@ -10,6 +10,7 @@ import java.util.HashSet;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -44,9 +45,8 @@ public class ReplaceSeriesTest {
 
     Result<Series> result = client.replaceSeries(series);
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-    assertEquals("PUT", argument.getValue().getRequestLine().getMethod());
+    HttpRequest request = Util.captureRequest(mockClient);
+    assertEquals("PUT", request.getRequestLine().getMethod());
   }
 
   @Test
@@ -57,10 +57,8 @@ public class ReplaceSeriesTest {
 
     Result<Series> result = client.replaceSeries(series);
 
-    ArgumentCaptor<HttpRequest> argument = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
-
-    URI uri = new URI(argument.getValue().getRequestLine().getUri());
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
     assertEquals("/v1/series/key/key1/", uri.getPath());
   }
 
@@ -73,7 +71,7 @@ public class ReplaceSeriesTest {
     Result<Series> result = client.replaceSeries(series);
 
     ArgumentCaptor<HttpPut> argument = ArgumentCaptor.forClass(HttpPut.class);
-    verify(mockClient).execute(any(HttpHost.class), argument.capture());
+    verify(mockClient).execute(any(HttpHost.class), argument.capture(), any(HttpContext.class));
     assertEquals(body, EntityUtils.toString(argument.getValue().getEntity(), DEFAULT_CHARSET));
   }
 }

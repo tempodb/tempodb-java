@@ -13,6 +13,7 @@ import org.apache.http.auth.*;
 import org.apache.http.client.*;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -81,6 +82,7 @@ public class Client {
   private final boolean secure;
 
   private HttpClient client = null;
+  private HttpContext context = null;
   private HttpHost target = null;
 
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -504,8 +506,9 @@ public class Client {
 
   HttpResponse execute(HttpRequest request) throws IOException {
     HttpClient client = getHttpClient();
+    HttpContext context = getContext();
     HttpHost target = getTarget();
-    HttpResponse response = client.execute(target, request);
+    HttpResponse response = client.execute(target, request, context);
     return response;
   }
 
@@ -562,6 +565,25 @@ public class Client {
       client = defaultClient;
     }
     return client;
+  }
+
+  private HttpContext getContext() {
+    if(context == null) {
+      HttpHost targetHost = getTarget();
+
+      // Create AuthCache instance
+      AuthCache authCache = new BasicAuthCache();
+      // Generate BASIC scheme object and add it to the local
+      // auth cache
+      BasicScheme basicAuth = new BasicScheme();
+      authCache.put(targetHost, basicAuth);
+
+      // Add AuthCache to the execution context
+      BasicHttpContext localcontext = new BasicHttpContext();
+      localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+      context = localcontext;
+    }
+    return context;
   }
 
   private HttpHost getTarget() {
