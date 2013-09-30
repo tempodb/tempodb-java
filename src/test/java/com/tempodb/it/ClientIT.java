@@ -1,10 +1,13 @@
 package com.tempodb.it;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -13,13 +16,51 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import com.tempodb.*;
+import static com.tempodb.util.Preconditions.*;
 
 
 public class ClientIT {
-  private static final Client client = new Client("dc6943b5ec9c48df9f027ffd4a5c9a43", "a7b88b6707cf481baefeb9de1f47479f", "api-staging.tempo-db.com", 443, true);
+  private static final Client client;
   private static final DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0);
   private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0);
   private static final DateTimeZone timezone = DateTimeZone.UTC;
+
+  static {
+    File credentials = new File("integration-credentials.properties");
+    if(!credentials.exists()) {
+      String message = "Missing credentials file for integration test.\n" +
+        "Please supply a file 'integration-credentials.properties' with the following format:\n" +
+        "  database.id=<id>\n" +
+        "  credentials.key=<key>\n" +
+        "  credentials.secret=<secret>\n" +
+        "  hostname=<hostname>\n" +
+        "  port=<port>\n" +
+        "  secure=<secure>\n";
+
+      System.out.println(message);
+      System.exit(1);
+    }
+
+    client = getClient(credentials);
+  }
+
+  static Client getClient(File propertiesFile) {
+    Properties properties = new Properties();
+    try {
+      properties.load(new FileInputStream(propertiesFile));
+    } catch (Exception e) {
+      throw new IllegalArgumentException("No credentials file", e);
+    }
+
+    String id = checkNotNull(properties.getProperty("database.id"));
+    String key = checkNotNull(properties.getProperty("credentials.key"));
+    String secret = checkNotNull(properties.getProperty("credentials.secret"));
+    String hostname = checkNotNull(properties.getProperty("hostname"));
+    int port = Integer.parseInt(checkNotNull(properties.getProperty("port")));
+    boolean secure = Boolean.parseBoolean(checkNotNull(properties.getProperty("secure")));
+
+    return new Client(key, secret, hostname, port, secure);
+  }
 
   @BeforeClass
   static public void onetimeSetup() {
