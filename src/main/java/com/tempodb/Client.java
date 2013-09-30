@@ -115,6 +115,41 @@ public class Client {
   }
 
   /**
+   *  Creates a Series
+   *  @param series The Series to create
+   *  @return The created Series
+   *
+   *  @since 1.0.0
+   *  @throws NullPointerException If the input Series is null.
+   */
+  public Result<Series> createSeries(Series series) {
+    checkNotNull(series);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = "Could not build URI";
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Result<Series> result = null;
+    String body = null;
+    try {
+      body = Json.dumps(series);
+    } catch (JsonProcessingException e) {
+      String message = "Error serializing the body of the request. More detail: " + e.getMessage();
+      result = new Result<Series>(null, GENERIC_ERROR_CODE, message);
+      return result;
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
+    result = execute(request, Series.class);
+    return result;
+  }
+
+  /**
    *  Deletes a range of datapoints for a Series specified by key.
    *
    *  @param key The series key

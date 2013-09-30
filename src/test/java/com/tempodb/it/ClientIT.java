@@ -2,6 +2,8 @@ package com.tempodb.it;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -65,5 +67,19 @@ public class ClientIT {
       output.add(dp);
     }
     assertEquals(expected, output);
+  }
+
+  @Ignore
+  @Test
+  public void testCreateSeries() {
+    HashSet<String> tags = new HashSet();
+    tags.add("create");
+
+    Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
+
+    Result<Series> result = client.createSeries(series);
+    Result<Series> expected = new Result(series, 200, "OK");
+
+    assertEquals(expected, result);
   }
 }
