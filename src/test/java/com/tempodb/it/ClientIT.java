@@ -72,10 +72,12 @@ public class ClientIT {
     Cursor<Series> cursor = client.getSeriesByFilter(new Filter());
     for(Series series : cursor) {
       Result<Nothing> result = client.deleteDataPointsByKey(series.getKey(), new Interval(start, end));
+      assertEquals(State.SUCCESS, result.getState());
     }
 
     /* Delete all series */
     Result<DeleteSummary> result = client.deleteAllSeries();
+    assertEquals(State.SUCCESS, result.getState());
   }
 
   @After
@@ -88,13 +90,13 @@ public class ClientIT {
     assertEquals(State.SUCCESS, result.getState());
   }
 
-  @Ignore
   @Test
   public void testReadDataPointKey() throws InterruptedException {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
     Result<Nothing> result = client.writeDataPointsByKey("key1", Arrays.asList(dp1, dp2));
+    assertEquals(State.SUCCESS, result.getState());
     Thread.sleep(2);
 
     DateTime start = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
