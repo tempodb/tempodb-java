@@ -113,13 +113,13 @@ public class ClientIT {
   @Ignore
   @Test
   public void testCreateSeries() {
-    HashSet<String> tags = new HashSet();
+    HashSet<String> tags = new HashSet<String>();
     tags.add("create");
 
     Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
 
     Result<Series> result = client.createSeries(series);
-    Result<Series> expected = new Result(series, 200, "OK");
+    Result<Series> expected = new Result<Series>(series, 200, "OK");
 
     assertEquals(expected, result);
   }
