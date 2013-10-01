@@ -112,7 +112,6 @@ public class ClientIT {
     assertEquals(expected, output);
   }
 
-  @Ignore
   @Test
   public void testCreateSeries() {
     HashSet<String> tags = new HashSet<String>();
