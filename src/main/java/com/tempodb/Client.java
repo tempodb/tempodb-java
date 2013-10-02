@@ -64,8 +64,9 @@ import static com.tempodb.util.Preconditions.*;
  *    import org.joda.time.Interval;
  *    import org.joda.time.Period;
  *
+ *    Database database = new Database("database-id");
  *    Credentials credentials = new Credentials("api-key", "api-secret");
- *    Client client = new Client(credentials, InetAddress.getByName("api.tempo-db.com"), 443, "https");
+ *    Client client = new Client(database, credentials, InetAddress.getByName("api.tempo-db.com"), 443, "https");
  *
  *    DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, 0);
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
@@ -80,6 +81,7 @@ import static com.tempodb.util.Preconditions.*;
  */
 public class Client {
 
+  private final Database database;
   private final Credentials credentials;
   private final InetAddress address;
   private final int port;
@@ -104,28 +106,38 @@ public class Client {
    *
    *  Defaults port and scheme to 443 and "https" respectively.
    *
+   *  @param database Database to connect to
    *  @param credentials Api credentials
    *  @param address Api server address
    */
-  public Client(Credentials credentials, InetAddress address) {
-    this(credentials, address, 443, "https");
+  public Client(Database database, Credentials credentials, InetAddress address) {
+    this(database, credentials, address, 443, "https");
   }
 
   /**
    *  Base constructor for a Client object.
    *
+   *  @param database Database to connect to
    *  @param credentials Api credentials
    *  @param address Api server address
    *  @param port Port that the api server is listening on
    *  @param scheme Scheme for requests. "http" and "https" are supported.
    */
-  public Client(Credentials credentials, InetAddress address, int port, String scheme) {
+  public Client(Database database, Credentials credentials, InetAddress address, int port, String scheme) {
     checkArgument(scheme.equals("http") || scheme.equals("https"), "Scheme must be either \"http\" or \"https\".");
+    this.database = checkNotNull(database, "Database cannot be null.");
     this.credentials = checkNotNull(credentials, "Credentials cannot be null.");
     this.address = checkNotNull(address, "Address cannot be null.");
     this.port = checkNotNull(port, "Port cannot be null.");
     this.scheme = checkNotNull(scheme, "Scheme cannot be null.");
   }
+
+  /**
+   *  Returns the database the client is connected to.
+   *  @return Client database
+   *  @since 1.0.0
+   */
+  public Database getDatabase() { return database; }
 
   /**
    *  Returns the client's credentials.

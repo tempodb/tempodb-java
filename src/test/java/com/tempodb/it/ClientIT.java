@@ -46,7 +46,7 @@ public class ClientIT {
     }
 
     client = getClient(credentials);
-    invalidClient = new Client(new Credentials("key", "secret"), client.getAddress(), client.getPort(), client.getScheme());
+    invalidClient = new Client(client.getDatabase(), new Credentials("key", "secret"), client.getAddress(), client.getPort(), client.getScheme());
   }
 
   static Client getClient(File propertiesFile) {
@@ -64,13 +64,14 @@ public class ClientIT {
     int port = Integer.parseInt(checkNotNull(properties.getProperty("port")));
     String scheme = checkNotNull(properties.getProperty("scheme"));
 
+    Database database = new Database(id);
     Credentials credentials = new Credentials(key, secret);
     InetAddress address = null;
     try {
       address = InetAddress.getByName(hostname);
     } catch (UnknownHostException e) { }
 
-    return new Client(credentials, address, port, scheme);
+    return new Client(database, credentials, address, port, scheme);
   }
 
   @BeforeClass

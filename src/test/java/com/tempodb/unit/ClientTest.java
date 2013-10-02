@@ -12,6 +12,7 @@ import org.junit.rules.ExpectedException;
 
 import com.tempodb.Client;
 import com.tempodb.Credentials;
+import com.tempodb.Database;
 
 
 public class ClientTest {
@@ -21,13 +22,13 @@ public class ClientTest {
 
   @Test
   public void testConstructor() throws UnknownHostException {
-    Client client = new Client(new Credentials("key", "secret"), InetAddress.getByName("example.com"), 10, "http");
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), 10, "http");
     assertNotNull(client);
   }
 
   @Test
   public void testInvalidScheme() throws UnknownHostException {
     thrown.expect(IllegalArgumentException.class);
-    Client client = new Client(new Credentials("key", "secret"), InetAddress.getByName("example.com"), 10, "scheme");
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), 10, "scheme");
   }
 }
