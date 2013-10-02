@@ -22,9 +22,9 @@ import static com.tempodb.util.Preconditions.*;
 public class ClientIT {
   private static final Client client;
   private static final Client invalidClient;
-  private static final DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0);
-  private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0);
   private static final DateTimeZone timezone = DateTimeZone.UTC;
+  private static final DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0, timezone);
+  private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0, timezone);
 
   static {
     File credentials = new File("integration-credentials.properties");
@@ -94,8 +94,46 @@ public class ClientIT {
   }
 
   @Test
+  public void testCreateSeries() {
+    HashSet<String> tags = new HashSet<String>();
+    tags.add("create");
+
+    Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
+
+    Result<Series> result = client.createSeries(series);
+    Result<Series> expected = new Result<Series>(series, 200, "OK");
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testDeleteDataPointsByKey() throws InterruptedException {
+    Interval interval = new Interval(start, end);
+
+    // Write datapoints
+    DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
+    Result<Nothing> result1 = client.writeDataPointsByKey("key1", Arrays.asList(dp));
+    assertEquals(State.SUCCESS, result1.getState());
+    Thread.sleep(2);
+
+    // Read datapoints
+    List<DataPoint> expected1 = Arrays.asList(dp);
+    Cursor<DataPoint> cursor1 = client.readDataPointsByKey("key1", interval, null, timezone);
+    assertEquals(expected1, toList(cursor1));
+
+    // Delete datapoints
+    Result<Nothing> result2 = client.deleteDataPointsByKey("key1", interval);
+    assertEquals(new Result(new Nothing(), 200, "OK"), result2);
+
+    // Read datapoints again
+    List<DataPoint> expected2 = new ArrayList<DataPoint>();
+    Cursor<DataPoint> cursor2 = client.readDataPointsByKey("key1", interval, null, timezone);
+    assertEquals(expected2, toList(cursor2));
+  }
+
+  @Test
   public void testWriteDataPointKey() {
-    DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0), 12.34);
+    DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result = client.writeDataPointsByKey("key1", Arrays.asList(dp));
     assertEquals(State.SUCCESS, result.getState());
   }
@@ -113,25 +151,15 @@ public class ClientIT {
     DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
 
     List<DataPoint> expected = Arrays.asList(dp1, dp2);
-
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, timezone);
+    assertEquals(expected, toList(cursor));
+  }
+
+  private List<DataPoint> toList(Cursor<DataPoint> cursor) {
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
     }
-    assertEquals(expected, output);
-  }
-
-  @Test
-  public void testCreateSeries() {
-    HashSet<String> tags = new HashSet<String>();
-    tags.add("create");
-
-    Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
-
-    Result<Series> result = client.createSeries(series);
-    Result<Series> expected = new Result<Series>(series, 200, "OK");
-
-    assertEquals(expected, result);
+    return output;
   }
 }
