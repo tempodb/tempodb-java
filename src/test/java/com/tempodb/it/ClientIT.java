@@ -25,6 +25,7 @@ public class ClientIT {
   private static final DateTimeZone timezone = DateTimeZone.UTC;
   private static final DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0, timezone);
   private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0, timezone);
+  private static final Interval interval = new Interval(start, end);
 
   static {
     File credentials = new File("integration-credentials.properties");
@@ -73,7 +74,7 @@ public class ClientIT {
     /* Delete all datapoints all series */
     Cursor<Series> cursor = client.getSeriesByFilter(new Filter());
     for(Series series : cursor) {
-      Result<Nothing> result = client.deleteDataPointsByKey(series.getKey(), new Interval(start, end));
+      Result<Nothing> result = client.deleteDataPointsByKey(series.getKey(), interval);
       assertEquals(State.SUCCESS, result.getState());
     }
 
@@ -108,8 +109,6 @@ public class ClientIT {
 
   @Test
   public void testDeleteDataPointsByKey() throws InterruptedException {
-    Interval interval = new Interval(start, end);
-
     // Write datapoints
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result1 = client.writeDataPointsByKey("key1", Arrays.asList(dp));
@@ -132,14 +131,14 @@ public class ClientIT {
   }
 
   @Test
-  public void testWriteDataPointKey() {
+  public void testWriteDataPointByKey() {
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result = client.writeDataPointsByKey("key1", Arrays.asList(dp));
     assertEquals(State.SUCCESS, result.getState());
   }
 
   @Test
-  public void testReadDataPointKey() throws InterruptedException {
+  public void testReadDataPointByKey() throws InterruptedException {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
@@ -152,6 +151,45 @@ public class ClientIT {
 
     List<DataPoint> expected = Arrays.asList(dp1, dp2);
     Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, timezone);
+    assertEquals(expected, toList(cursor));
+  }
+
+  @Test
+  public void testWriteDataPoints() throws InterruptedException {
+    MultiDataPoint mdp1 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0);
+    MultiDataPoint mdp2 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0);
+    MultiDataPoint mdp3 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0);
+    MultiDataPoint mdp4 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 2, 0, 0, timezone), 8.0);
+
+    Thread.sleep(2);
+
+    List<MultiDataPoint> data = Arrays.asList(mdp1, mdp2, mdp3, mdp4);
+    Result<Nothing> result = client.writeDataPoints(data);
+    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result);
+  }
+
+  @Test
+  public void testReadDataPoints() throws InterruptedException {
+    MultiDataPoint mdp1 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0);
+    MultiDataPoint mdp2 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0);
+    MultiDataPoint mdp3 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0);
+    MultiDataPoint mdp4 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0);
+
+    Thread.sleep(2);
+
+    List<MultiDataPoint> data = Arrays.asList(mdp1, mdp2, mdp3, mdp4);
+    Result<Nothing> result1 = client.writeDataPoints(data);
+    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result1);
+
+    Filter filter = new Filter();
+    filter.addKey("key1");
+    filter.addKey("key2");
+    Aggregation aggregation = new Aggregation(Fold.SUM);
+    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, timezone);
+
+    DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 11.0);
+    DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 15.0);
+    List<DataPoint> expected = Arrays.asList(dp1, dp2);
     assertEquals(expected, toList(cursor));
   }
 
