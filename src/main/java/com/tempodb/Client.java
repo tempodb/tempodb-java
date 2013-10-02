@@ -1,6 +1,7 @@
 package com.tempodb;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -57,12 +58,13 @@ import static com.tempodb.util.Preconditions.*;
  *  which provides a lazily loaded iterable of DataPoints.
  *
  *  <p><pre>
+ *    import java.net.InetAddress;
  *    import org.joda.time.DateTime;
  *    import org.joda.time.DateTimeZone;
  *    import org.joda.time.Interval;
  *    import org.joda.time.Period;
  *
- *    Client client = new Client("api-key", "api-secret", "api.tempo-db.com", 443, true);
+ *    Client client = new Client("api-key", "api-secret", InetAddress.getByName("api.tempo-db.com"), 443, "https");
  *
  *    DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, 0);
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
@@ -79,9 +81,9 @@ public class Client {
 
   private final String key;
   private final String secret;
-  private final String host;
+  private final InetAddress address;
   private final int port;
-  private final boolean secure;
+  private final String scheme;
 
   private HttpClient client = null;
   private HttpHost target = null;
@@ -98,27 +100,59 @@ public class Client {
   private enum HttpMethod { GET, POST, PUT, DELETE }
 
   /**
+   *  Default connection constructor for a Client object.
+   *
+   *  Defaults port and scheme to 443 and "https" respectively.
+   *
+   *  @param key Api key
+   *  @param secret Api secret
+   *  @param address Api server address
+   */
+  public Client(String key, String secret, InetAddress address) {
+    this(key, secret, address, 443, "https");
+  }
+
+  /**
    *  Base constructor for a Client object.
    *
    *  @param key Api key
    *  @param secret Api secret
-   *  @param host Hostname of the api server
+   *  @param address Api server address
    *  @param port Port that the api server is listening on
-   *  @param secure Uses http if false, https if true
+   *  @param scheme Scheme for requests. "http" and "https" are supported.
    */
-  public Client(String key, String secret, String host, int port, boolean secure) {
+  public Client(String key, String secret, InetAddress address, int port, String scheme) {
+    checkArgument(scheme.equals("http") || scheme.equals("https"), "Scheme must be either \"http\" or \"https\".");
     this.key = key;
     this.secret = secret;
-    this.host = host;
-    this.port = port;
-    this.secure = secure;
+    this.address = checkNotNull(address, "Address cannot be null.");
+    this.port = checkNotNull(port, "Port cannot be null.");
+    this.scheme = checkNotNull(scheme, "Scheme cannot be null.");
   }
 
   public String getKey() { return key; }
   public String getSecret() { return secret; }
-  public String getHost() { return host; }
+
+  /**
+   *  Returns client's api server address.
+   *  @return Api server address.
+   *  @since 1.0.0
+   */
+  public InetAddress getAddress() { return address; }
+
+  /**
+   *  Returns client's api server port.
+   *  @return Api server port.
+   *  @since 1.0.0
+   */
   public int getPort() { return port; }
-  public boolean getSecure() { return secure; }
+
+  /**
+   *  Returns client's api server scheme.
+   *  @return Api server scheme.
+   *  @since 1.0.0
+   */
+  public String getScheme() { return scheme; }
 
   /**
    *  Creates a Series
@@ -603,7 +637,7 @@ public class Client {
 
       DefaultHttpClient defaultClient = new DefaultHttpClient(new PoolingClientConnectionManager(), httpParams);
       defaultClient.getCredentialsProvider().setCredentials(
-          new AuthScope(host, port),
+          new AuthScope(address.getHostName(), port),
           new UsernamePasswordCredentials(key, secret));
 
       // Add gzip header to all requests
@@ -680,8 +714,7 @@ public class Client {
 
   private HttpHost getTarget() {
     if(target == null) {
-      String scheme = secure ? "https" : "http";
-      target = new HttpHost(host, port, scheme);
+      target = new HttpHost(address.getHostName(), port, scheme);
     }
     return target;
   }

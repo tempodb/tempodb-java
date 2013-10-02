@@ -2,6 +2,8 @@ package com.tempodb.it;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,14 +39,14 @@ public class ClientIT {
         "  credentials.secret=<secret>\n" +
         "  hostname=<hostname>\n" +
         "  port=<port>\n" +
-        "  secure=<secure>\n";
+        "  scheme=<scheme>\n";
 
       System.out.println(message);
       System.exit(1);
     }
 
     client = getClient(credentials);
-    invalidClient = new Client("key", "secret", client.getHost(), client.getPort(), client.getSecure());
+    invalidClient = new Client("key", "secret", client.getAddress(), client.getPort(), client.getScheme());
   }
 
   static Client getClient(File propertiesFile) {
@@ -60,9 +62,14 @@ public class ClientIT {
     String secret = checkNotNull(properties.getProperty("credentials.secret"));
     String hostname = checkNotNull(properties.getProperty("hostname"));
     int port = Integer.parseInt(checkNotNull(properties.getProperty("port")));
-    boolean secure = Boolean.parseBoolean(checkNotNull(properties.getProperty("secure")));
+    String scheme = checkNotNull(properties.getProperty("scheme"));
 
-    return new Client(key, secret, hostname, port, secure);
+    InetAddress address = null;
+    try {
+      address = InetAddress.getByName(hostname);
+    } catch (UnknownHostException e) { }
+
+    return new Client(key, secret, address, port, scheme);
   }
 
   @BeforeClass
