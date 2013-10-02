@@ -265,19 +265,21 @@ public class ClientIT {
     // Create a series
     HashSet<String> tags = new HashSet<String>();
     tags.add("delete-filter");
-    Series series = new Series("delete-series", "name", tags, new HashMap<String, String>());
-    Result<Series> result1 = client.createSeries(series);
+    Series series1 = new Series("delete-series", "name", tags, new HashMap<String, String>());
+    Series series2 = new Series("delete-series2", "name", new HashSet<String>(), new HashMap<String, String>());
+    Result<Series> result1 = client.createSeries(series1);
+    Result<Series> result2 = client.createSeries(series2);
 
     // Get the series by filter
     Filter filter = new Filter();
     filter.addTag("delete-filter");
     Cursor<Series> cursor = client.getSeriesByFilter(filter);
-    List<Series> expected1 = Arrays.asList(series);
+    List<Series> expected1 = Arrays.asList(series1);
     assertEquals(expected1, toList(cursor));
 
     // Delete the series by filter
-    Result<DeleteSummary> result2 = client.deleteSeriesByFilter(filter);
-    assertEquals(new Result<DeleteSummary>(new DeleteSummary(1), 200, "OK"), result2);
+    Result<DeleteSummary> result3 = client.deleteSeriesByFilter(filter);
+    assertEquals(new Result<DeleteSummary>(new DeleteSummary(1), 200, "OK"), result3);
 
     // Get the series by filter again
     Cursor<Series> cursor2 = client.getSeriesByFilter(filter);
