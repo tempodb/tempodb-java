@@ -21,6 +21,7 @@ import static com.tempodb.util.Preconditions.*;
 
 public class ClientIT {
   private static final Client client;
+  private static final Client invalidClient;
   private static final DateTime start = new DateTime(1500, 1, 1, 0, 0, 0, 0);
   private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0);
   private static final DateTimeZone timezone = DateTimeZone.UTC;
@@ -42,6 +43,7 @@ public class ClientIT {
     }
 
     client = getClient(credentials);
+    invalidClient = new Client("key", "secret", client.getHost(), client.getPort(), client.getSecure());
   }
 
   static Client getClient(File propertiesFile) {
@@ -82,6 +84,14 @@ public class ClientIT {
 
   @After
   public void tearDown() { cleanup(); }
+
+  @Test
+  public void testInvalidCredentials() {
+    Series series = new Series("key1", "", new HashSet<String>(), new HashMap<String, String>());
+    Result<Series> result = invalidClient.createSeries(series);
+    Result<Series> expected = new Result<Series>(null, 403, "Forbidden");
+    assertEquals(expected, result);
+  }
 
   @Test
   public void testWriteDataPointKey() {

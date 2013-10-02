@@ -114,6 +114,12 @@ public class Client {
     this.secure = secure;
   }
 
+  public String getKey() { return key; }
+  public String getSecret() { return secret; }
+  public String getHost() { return host; }
+  public int getPort() { return port; }
+  public boolean getSecure() { return secure; }
+
   /**
    *  Creates a Series
    *  @param series The Series to create
