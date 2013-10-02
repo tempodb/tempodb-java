@@ -193,9 +193,59 @@ public class ClientIT {
     assertEquals(expected, toList(cursor));
   }
 
-  private List<DataPoint> toList(Cursor<DataPoint> cursor) {
-    List<DataPoint> output = new ArrayList<DataPoint>();
-    for(DataPoint dp : cursor) {
+  @Test
+  public void testGetSeriesByKey() {
+    // Create a series
+    HashSet<String> tags = new HashSet<String>();
+    tags.add("create");
+    Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
+    Result<Series> result1 = client.createSeries(series);
+
+    // Get the series
+    Result<Series> result2 = client.getSeriesByKey("create-series");
+    Result<Series> expected = new Result<Series>(series, 200, "OK");
+    assertEquals(expected, result2);
+  }
+
+  @Test
+  public void testGetSeriesByFilter() {
+    // Create a series
+    HashSet<String> tags = new HashSet<String>();
+    tags.add("get-filter");
+    Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
+    Result<Series> result1 = client.createSeries(series);
+
+    // Get the series by filter
+    Filter filter = new Filter();
+    filter.addTag("get-filter");
+    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    List<Series> expected = Arrays.asList(series);
+    assertEquals(expected, toList(cursor));
+  }
+
+  @Ignore
+  @Test
+  public void testReplaceSeriesByKey() {
+    // Create a series
+    HashSet<String> tags = new HashSet<String>();
+    tags.add("replace");
+    Series series = new Series("relace-series", "name", tags, new HashMap<String, String>());
+    Result<Series> result1 = client.createSeries(series);
+
+    // Replace the series
+    series.getTags().add("replace2");
+    Result<Series> result2 = client.replaceSeries(series);
+    assertEquals(new Result<Series>(series, 200, "OK"), result2);
+
+    // Get the series
+    Result<Series> result3 = client.getSeriesByKey("replace-series");
+    Result<Series> expected = new Result<Series>(series, 200, "OK");
+    assertEquals(expected, result3);
+  }
+
+  private <T> List<T> toList(Cursor<T> cursor) {
+    List<T> output = new ArrayList<T>();
+    for(T dp : cursor) {
       output.add(dp);
     }
     return output;
