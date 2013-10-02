@@ -42,6 +42,20 @@ public class Series implements Serializable {
   }
 
   /**
+   *  Key-only constructor.
+   *  <ul>
+   *    <li><tt>name</tt> default to ""</li>
+   *    <li><tt>tags</tt> default to empty set</li>
+   *    <li><tt>attributes</tt> default to empty map</li>
+   *  </ul>
+   *  @param key Series key
+   *  @since 1.0.0
+   */
+  public Series(String key) {
+    this(key, "", new LinkedHashSet<String>(), new HashMap<String, String>());
+  }
+
+  /**
    *  Base constructor
    *
    *  @param key Series key
