@@ -113,7 +113,7 @@ public class ClientIT {
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result1 = client.writeDataPointsByKey("key1", Arrays.asList(dp));
     assertEquals(State.SUCCESS, result1.getState());
-    Thread.sleep(2);
+    Thread.sleep(2000);
 
     // Read datapoints
     List<DataPoint> expected1 = Arrays.asList(dp);
@@ -144,7 +144,7 @@ public class ClientIT {
 
     Result<Nothing> result = client.writeDataPointsByKey("key1", Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
-    Thread.sleep(2);
+    Thread.sleep(2000);
 
     DateTime start = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
     DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
@@ -161,7 +161,7 @@ public class ClientIT {
     MultiDataPoint mdp3 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0);
     MultiDataPoint mdp4 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 2, 0, 0, timezone), 8.0);
 
-    Thread.sleep(2);
+    Thread.sleep(2000);
 
     List<MultiDataPoint> data = Arrays.asList(mdp1, mdp2, mdp3, mdp4);
     Result<Nothing> result = client.writeDataPoints(data);
@@ -175,7 +175,7 @@ public class ClientIT {
     MultiDataPoint mdp3 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0);
     MultiDataPoint mdp4 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0);
 
-    Thread.sleep(2);
+    Thread.sleep(2000);
 
     List<MultiDataPoint> data = Arrays.asList(mdp1, mdp2, mdp3, mdp4);
     Result<Nothing> result1 = client.writeDataPoints(data);
@@ -240,6 +240,49 @@ public class ClientIT {
     Result<Series> result3 = client.getSeriesByKey("replace-series");
     Result<Series> expected = new Result<Series>(series, 200, "OK");
     assertEquals(expected, result3);
+  }
+
+  @Test
+  public void testDeleteSeriesByKey() {
+    // Create a series
+    HashSet<String> tags = new HashSet<String>();
+    tags.add("delete");
+    Series series = new Series("delete-series", "name", tags, new HashMap<String, String>());
+    Result<Series> result1 = client.createSeries(series);
+
+    // Replace the series
+    Result<Nothing> result2 = client.deleteSeriesByKey("delete-series");
+    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result2);
+
+    // Get the series
+    Result<Series> result3 = client.getSeriesByKey("delete-series");
+    Result<Series> expected = new Result<Series>(null, 403, "Forbidden");
+    assertEquals(expected, result3);
+  }
+
+  @Test
+  public void testDeleteSeriesByFilter() {
+    // Create a series
+    HashSet<String> tags = new HashSet<String>();
+    tags.add("delete-filter");
+    Series series = new Series("delete-series", "name", tags, new HashMap<String, String>());
+    Result<Series> result1 = client.createSeries(series);
+
+    // Get the series by filter
+    Filter filter = new Filter();
+    filter.addTag("delete-filter");
+    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    List<Series> expected1 = Arrays.asList(series);
+    assertEquals(expected1, toList(cursor));
+
+    // Delete the series by filter
+    Result<DeleteSummary> result2 = client.deleteSeriesByFilter(filter);
+    assertEquals(new Result<DeleteSummary>(new DeleteSummary(1), 200, "OK"), result2);
+
+    // Get the series by filter again
+    Cursor<Series> cursor2 = client.getSeriesByFilter(filter);
+    List<Series> expected2 = Arrays.asList();
+    assertEquals(expected2, toList(cursor2));
   }
 
   private <T> List<T> toList(Cursor<T> cursor) {
