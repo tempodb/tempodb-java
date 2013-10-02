@@ -17,6 +17,9 @@ public class Credentials implements Serializable {
   private String key;
   private String secret;
 
+  /** Serialization lock */
+  private static final long serialVersionUID = 1L;
+
   public Credentials() {
     this("", "");
   }

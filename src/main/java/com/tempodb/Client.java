@@ -64,7 +64,8 @@ import static com.tempodb.util.Preconditions.*;
  *    import org.joda.time.Interval;
  *    import org.joda.time.Period;
  *
- *    Client client = new Client("api-key", "api-secret", InetAddress.getByName("api.tempo-db.com"), 443, "https");
+ *    Credentials credentials = new Credentials("api-key", "api-secret");
+ *    Client client = new Client(credentials, InetAddress.getByName("api.tempo-db.com"), 443, "https");
  *
  *    DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, 0);
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
@@ -79,8 +80,7 @@ import static com.tempodb.util.Preconditions.*;
  */
 public class Client {
 
-  private final String key;
-  private final String secret;
+  private final Credentials credentials;
   private final InetAddress address;
   private final int port;
   private final String scheme;
@@ -104,34 +104,35 @@ public class Client {
    *
    *  Defaults port and scheme to 443 and "https" respectively.
    *
-   *  @param key Api key
-   *  @param secret Api secret
+   *  @param credentials Api credentials
    *  @param address Api server address
    */
-  public Client(String key, String secret, InetAddress address) {
-    this(key, secret, address, 443, "https");
+  public Client(Credentials credentials, InetAddress address) {
+    this(credentials, address, 443, "https");
   }
 
   /**
    *  Base constructor for a Client object.
    *
-   *  @param key Api key
-   *  @param secret Api secret
+   *  @param credentials Api credentials
    *  @param address Api server address
    *  @param port Port that the api server is listening on
    *  @param scheme Scheme for requests. "http" and "https" are supported.
    */
-  public Client(String key, String secret, InetAddress address, int port, String scheme) {
+  public Client(Credentials credentials, InetAddress address, int port, String scheme) {
     checkArgument(scheme.equals("http") || scheme.equals("https"), "Scheme must be either \"http\" or \"https\".");
-    this.key = key;
-    this.secret = secret;
+    this.credentials = checkNotNull(credentials, "Credentials cannot be null.");
     this.address = checkNotNull(address, "Address cannot be null.");
     this.port = checkNotNull(port, "Port cannot be null.");
     this.scheme = checkNotNull(scheme, "Scheme cannot be null.");
   }
 
-  public String getKey() { return key; }
-  public String getSecret() { return secret; }
+  /**
+   *  Returns the client's credentials.
+   *  @return Api credentials
+   *  @since 1.0.0
+   */
+  public Credentials getCredentials() { return credentials; }
 
   /**
    *  Returns client's api server address.
@@ -638,7 +639,7 @@ public class Client {
       DefaultHttpClient defaultClient = new DefaultHttpClient(new PoolingClientConnectionManager(), httpParams);
       defaultClient.getCredentialsProvider().setCredentials(
           new AuthScope(address.getHostName(), port),
-          new UsernamePasswordCredentials(key, secret));
+          new UsernamePasswordCredentials(credentials.getKey(), credentials.getSecret()));
 
       // Add gzip header to all requests
       defaultClient.addRequestInterceptor(new HttpRequestInterceptor() {
