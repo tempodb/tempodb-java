@@ -223,13 +223,12 @@ public class ClientIT {
     assertEquals(expected, toList(cursor));
   }
 
-  @Ignore
   @Test
   public void testReplaceSeriesByKey() {
     // Create a series
     HashSet<String> tags = new HashSet<String>();
     tags.add("replace");
-    Series series = new Series("relace-series", "name", tags, new HashMap<String, String>());
+    Series series = new Series("replace-series", "name", tags, new HashMap<String, String>());
     Result<Series> result1 = client.createSeries(series);
 
     // Replace the series
