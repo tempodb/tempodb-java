@@ -25,12 +25,14 @@ import com.tempodb.Cursor;
 import com.tempodb.DataPoint;
 import com.tempodb.Fold;
 import com.tempodb.Rollup;
+import com.tempodb.Series;
 import com.tempodb.TempoDBException;
 import com.tempodb.Util;
 
 
-public class ReadDataPointsByKeyTest {
+public class ReadDataPointsBySeriesTest {
   private static final DateTimeZone zone = DateTimeZone.UTC;
+  private static final Series series = new Series("key1");
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -86,7 +88,7 @@ public class ReadDataPointsByKeyTest {
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), null, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -104,7 +106,7 @@ public class ReadDataPointsByKeyTest {
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), null, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -126,7 +128,7 @@ public class ReadDataPointsByKeyTest {
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), null, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -140,7 +142,7 @@ public class ReadDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, null, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -156,7 +158,7 @@ public class ReadDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, null, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -173,7 +175,7 @@ public class ReadDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, null, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -194,7 +196,7 @@ public class ReadDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, rollup, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -216,7 +218,7 @@ public class ReadDataPointsByKeyTest {
     HttpResponse response = Util.getResponse(403, "You are forbidden");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", interval, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, rollup, zone);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();

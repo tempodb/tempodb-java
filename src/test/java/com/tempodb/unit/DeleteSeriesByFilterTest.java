@@ -29,7 +29,7 @@ public class DeleteSeriesByFilterTest {
     HttpResponse response = Util.getResponse(200, json);
     Client client = Util.getClient(response);
 
-    Result<DeleteSummary> result = client.deleteSeriesByFilter(filter);
+    Result<DeleteSummary> result = client.deleteSeries(filter);
     Result<DeleteSummary> expected = new Result<DeleteSummary>(new DeleteSummary(127), 200, "OK");
     assertEquals(expected, result);
   }
@@ -40,7 +40,7 @@ public class DeleteSeriesByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<DeleteSummary> result = client.deleteSeriesByFilter(filter);
+    Result<DeleteSummary> result = client.deleteSeries(filter);
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("DELETE", request.getRequestLine().getMethod());
@@ -52,7 +52,7 @@ public class DeleteSeriesByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<DeleteSummary> result = client.deleteSeriesByFilter(filter);
+    Result<DeleteSummary> result = client.deleteSeries(filter);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
@@ -72,7 +72,7 @@ public class DeleteSeriesByFilterTest {
     filter.addAttribute("key1", "value1");
     filter.addAttribute("key2", "value2");
 
-    Result<DeleteSummary> result = client.deleteSeriesByFilter(filter);
+    Result<DeleteSummary> result = client.deleteSeries(filter);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());

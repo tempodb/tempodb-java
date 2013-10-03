@@ -205,23 +205,23 @@ public class Client {
   /**
    *  Deletes a range of datapoints for a Series specified by key.
    *
-   *  @param key The series key
+   *  @param series The series
    *  @param interval The start/end datetime interval to delete.
    *  @return Nothing
    *
    *  @since 1.0.0
    */
-  public Result<Nothing> deleteDataPointsByKey(String key, Interval interval) {
-    checkNotNull(key);
+  public Result<Nothing> deleteDataPoints(Series series, Interval interval) {
+    checkNotNull(series);
     checkNotNull(interval);
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, key));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, series.getKey()));
       addIntervalToURI(builder, interval);
       uri = builder.build();
     } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: key: %s, interval: %s", key, interval);
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s", series.getKey(), interval);
       throw new IllegalArgumentException(message, e);
     }
 
@@ -231,124 +231,26 @@ public class Client {
   }
 
   /**
-   *  Returns a cursor of datapoints specified by series key.
+   *  Deletes a Series.
    *
-   *  @param key The series key
-   *  @param interval An interval of time for the query (start/end datetimes)
-   *  @param rollup The rollup for the read query. This can be null.
-   *  @param timezone The time zone for the returned datapoints.
-   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
-   *
-   *  @see Cursor
-   *  @since 1.0.0
-   */
-  public Cursor<DataPoint> readDataPointsByKey(String key, Interval interval, Rollup rollup, DateTimeZone timezone) {
-    checkNotNull(interval);
-    checkNotNull(timezone);
-
-    URI uri = null;
-    try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/segment/", API_VERSION, key));
-      addIntervalToURI(builder, interval);
-      addRollupToURI(builder, rollup);
-      addTimeZoneToURI(builder, timezone);
-      uri = builder.build();
-    } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: key: %s, interval: %s, rollup: %s, timezone: %s", key, interval, rollup, timezone);
-      throw new IllegalArgumentException(message, e);
-    }
-
-    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
-    return cursor;
-  }
-
-  /**
-   *  Returns a cursor of datapoints specified by a series filter.
-   *
-   *  This endpoint allows one to request multiple series and apply an aggregation function.
-   *
-   *  @param filter The series filter
-   *  @param interval An interval of time for the query (start/end datetimes)
-   *  @param aggregation The aggregation for the read query. This is required.
-   *  @param rollup The rollup for the read query. This can be null.
-   *  @param timezone The time zone for the returned datapoints.
-   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
-   *
-   *  @see Aggregation
-   *  @see Cursor
-   *  @see Filter
-   *  @see Rollup
-   *  @since 1.0.0
-   */
-  public Cursor<DataPoint> readDataPointsByFilter(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup, DateTimeZone timezone) {
-    checkNotNull(filter);
-    checkNotNull(interval);
-    checkNotNull(aggregation);
-    checkNotNull(timezone);
-
-    URI uri = null;
-    try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/data/segment/", API_VERSION));
-      addFilterToURI(builder, filter);
-      addIntervalToURI(builder, interval);
-      addAggregationToURI(builder, aggregation);
-      addRollupToURI(builder, rollup);
-      addTimeZoneToURI(builder, timezone);
-      uri = builder.build();
-    } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: filter: %s, interval: %s, aggregation: %s, rollup: %s, timezone: %s", filter, interval, aggregation, rollup, timezone);
-      throw new IllegalArgumentException(message, e);
-    }
-
-    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
-    return cursor;
-  }
-
-  /**
-   *  Deletes a Series referenced by key.
-   *
-   *  @param key The Series key to delete
+   *  @param series The Series to delete
    *  @return {@link Nothing}
    *  @since 1.0.0
    */
-  public Result<Nothing> deleteSeriesByKey(String key) {
-    checkNotNull(key);
+  public Result<Nothing> deleteSeries(Series series) {
+    checkNotNull(series);
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, key));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, series.getKey()));
       uri = builder.build();
     } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: key: %s", key);
+      String message = String.format("Could not build URI with inputs: key: %s", series.getKey());
       throw new IllegalArgumentException(message, e);
     }
 
     HttpRequest request = buildRequest(uri.toString(), HttpMethod.DELETE);
     Result<Nothing> result = execute(request, Nothing.class);
-    return result;
-  }
-
-  /**
-   *  Returns a Series referenced by key.
-   *
-   *  @param key The Series key to retrieve
-   *  @return The requested Series.
-   *  @since 1.0.0
-   */
-  public Result<Series> getSeriesByKey(String key) {
-    checkNotNull(key);
-
-    URI uri = null;
-    try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, key));
-      uri = builder.build();
-    } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: key: %s", key);
-      throw new IllegalArgumentException(message, e);
-    }
-
-    HttpRequest request = buildRequest(uri.toString());
-    Result<Series> result = execute(request, Series.class);
     return result;
   }
 
@@ -362,7 +264,7 @@ public class Client {
    *  @see Filter
    *  @since 1.0.0
    */
-  public Result<DeleteSummary> deleteSeriesByFilter(Filter filter) {
+  public Result<DeleteSummary> deleteSeries(Filter filter) {
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
@@ -403,6 +305,30 @@ public class Client {
   }
 
   /**
+   *  Returns a Series referenced by key.
+   *
+   *  @param key The Series key to retrieve
+   *  @return The requested Series.
+   *  @since 1.0.0
+   */
+  public Result<Series> getSeriesByKey(String key) {
+    checkNotNull(key);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, key));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s", key);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString());
+    Result<Series> result = execute(request, Series.class);
+    return result;
+  }
+
+  /**
    *  Returns a cursor of series specified by a filter.
    *
    *  @param filter The series filter
@@ -424,6 +350,81 @@ public class Client {
     }
 
     Cursor<Series> cursor = new SeriesCursor(uri, this);
+    return cursor;
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by series.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, Rollup rollup, DateTimeZone timezone) {
+    checkNotNull(series);
+    checkNotNull(interval);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/segment/", API_VERSION, series.getKey()));
+      addIntervalToURI(builder, interval);
+      addRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s, rollup: %s, timezone: %s", series.getKey(), interval, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
+    return cursor;
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by a series filter.
+   *
+   *  This endpoint allows one to request multiple series and apply an aggregation function.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param aggregation The aggregation for the read query. This is required.
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Aggregation
+   *  @see Cursor
+   *  @see Filter
+   *  @see Rollup
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup, DateTimeZone timezone) {
+    checkNotNull(filter);
+    checkNotNull(interval);
+    checkNotNull(aggregation);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/data/segment/", API_VERSION));
+      addFilterToURI(builder, filter);
+      addIntervalToURI(builder, interval);
+      addAggregationToURI(builder, aggregation);
+      addRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: filter: %s, interval: %s, aggregation: %s, rollup: %s, timezone: %s", filter, interval, aggregation, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<DataPoint> cursor = new DataPointCursor(uri, this);
     return cursor;
   }
 
@@ -462,6 +463,45 @@ public class Client {
   }
 
   /**
+   *  Writes datapoints to single Series.
+   *
+   *  @param series The series to write to.
+   *  @param data A list of datapoints
+   *  @return {@link Nothing}
+   *
+   *  @see DataPoint
+   *  @see Nothing
+   *  @since 1.0.0
+   */
+  public Result<Nothing> writeDataPoints(Series series, List<DataPoint> data) {
+    checkNotNull(series);
+    checkNotNull(data);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, series.getKey()));
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s", series.getKey());
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Result<Nothing> result = null;
+    String body = null;
+    try{
+      body = Json.dumps(data);
+    } catch (JsonProcessingException e) {
+      String message = "Error serializing the body of the request. More detail: " + e.getMessage();
+      result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
+      return result;
+    }
+
+    HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
+    result = execute(request, Nothing.class);
+    return result;
+  }
+
+  /**
    *  Writes datapoints to multiple Series.
    *
    *  <p>This request can partially succeed. You should check the {@link Result#getState()} to check if the request was
@@ -490,46 +530,6 @@ public class Client {
     Result<Nothing> result = null;
     String body = null;
     try {
-      body = Json.dumps(data);
-    } catch (JsonProcessingException e) {
-      String message = "Error serializing the body of the request. More detail: " + e.getMessage();
-      result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
-      return result;
-    }
-
-    HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
-    result = execute(request, Nothing.class);
-    return result;
-  }
-
-
-  /**
-   *  Writes datapoints to single Series.
-   *
-   *  @param series The series to write to.
-   *  @param data A list of datapoints
-   *  @return {@link Nothing}
-   *
-   *  @see DataPoint
-   *  @see Nothing
-   *  @since 1.0.0
-   */
-  public Result<Nothing> writeDataPoints(Series series, List<DataPoint> data) {
-    checkNotNull(series);
-    checkNotNull(data);
-
-    URI uri = null;
-    try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, series.getKey()));
-      uri = builder.build();
-    } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: key: %s", series.getKey());
-      throw new IllegalArgumentException(message, e);
-    }
-
-    Result<Nothing> result = null;
-    String body = null;
-    try{
       body = Json.dumps(data);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();

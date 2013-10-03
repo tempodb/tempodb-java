@@ -83,7 +83,7 @@ public class ClientIT {
     /* Delete all datapoints all series */
     Cursor<Series> cursor = client.getSeriesByFilter(new Filter());
     for(Series series : cursor) {
-      Result<Nothing> result = client.deleteDataPointsByKey(series.getKey(), interval);
+      Result<Nothing> result = client.deleteDataPoints(series, interval);
       assertEquals(State.SUCCESS, result.getState());
     }
 
@@ -117,7 +117,7 @@ public class ClientIT {
   }
 
   @Test
-  public void testDeleteDataPointsByKey() throws InterruptedException {
+  public void testDeleteDataPointsBySeries() throws InterruptedException {
     // Write datapoints
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result1 = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
@@ -126,16 +126,16 @@ public class ClientIT {
 
     // Read datapoints
     List<DataPoint> expected1 = Arrays.asList(dp);
-    Cursor<DataPoint> cursor1 = client.readDataPointsByKey("key1", interval, null, timezone);
+    Cursor<DataPoint> cursor1 = client.readDataPoints(new Series("key1"), interval, null, timezone);
     assertEquals(expected1, toList(cursor1));
 
     // Delete datapoints
-    Result<Nothing> result2 = client.deleteDataPointsByKey("key1", interval);
+    Result<Nothing> result2 = client.deleteDataPoints(new Series("key1"), interval);
     assertEquals(new Result(new Nothing(), 200, "OK"), result2);
 
     // Read datapoints again
     List<DataPoint> expected2 = new ArrayList<DataPoint>();
-    Cursor<DataPoint> cursor2 = client.readDataPointsByKey("key1", interval, null, timezone);
+    Cursor<DataPoint> cursor2 = client.readDataPoints(new Series("key1"), interval, null, timezone);
     assertEquals(expected2, toList(cursor2));
   }
 
@@ -159,7 +159,7 @@ public class ClientIT {
     DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
 
     List<DataPoint> expected = Arrays.asList(dp1, dp2);
-    Cursor<DataPoint> cursor = client.readDataPointsByKey("key1", new Interval(start, end), null, timezone);
+    Cursor<DataPoint> cursor = client.readDataPoints(new Series("key1"), new Interval(start, end), null, timezone);
     assertEquals(expected, toList(cursor));
   }
 
@@ -194,7 +194,7 @@ public class ClientIT {
     filter.addKey("key1");
     filter.addKey("key2");
     Aggregation aggregation = new Aggregation(Fold.SUM);
-    Cursor<DataPoint> cursor = client.readDataPointsByFilter(filter, interval, aggregation, null, timezone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, null, timezone);
 
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 11.0);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 15.0);
@@ -252,15 +252,15 @@ public class ClientIT {
   }
 
   @Test
-  public void testDeleteSeriesByKey() {
+  public void testDeleteSeries() {
     // Create a series
     HashSet<String> tags = new HashSet<String>();
     tags.add("delete");
     Series series = new Series("delete-series", "name", tags, new HashMap<String, String>());
     Result<Series> result1 = client.createSeries(series);
 
-    // Replace the series
-    Result<Nothing> result2 = client.deleteSeriesByKey("delete-series");
+    // Delete the series
+    Result<Nothing> result2 = client.deleteSeries(series);
     assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result2);
 
     // Get the series
@@ -287,7 +287,7 @@ public class ClientIT {
     assertEquals(expected1, toList(cursor));
 
     // Delete the series by filter
-    Result<DeleteSummary> result3 = client.deleteSeriesByFilter(filter);
+    Result<DeleteSummary> result3 = client.deleteSeries(filter);
     assertEquals(new Result<DeleteSummary>(new DeleteSummary(1), 200, "OK"), result3);
 
     // Get the series by filter again

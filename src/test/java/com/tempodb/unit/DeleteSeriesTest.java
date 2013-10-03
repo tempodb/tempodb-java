@@ -12,10 +12,12 @@ import static org.junit.Assert.*;
 import com.tempodb.Client;
 import com.tempodb.Nothing;
 import com.tempodb.Result;
+import com.tempodb.Series;
 import com.tempodb.Util;
 
 
-public class DeleteSeriesByKeyTest {
+public class DeleteSeriesTest {
+  private static final Series series = new Series("key1");
 
   @Test
   public void smokeTest() throws IOException {
@@ -23,7 +25,7 @@ public class DeleteSeriesByKeyTest {
     Client client = Util.getClient(response);
 
     Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK");
-    Result<Nothing> result = client.deleteSeriesByKey("key1");
+    Result<Nothing> result = client.deleteSeries(series);
     assertEquals(expected, result);
   }
 
@@ -33,7 +35,7 @@ public class DeleteSeriesByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteSeriesByKey("key1");
+    Result<Nothing> result = client.deleteSeries(series);
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("DELETE", request.getRequestLine().getMethod());
@@ -45,7 +47,7 @@ public class DeleteSeriesByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteSeriesByKey("key1");
+    Result<Nothing> result = client.deleteSeries(series);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
