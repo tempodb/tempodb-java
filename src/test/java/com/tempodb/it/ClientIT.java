@@ -120,7 +120,7 @@ public class ClientIT {
   public void testDeleteDataPointsByKey() throws InterruptedException {
     // Write datapoints
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
-    Result<Nothing> result1 = client.writeDataPointsByKey("key1", Arrays.asList(dp));
+    Result<Nothing> result1 = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
     assertEquals(State.SUCCESS, result1.getState());
     Thread.sleep(2000);
 
@@ -140,9 +140,9 @@ public class ClientIT {
   }
 
   @Test
-  public void testWriteDataPointByKey() {
+  public void testWriteDataPointBySeries() {
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
-    Result<Nothing> result = client.writeDataPointsByKey("key1", Arrays.asList(dp));
+    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
     assertEquals(State.SUCCESS, result.getState());
   }
 
@@ -151,7 +151,7 @@ public class ClientIT {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
-    Result<Nothing> result = client.writeDataPointsByKey("key1", Arrays.asList(dp1, dp2));
+    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
     Thread.sleep(2000);
 

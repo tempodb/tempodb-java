@@ -504,9 +504,9 @@ public class Client {
 
 
   /**
-   *  Writes datapoints to single Series, referenced by key.
+   *  Writes datapoints to single Series.
    *
-   *  @param key The key of the series to write to.
+   *  @param series The series to write to.
    *  @param data A list of datapoints
    *  @return {@link Nothing}
    *
@@ -514,16 +514,16 @@ public class Client {
    *  @see Nothing
    *  @since 1.0.0
    */
-  public Result<Nothing> writeDataPointsByKey(String key, List<DataPoint> data) {
-    checkNotNull(key);
+  public Result<Nothing> writeDataPoints(Series series, List<DataPoint> data) {
+    checkNotNull(series);
     checkNotNull(data);
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, key));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, series.getKey()));
       uri = builder.build();
     } catch (URISyntaxException e) {
-      String message = String.format("Could not build URI with inputs: key: %s", key);
+      String message = String.format("Could not build URI with inputs: key: %s", series.getKey());
       throw new IllegalArgumentException(message, e);
     }
 
