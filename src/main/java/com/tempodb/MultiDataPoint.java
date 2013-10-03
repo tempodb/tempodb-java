@@ -2,7 +2,6 @@ package com.tempodb;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
@@ -12,13 +11,13 @@ import static com.tempodb.util.Preconditions.*;
 
 /**
  *  DataPoint for a Series, used for bulk writing of DataPoints.
- *  <p>Allows you to specify a timestamp/value pair, as well as the {@link Series} key
+ *  <p>Allows you to specify a timestamp/value pair, as well as the {@link Series}
  *  that it is associated with.
  *  @since 1.0.0
  */
 public class MultiDataPoint implements Serializable {
 
-  private String key;
+  private Series series;
   private DateTime timestamp;
   private Number value;
 
@@ -26,43 +25,41 @@ public class MultiDataPoint implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public MultiDataPoint() {
-    this("", new DateTime(), 0.0);
+    this(new Series(""), new DateTime(), 0.0);
   }
 
   /**
    *  Base constructor
-   *  @param key {@link Series} key for the DataPoint
+   *  @param series {@link Series} for the DataPoint
    *  @param timestamp Timestamp for the DataPoint
    *  @param value Value for the DataPoint
    *  @since 1.0.0
    */
-  public MultiDataPoint(@JsonProperty("key") String key, @JsonProperty("t") DateTime timestamp, @JsonProperty("v") Number value) {
-    this.key = checkNotNull(key);
+  public MultiDataPoint(Series series, DateTime timestamp, Number value) {
+    this.series = checkNotNull(series);
     this.timestamp = checkNotNull(timestamp);
     this.value = checkNotNull(value);
   }
 
   /**
-   *  Returns the {@link Series} key of this MultiDataPoint.
-   *  @return the {@link Series} key
+   *  Returns the {@link Series} of this MultiDataPoint.
+   *  @return the {@link Series}
    *  @since 1.0.0
    */
-  @JsonProperty("key")
-  public String getKey() { return key; }
+  public Series getSeries() { return series; }
 
   /**
-   *  Sets the {@link Series} key of this MultiDataPoint.
-   *  @param key The {@link Series} key
+   *  Sets the {@link Series} of this MultiDataPoint.
+   *  @param series The {@link Series}
    *  @since 1.0.0
    */
-  public void setKey(String key) { this.key = checkNotNull(key); }
+  public void setSeries(Series series) { this.series = checkNotNull(series); }
 
   /**
    *  Returns the timestamp of this MultiDataPoint.
    *  @return the timestamp
    *  @since 1.0.0
    */
-  @JsonProperty("t")
   public DateTime getTimestamp() { return timestamp; }
 
   /**
@@ -77,7 +74,6 @@ public class MultiDataPoint implements Serializable {
    *  @return the value
    *  @since 1.0.0
    */
-  @JsonProperty("v")
   public Number getValue() { return value; }
 
   /**
@@ -89,13 +85,13 @@ public class MultiDataPoint implements Serializable {
 
   @Override
   public String toString() {
-    return String.format("MultiDataPoint(key=%s, timestamp=%s, value=%s", key, timestamp, value);
+    return String.format("MultiDataPoint(series=%s, timestamp=%s, value=%s", series, timestamp, value);
   }
 
   @Override
   public int hashCode() {
     return new HashCodeBuilder(137, 139)
-      .append(key)
+      .append(series)
       .append(timestamp)
       .append(value)
       .toHashCode();
@@ -109,7 +105,7 @@ public class MultiDataPoint implements Serializable {
 
     MultiDataPoint rhs = (MultiDataPoint)obj;
     return new EqualsBuilder()
-      .append(key, rhs.key)
+      .append(series, rhs.series)
       .append(timestamp, rhs.timestamp)
       .append(value, rhs.value)
       .isEquals();

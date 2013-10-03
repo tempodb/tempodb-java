@@ -508,15 +508,15 @@ public class Client {
    *  successful. If the request was partially successful, the result's {@link MultiStatus} can be inspected to determine
    *  what failed.
    *
-   *  @param data List of MultiDataPoint's to write
+   *  @param request A WriteRequest for the DataPoints to write.
    *  @return {@link Nothing}
    *
    *  @see MultiDataPoint
    *  @see MultiStatus
    *  @since 1.0.0
    */
-  public Result<Nothing> writeDataPoints(List<MultiDataPoint> data) {
-    checkNotNull(data);
+  public Result<Nothing> writeDataPoints(WriteRequest request) {
+    checkNotNull(request);
 
     URI uri = null;
     try {
@@ -530,15 +530,15 @@ public class Client {
     Result<Nothing> result = null;
     String body = null;
     try {
-      body = Json.dumps(data);
+      body = Json.dumps(request);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();
       result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
       return result;
     }
 
-    HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
-    result = execute(request, Nothing.class);
+    HttpRequest httpRequest = buildRequest(uri.toString(), HttpMethod.POST, body);
+    result = execute(httpRequest, Nothing.class);
     return result;
   }
 

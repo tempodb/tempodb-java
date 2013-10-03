@@ -131,7 +131,7 @@ public class ClientIT {
 
     // Delete datapoints
     Result<Nothing> result2 = client.deleteDataPoints(new Series("key1"), interval);
-    assertEquals(new Result(new Nothing(), 200, "OK"), result2);
+    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result2);
 
     // Read datapoints again
     List<DataPoint> expected2 = new ArrayList<DataPoint>();
@@ -165,29 +165,29 @@ public class ClientIT {
 
   @Test
   public void testWriteDataPoints() throws InterruptedException {
-    MultiDataPoint mdp1 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0);
-    MultiDataPoint mdp2 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0);
-    MultiDataPoint mdp3 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0);
-    MultiDataPoint mdp4 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 2, 0, 0, timezone), 8.0);
+    WriteRequest wr = new WriteRequest()
+      .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0))
+      .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0))
+      .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
+      .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 2, 0, 0, timezone), 8.0));
 
     Thread.sleep(2000);
 
-    List<MultiDataPoint> data = Arrays.asList(mdp1, mdp2, mdp3, mdp4);
-    Result<Nothing> result = client.writeDataPoints(data);
+    Result<Nothing> result = client.writeDataPoints(wr);
     assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result);
   }
 
   @Test
   public void testReadDataPoints() throws InterruptedException {
-    MultiDataPoint mdp1 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0);
-    MultiDataPoint mdp2 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0);
-    MultiDataPoint mdp3 = new MultiDataPoint("key1", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0);
-    MultiDataPoint mdp4 = new MultiDataPoint("key2", new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0);
+    WriteRequest wr = new WriteRequest()
+      .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0))
+      .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0))
+      .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
+      .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0));
 
     Thread.sleep(2000);
 
-    List<MultiDataPoint> data = Arrays.asList(mdp1, mdp2, mdp3, mdp4);
-    Result<Nothing> result1 = client.writeDataPoints(data);
+    Result<Nothing> result1 = client.writeDataPoints(wr);
     assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result1);
 
     Filter filter = new Filter();
