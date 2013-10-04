@@ -12,6 +12,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <integration-test.directory>src/integration-test</integration-test.directory>
+    <integration-test.testSourceDirectory>${integration-test.directory}/java</integration-test.testSourceDirectory>
+    <integration-test.docDirectory>${integration-test.directory}/resources</integration-test.docDirectory>
+    <integration-test.testOutputDirectory>${project.build.directory}/integrationtest-classes</integration-test.testOutputDirectory>
   </properties>
 
   <dependencies>
@@ -61,6 +66,40 @@
           <target>1.7</target>
           <compilerArgument>-Xlint:unchecked</compilerArgument>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>add-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${integration-test.testSourceDirectory}</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-test-resource</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${integration-test.docDirectory}</directory>
+                  <targetPath>${integration-test.testOutputDirectory}</targetPath>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
