@@ -13,6 +13,12 @@ public enum Fold {
   SUM,
 
   /**
+   *  Multiplication of DataPoints
+   *  @since 1.0.0
+   */
+  MULT,
+
+  /**
    *  Arithmetic mean of DataPoints (average)
    *  @since 1.0.0
    */
@@ -37,8 +43,26 @@ public enum Fold {
   COUNT,
 
   /**
+   *  Variance of DataPoints
+   *  @since 1.0.0
+   */
+  VARIANCE,
+
+  /**
    *  Standard deviation of DataPoints
    *  @since 1.0.0
    */
-  STDDEV
+  STDDEV,
+
+  /**
+   *  Range of DataPoints (max - min)
+   *  @since 1.0.0
+   */
+  RANGE,
+
+  /**
+   *  First DataPoint in interval (takes the left most DataPoint)
+   *  @since 1.0.0
+   */
+  FIRST
 }
