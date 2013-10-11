@@ -233,20 +233,20 @@ public class ClientIT {
   }
 
   @Test
-  public void testReplaceSeriesByKey() {
+  public void testUpdateSeries() {
     // Create a series
     HashSet<String> tags = new HashSet<String>();
-    tags.add("replace");
-    Series series = new Series("replace-series", "name", tags, new HashMap<String, String>());
+    tags.add("update");
+    Series series = new Series("update-series", "name", tags, new HashMap<String, String>());
     Result<Series> result1 = client.createSeries(series);
 
-    // Replace the series
-    series.getTags().add("replace2");
-    Result<Series> result2 = client.replaceSeries(series);
+    // Update the series
+    series.getTags().add("update2");
+    Result<Series> result2 = client.updateSeries(series);
     assertEquals(new Result<Series>(series, 200, "OK"), result2);
 
     // Get the series
-    Result<Series> result3 = client.getSeries("replace-series");
+    Result<Series> result3 = client.getSeries("update-series");
     Result<Series> expected = new Result<Series>(series, 200, "OK");
     assertEquals(expected, result3);
   }

@@ -429,15 +429,15 @@ public class Client {
   }
 
   /**
-   *  Replaces all of a Series metadata
+   *  Updates all of a Series metadata
    *
-   *  @param series The series to replace
+   *  @param series The series to update
    *  @return The updated Series
    *
    *  @see Series
    *  @since 1.0.0
    */
-  public Result<Series> replaceSeries(Series series) {
+  public Result<Series> updateSeries(Series series) {
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, series.getKey()));

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 
 
-public class ReplaceSeriesTest {
+public class UpdateSeriesTest {
 
   private static final String json = "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
   private static final String body = "{\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
@@ -32,7 +32,7 @@ public class ReplaceSeriesTest {
     HttpResponse response = Util.getResponse(200, json);
     Client client = Util.getClient(response);
 
-    Result<Series> result = client.replaceSeries(series);
+    Result<Series> result = client.updateSeries(series);
 
     assertEquals(series1, result.getValue());
   }
@@ -43,7 +43,7 @@ public class ReplaceSeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Series> result = client.replaceSeries(series);
+    Result<Series> result = client.updateSeries(series);
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("PUT", request.getRequestLine().getMethod());
@@ -55,7 +55,7 @@ public class ReplaceSeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Series> result = client.replaceSeries(series);
+    Result<Series> result = client.updateSeries(series);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
@@ -68,7 +68,7 @@ public class ReplaceSeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Series> result = client.replaceSeries(series);
+    Result<Series> result = client.updateSeries(series);
 
     ArgumentCaptor<HttpPut> argument = ArgumentCaptor.forClass(HttpPut.class);
     verify(mockClient).execute(any(HttpHost.class), argument.capture(), any(HttpContext.class));
