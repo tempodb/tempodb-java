@@ -22,7 +22,7 @@ public class GetSeriesByKeyTest {
     Client client = Util.getClient(response);
 
     Result<Series> expected = new Result<Series>(new Series("key1", "name1", new HashSet<String>(), new HashMap<String, String>()), 200, "OK");
-    Result<Series> result = client.getSeriesByKey("key1");
+    Result<Series> result = client.getSeries("key1");
     assertEquals(expected, result);
   }
 
@@ -32,7 +32,7 @@ public class GetSeriesByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Series> result = client.getSeriesByKey("key1");
+    Result<Series> result = client.getSeries("key1");
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("GET", request.getRequestLine().getMethod());
@@ -44,7 +44,7 @@ public class GetSeriesByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Series> result = client.getSeriesByKey("key1");
+    Result<Series> result = client.getSeries("key1");
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());

@@ -311,7 +311,7 @@ public class Client {
    *  @return The requested Series.
    *  @since 1.0.0
    */
-  public Result<Series> getSeriesByKey(String key) {
+  public Result<Series> getSeries(String key) {
     checkNotNull(key);
 
     URI uri = null;
@@ -338,7 +338,7 @@ public class Client {
    *  @see Filter
    *  @since 1.0.0
    */
-  public Cursor<Series> getSeriesByFilter(Filter filter) {
+  public Cursor<Series> getSeries(Filter filter) {
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));

@@ -81,7 +81,7 @@ public class ClientIT {
 
   static public void cleanup() {
     /* Delete all datapoints all series */
-    Cursor<Series> cursor = client.getSeriesByFilter(new Filter());
+    Cursor<Series> cursor = client.getSeries(new Filter());
     for(Series series : cursor) {
       Result<Nothing> result = client.deleteDataPoints(series, interval);
       assertEquals(State.SUCCESS, result.getState());
@@ -211,7 +211,7 @@ public class ClientIT {
     Result<Series> result1 = client.createSeries(series);
 
     // Get the series
-    Result<Series> result2 = client.getSeriesByKey("create-series");
+    Result<Series> result2 = client.getSeries("create-series");
     Result<Series> expected = new Result<Series>(series, 200, "OK");
     assertEquals(expected, result2);
   }
@@ -227,7 +227,7 @@ public class ClientIT {
     // Get the series by filter
     Filter filter = new Filter();
     filter.addTag("get-filter");
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> expected = Arrays.asList(series);
     assertEquals(expected, toList(cursor));
   }
@@ -246,7 +246,7 @@ public class ClientIT {
     assertEquals(new Result<Series>(series, 200, "OK"), result2);
 
     // Get the series
-    Result<Series> result3 = client.getSeriesByKey("replace-series");
+    Result<Series> result3 = client.getSeries("replace-series");
     Result<Series> expected = new Result<Series>(series, 200, "OK");
     assertEquals(expected, result3);
   }
@@ -264,7 +264,7 @@ public class ClientIT {
     assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result2);
 
     // Get the series
-    Result<Series> result3 = client.getSeriesByKey("delete-series");
+    Result<Series> result3 = client.getSeries("delete-series");
     Result<Series> expected = new Result<Series>(null, 403, "Forbidden");
     assertEquals(expected, result3);
   }
@@ -282,7 +282,7 @@ public class ClientIT {
     // Get the series by filter
     Filter filter = new Filter();
     filter.addTag("delete-filter");
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> expected1 = Arrays.asList(series1);
     assertEquals(expected1, toList(cursor));
 
@@ -291,7 +291,7 @@ public class ClientIT {
     assertEquals(new Result<DeleteSummary>(new DeleteSummary(1), 200, "OK"), result3);
 
     // Get the series by filter again
-    Cursor<Series> cursor2 = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor2 = client.getSeries(filter);
     List<Series> expected2 = Arrays.asList();
     assertEquals(expected2, toList(cursor2));
   }

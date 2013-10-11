@@ -48,7 +48,7 @@ public class GetSeriesByFilterTest {
 
     List<Series> expected = Arrays.asList(series1);
 
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
@@ -66,7 +66,7 @@ public class GetSeriesByFilterTest {
 
     List<Series> expected = Arrays.asList(series1, series2, series3);
 
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
@@ -80,7 +80,7 @@ public class GetSeriesByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
@@ -96,7 +96,7 @@ public class GetSeriesByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
@@ -120,7 +120,7 @@ public class GetSeriesByFilterTest {
     filter.addAttribute("key1", "value1");
     filter.addAttribute("key2", "value2");
 
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
     List<Series> output = new ArrayList<Series>();
     for(Series series : cursor) {
       output.add(series);
@@ -142,7 +142,7 @@ public class GetSeriesByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<Series> cursor = client.getSeriesByFilter(filter);
+    Cursor<Series> cursor = client.getSeries(filter);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();
