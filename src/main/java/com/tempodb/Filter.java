@@ -61,6 +61,34 @@ public class Filter {
   }
 
   /**
+   *  Adds a list of keys to the filter.
+   *
+   *  @param keys The keys to add.
+   *  @return This filter
+   *  @since 1.0.0
+   */
+  public synchronized Filter addKeys(String... keys) {
+    for(String key : keys) {
+      this.keys.add(key);
+    }
+    return this;
+  }
+
+  /**
+   *  Adds a set of keys to the filter.
+   *
+   *  @param keys The set of keys to add.
+   *  @return This filter
+   *  @since 1.0.0
+   */
+  public synchronized Filter addKeys(Set<String> keys) {
+    for(String key : keys) {
+      this.keys.add(key);
+    }
+    return this;
+  }
+
+  /**
    *  Adds a tag to the filter.
    *
    *  @param tag The tag to add.

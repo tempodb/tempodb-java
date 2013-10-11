@@ -57,6 +57,23 @@ public class FilterTest {
   }
 
   @Test
+  public void testAddKeys() {
+    Filter f1 = new Filter().addKey("key1").addKey("key2").addKey("key3");
+    Filter f2 = new Filter().addKey("key1").addKeys("key2", "key3");
+    assertEquals(f1, f2);
+  }
+
+  @Test
+  public void testAddKeysSet() {
+    Filter f1 = new Filter().addKey("key1").addKey("key2").addKey("key3");
+    HashSet<String> keys = new HashSet<String>();
+    keys.add("key2");
+    keys.add("key3");
+    Filter f2 = new Filter().addKey("key1").addKeys(keys);
+    assertEquals(f1, f2);
+  }
+
+  @Test
   public void testAddTags() {
     Filter f1 = new Filter().addTag("tag1").addTag("tag2").addTag("tag3");
     Filter f2 = new Filter().addTag("tag1").addTags("tag2", "tag3");
