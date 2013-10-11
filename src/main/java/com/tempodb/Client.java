@@ -72,7 +72,7 @@ import static com.tempodb.util.Preconditions.*;
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
  *    Rollup rollup = new Rollup(Period.hours(1), Fold.MEAN);
  *
- *    Cursor&lt;DataPoint&gt; datapoints = client.readDataPointsByKey("my-key", new Interval(start, end), rollup, DateTimeZone.UTC);
+ *    Cursor&lt;DataPoint&gt; datapoints = client.readDataPoints(new Series("my-key"), new Interval(start, end), rollup, DateTimeZone.UTC);
  *  </pre>
  *
  *  <p>The TempoDB Rest API supports http keep-alive, and the Client object is designed to be thread-safe. It is recommended
