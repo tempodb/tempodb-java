@@ -40,6 +40,21 @@ public class WriteRequest implements Iterable<MultiDataPoint> {
     return this;
   }
 
+  /**
+   *  Adds a list of DataPoints to the request for a Series.
+   *  @param series The Series to write to.
+   *  @param datapoints The list of DataPoints to write.
+   *  @return The updated request.
+   *  @since 1.0.0
+   */
+  public WriteRequest add(Series series, List<DataPoint> datapoints) {
+    for(DataPoint datapoint : datapoints) {
+      MultiDataPoint mdp = new MultiDataPoint(series, datapoint.getTimestamp(), datapoint.getValue());
+      data.add(mdp);
+    }
+    return this;
+  }
+
   @Override
   public Iterator<MultiDataPoint> iterator() {
     return data.iterator();

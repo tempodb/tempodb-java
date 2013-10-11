@@ -1,5 +1,7 @@
 package com.tempodb;
 
+import java.util.Arrays;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.*;
@@ -42,5 +44,12 @@ public class WriteRequestTest {
   public void testNotEquals_Null() {
     WriteRequest wr = new WriteRequest().add(series1, dp1);
     assertFalse(wr.equals(null));
+  }
+
+  @Test
+  public void testAddMultiple() {
+    WriteRequest wr1 = new WriteRequest().add(series1, Arrays.asList(dp2, dp3));
+    WriteRequest wr2 = new WriteRequest().add(series1, dp2).add(series1, dp3);
+    assertEquals(wr1, wr2);
   }
 }
