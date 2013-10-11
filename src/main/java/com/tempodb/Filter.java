@@ -52,26 +52,82 @@ public class Filter {
    *  Adds a key to the filter.
    *
    *  @param key The key to add.
+   *  @return This filter
    *  @since 1.0.0
    */
-  public synchronized void addKey(String key) { keys.add(key); }
+  public synchronized Filter addKey(String key) {
+    keys.add(key);
+    return this;
+  }
 
   /**
    *  Adds a tag to the filter.
    *
    *  @param tag The tag to add.
+   *  @return This filter
    *  @since 1.0.0
    */
-  public synchronized void addTag(String tag) { tags.add(tag); }
+  public synchronized Filter addTag(String tag) {
+    tags.add(tag);
+    return this;
+  }
+
+  /**
+   *  Adds a list of tags to the filter.
+   *
+   *  @param tags The tags to add.
+   *  @return This filter
+   *  @since 1.0.0
+   */
+  public synchronized Filter addTags(String... tags) {
+    for(String tag : tags) {
+      this.tags.add(tag);
+    }
+    return this;
+  }
+
+  /**
+   *  Adds a set of tags to the filter.
+   *
+   *  @param tags The set of tags to add.
+   *  @return This filter
+   *  @since 1.0.0
+   */
+  public synchronized Filter addTags(Set<String> tags) {
+    for(String tag : tags) {
+      this.tags.add(tag);
+    }
+    return this;
+  }
 
   /**
    *  Adds an attribute to the filter.
    *
    *  @param key The attribute key.
    *  @param value The attribute value.
+   *  @return This filter
    *  @since 1.0.0
    */
-  public synchronized void addAttribute(String key, String value) { attributes.put(key, value); }
+  public synchronized Filter addAttribute(String key, String value) {
+    attributes.put(key, value);
+    return this;
+  }
+
+  /**
+   *  Adds a map of attributes to the filter.
+   *
+   *  @param attributes The map of attributes to add.
+   *  @return This filter
+   *  @since 1.0.0
+   */
+  public synchronized Filter addAttributes(Map<String, String> attributes) {
+    for(Map.Entry<String, String> pair : attributes.entrySet()) {
+      String key = pair.getKey();
+      String value = pair.getValue();
+      this.attributes.put(key, value);
+    }
+    return this;
+  }
 
   @Override
   public String toString() {
