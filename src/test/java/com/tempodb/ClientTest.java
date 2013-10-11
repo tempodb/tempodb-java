@@ -18,13 +18,13 @@ public class ClientTest {
 
   @Test
   public void testConstructor() throws UnknownHostException {
-    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), 10, "http");
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), "http", 10);
     assertNotNull(client);
   }
 
   @Test
   public void testInvalidScheme() throws UnknownHostException {
     thrown.expect(IllegalArgumentException.class);
-    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), 10, "scheme");
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), "scheme", 10);
   }
 }

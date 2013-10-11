@@ -111,7 +111,7 @@ public class Client {
    *  @param address Api server address
    */
   public Client(Database database, Credentials credentials, InetAddress address) {
-    this(database, credentials, address, 443, "https");
+    this(database, credentials, address, "https", 443);
   }
 
   /**
@@ -120,16 +120,16 @@ public class Client {
    *  @param database Database to connect to
    *  @param credentials Api credentials
    *  @param address Api server address
-   *  @param port Port that the api server is listening on
    *  @param scheme Scheme for requests. "http" and "https" are supported.
+   *  @param port Port that the api server is listening on
    */
-  public Client(Database database, Credentials credentials, InetAddress address, int port, String scheme) {
+  public Client(Database database, Credentials credentials, InetAddress address, String scheme, int port) {
     checkArgument(scheme.equals("http") || scheme.equals("https"), "Scheme must be either \"http\" or \"https\".");
     this.database = checkNotNull(database, "Database cannot be null.");
     this.credentials = checkNotNull(credentials, "Credentials cannot be null.");
     this.address = checkNotNull(address, "Address cannot be null.");
-    this.port = checkNotNull(port, "Port cannot be null.");
     this.scheme = checkNotNull(scheme, "Scheme cannot be null.");
+    this.port = checkNotNull(port, "Port cannot be null.");
   }
 
   /**

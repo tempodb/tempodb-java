@@ -24,7 +24,7 @@ public class Util {
     try {
       address = InetAddress.getByName("example.com");
     } catch (UnknownHostException e) { }
-    Client client = new Client(new Database("id"), new Credentials("key", "secret"), address, 80, "http");
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), address, "http", 80);
     client.setHttpClient(httpClient);
     return client;
   }
