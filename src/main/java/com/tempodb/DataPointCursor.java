@@ -23,6 +23,7 @@ class DataPointCursor implements Cursor<DataPoint> {
 
     Iterator<DataPoint> iterator = null;
     if(result.getState() == State.SUCCESS) {
+      @SuppressWarnings("unchecked") // This cast is always ok
       SegmentIterator<Segment<DataPoint>> segments = new SegmentIterator(client, result.getValue(), DataPointSegment.class);
       iterator = new SegmentInnerIterator<DataPoint>(segments);
     } else {

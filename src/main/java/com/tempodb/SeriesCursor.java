@@ -23,6 +23,7 @@ class SeriesCursor implements Cursor<Series> {
 
     Iterator<Series> iterator = null;
     if(result.getState() == State.SUCCESS) {
+      @SuppressWarnings("unchecked") // This cast is always ok
       SegmentIterator<Segment<Series>> segments = new SegmentIterator(client, result.getValue(), SeriesSegment.class);
       iterator = new SegmentInnerIterator<Series>(segments);
     } else {
