@@ -79,7 +79,7 @@ public class ReadDataPointsBySeriesTest {
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -97,7 +97,7 @@ public class ReadDataPointsBySeriesTest {
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -119,7 +119,7 @@ public class ReadDataPointsBySeriesTest {
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -133,7 +133,7 @@ public class ReadDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -149,7 +149,7 @@ public class ReadDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -166,7 +166,7 @@ public class ReadDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -187,7 +187,7 @@ public class ReadDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -209,7 +209,7 @@ public class ReadDataPointsBySeriesTest {
     HttpResponse response = Util.getResponse(403, "You are forbidden");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();

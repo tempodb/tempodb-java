@@ -82,7 +82,7 @@ public class ReadDataPointsByFilterTest {
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45));
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, new Interval(start, end), aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, new Interval(start, end), zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -102,7 +102,7 @@ public class ReadDataPointsByFilterTest {
 
     List<DataPoint> expected = Arrays.asList(new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, new Interval(start, end), aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, new Interval(start, end), zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -126,7 +126,7 @@ public class ReadDataPointsByFilterTest {
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), 23.45),
                                              new DataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), 34.56));
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, new Interval(start, end), aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, new Interval(start, end), zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -143,7 +143,7 @@ public class ReadDataPointsByFilterTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -162,7 +162,7 @@ public class ReadDataPointsByFilterTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -182,7 +182,7 @@ public class ReadDataPointsByFilterTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -208,7 +208,7 @@ public class ReadDataPointsByFilterTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation, rollup);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -240,7 +240,7 @@ public class ReadDataPointsByFilterTest {
     filter.addAttribute("key1", "value1");
     filter.addAttribute("key2", "value2");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, null, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -269,7 +269,7 @@ public class ReadDataPointsByFilterTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, rollup, zone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();

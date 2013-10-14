@@ -121,7 +121,7 @@ public class ClientIT {
 
     // Read datapoints
     List<DataPoint> expected1 = Arrays.asList(dp);
-    Cursor<DataPoint> cursor1 = client.readDataPoints(new Series("key1"), interval, null, timezone);
+    Cursor<DataPoint> cursor1 = client.readDataPoints(new Series("key1"), interval, timezone);
     assertEquals(expected1, toList(cursor1));
 
     // Delete datapoints
@@ -130,7 +130,7 @@ public class ClientIT {
 
     // Read datapoints again
     List<DataPoint> expected2 = new ArrayList<DataPoint>();
-    Cursor<DataPoint> cursor2 = client.readDataPoints(new Series("key1"), interval, null, timezone);
+    Cursor<DataPoint> cursor2 = client.readDataPoints(new Series("key1"), interval, timezone);
     assertEquals(expected2, toList(cursor2));
   }
 
@@ -154,7 +154,7 @@ public class ClientIT {
     DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
 
     List<DataPoint> expected = Arrays.asList(dp1, dp2);
-    Cursor<DataPoint> cursor = client.readDataPoints(new Series("key1"), new Interval(start, end), null, timezone);
+    Cursor<DataPoint> cursor = client.readDataPoints(new Series("key1"), new Interval(start, end), timezone);
     assertEquals(expected, toList(cursor));
   }
 
@@ -189,7 +189,7 @@ public class ClientIT {
     filter.addKey("key1");
     filter.addKey("key2");
     Aggregation aggregation = new Aggregation(Fold.SUM);
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, aggregation, null, timezone);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, timezone, aggregation);
 
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 11.0);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 15.0);

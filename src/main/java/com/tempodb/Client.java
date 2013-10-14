@@ -73,7 +73,7 @@ import static com.tempodb.util.Preconditions.*;
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
  *    Rollup rollup = new Rollup(Period.hours(1), Fold.MEAN);
  *
- *    Cursor&lt;DataPoint&gt; datapoints = client.readDataPoints(new Series("my-key"), new Interval(start, end), rollup, DateTimeZone.UTC);
+ *    Cursor&lt;DataPoint&gt; datapoints = client.readDataPoints(new Series("my-key"), new Interval(start, end), DateTimeZone.UTC, rollup);
  *  </pre>
  *
  *  <p>The TempoDB Rest API supports http keep-alive, and the Client object is designed to be thread-safe. It is recommended
@@ -333,17 +333,63 @@ public class Client {
 
   /**
    *  Returns a cursor of datapoints specified by series.
+   *  <p>The system default timezone is used for the returned DateTimes.
    *
    *  @param series The series
    *  @param interval An interval of time for the query (start/end datetimes)
-   *  @param rollup The rollup for the read query. This can be null.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Series series, Interval interval) {
+    return readDataPoints(series, interval, DateTimeZone.getDefault(), null);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by series.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
    *  @param timezone The time zone for the returned datapoints.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Cursor
    *  @since 1.0.0
    */
-  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, Rollup rollup, DateTimeZone timezone) {
+  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, DateTimeZone timezone) {
+    return readDataPoints(series, interval, timezone, null);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by series.
+   *  <p>The system default timezone is used for the returned DateTimes.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, Rollup rollup) {
+    return readDataPoints(series, interval, DateTimeZone.getDefault(), rollup);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by series.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param timezone The time zone for the returned datapoints.
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, DateTimeZone timezone, Rollup rollup) {
     checkNotNull(series);
     checkNotNull(interval);
     checkNotNull(timezone);
@@ -367,13 +413,33 @@ public class Client {
   /**
    *  Returns a cursor of datapoints specified by a series filter.
    *
-   *  This endpoint allows one to request multiple series and apply an aggregation function.
+   *  <p>This endpoint allows one to request multiple series and apply an aggregation function.
+   *  The system default timezone is used for the returned DateTimes.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param aggregation The aggregation for the read query. This is required.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Aggregation
+   *  @see Cursor
+   *  @see Filter
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, Aggregation aggregation) {
+    return readDataPoints(filter, interval, DateTimeZone.getDefault(), aggregation, null);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by a series filter.
+   *
+   *  <p>This endpoint allows one to request multiple series and apply an aggregation function.
+   *  The system default timezone is used for the returned DateTimes.
    *
    *  @param filter The series filter
    *  @param interval An interval of time for the query (start/end datetimes)
    *  @param aggregation The aggregation for the read query. This is required.
    *  @param rollup The rollup for the read query. This can be null.
-   *  @param timezone The time zone for the returned datapoints.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Aggregation
@@ -382,7 +448,49 @@ public class Client {
    *  @see Rollup
    *  @since 1.0.0
    */
-  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup, DateTimeZone timezone) {
+  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup) {
+    return readDataPoints(filter, interval, DateTimeZone.getDefault(), aggregation, rollup);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by a series filter.
+   *
+   *  This endpoint allows one to request multiple series and apply an aggregation function.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param timezone The time zone for the returned datapoints.
+   *  @param aggregation The aggregation for the read query. This is required.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Aggregation
+   *  @see Cursor
+   *  @see Filter
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Aggregation aggregation) {
+    return readDataPoints(filter, interval, timezone, aggregation, null);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by a series filter.
+   *
+   *  This endpoint allows one to request multiple series and apply an aggregation function.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param timezone The time zone for the returned datapoints.
+   *  @param aggregation The aggregation for the read query. This is required.
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Aggregation
+   *  @see Cursor
+   *  @see Filter
+   *  @see Rollup
+   *  @since 1.0.0
+   */
+  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Aggregation aggregation, Rollup rollup) {
     checkNotNull(filter);
     checkNotNull(interval);
     checkNotNull(aggregation);
