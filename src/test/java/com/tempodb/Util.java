@@ -1,8 +1,7 @@
 package com.tempodb;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
@@ -20,11 +19,8 @@ import org.mockito.ArgumentCaptor;
 public class Util {
 
   public static Client getClient(HttpClient httpClient) {
-    InetAddress address = null;
-    try {
-      address = InetAddress.getByName("example.com");
-    } catch (UnknownHostException e) { }
-    Client client = new Client(new Database("id"), new Credentials("key", "secret"), address, "http", 80);
+    InetSocketAddress host = new InetSocketAddress("example.com", 80);
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), host, "http");
     client.setHttpClient(httpClient);
     return client;
   }

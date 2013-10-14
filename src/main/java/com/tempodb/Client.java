@@ -1,7 +1,7 @@
 package com.tempodb;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -40,7 +40,7 @@ import static com.tempodb.util.Preconditions.*;
  *
  *  <p>A client object holds the session information required to authenticate and connect to the Rest api. An api key and secret
  *  are required. These can be obtained by signing up at <a href="http://tempo-db.com">http://tempo-db.com</a>. The client
- *  also lets you specify a different hostname (for instance, if you are on a dedicated cluster), the port, and whether to
+ *  also lets you specify a different hostname (for instance, if you are on a dedicated cluster) and port, and whether to
  *  use SSL encryption on the connection.
  *
  *  <p>Using the client, you can:
@@ -58,7 +58,7 @@ import static com.tempodb.util.Preconditions.*;
  *  which provides a lazily loaded iterable of DataPoints.
  *
  *  <p><pre>
- *    import java.net.InetAddress;
+ *    import java.net.InetSocketAddress;
  *    import org.joda.time.DateTime;
  *    import org.joda.time.DateTimeZone;
  *    import org.joda.time.Interval;
@@ -66,7 +66,8 @@ import static com.tempodb.util.Preconditions.*;
  *
  *    Database database = new Database("database-id");
  *    Credentials credentials = new Credentials("api-key", "api-secret");
- *    Client client = new Client(database, credentials, InetAddress.getByName("api.tempo-db.com"), 443, "https");
+ *    InetSocketAddress host = new InetSocketAddress("api.tempo-db.com", 443);
+ *    Client client = new Client(database, credentials, host, "https");
  *
  *    DateTime start = new DateTime(2012, 1, 1, 0, 0, 0, 0);
  *    DateTime end = new DateTime(2012, 1, 2, 0, 0, 0, 0);
@@ -83,8 +84,7 @@ public class Client {
 
   private final Database database;
   private final Credentials credentials;
-  private final InetAddress address;
-  private final int port;
+  private final InetSocketAddress host;
   private final String scheme;
 
   private HttpClient client = null;
@@ -102,34 +102,19 @@ public class Client {
   private enum HttpMethod { GET, POST, PUT, DELETE }
 
   /**
-   *  Default connection constructor for a Client object.
-   *
-   *  Defaults port and scheme to 443 and "https" respectively.
-   *
-   *  @param database Database to connect to
-   *  @param credentials Api credentials
-   *  @param address Api server address
-   */
-  public Client(Database database, Credentials credentials, InetAddress address) {
-    this(database, credentials, address, "https", 443);
-  }
-
-  /**
    *  Base constructor for a Client object.
    *
    *  @param database Database to connect to
    *  @param credentials Api credentials
-   *  @param address Api server address
+   *  @param host Api server host address
    *  @param scheme Scheme for requests. "http" and "https" are supported.
-   *  @param port Port that the api server is listening on
    */
-  public Client(Database database, Credentials credentials, InetAddress address, String scheme, int port) {
+  public Client(Database database, Credentials credentials, InetSocketAddress host, String scheme) {
     checkArgument(scheme.equals("http") || scheme.equals("https"), "Scheme must be either \"http\" or \"https\".");
     this.database = checkNotNull(database, "Database cannot be null.");
     this.credentials = checkNotNull(credentials, "Credentials cannot be null.");
-    this.address = checkNotNull(address, "Address cannot be null.");
+    this.host = checkNotNull(host, "Host cannot be null.");
     this.scheme = checkNotNull(scheme, "Scheme cannot be null.");
-    this.port = checkNotNull(port, "Port cannot be null.");
   }
 
   /**
@@ -147,18 +132,11 @@ public class Client {
   public Credentials getCredentials() { return credentials; }
 
   /**
-   *  Returns client's api server address.
-   *  @return Api server address.
+   *  Returns client's api server host.
+   *  @return Api server host address.
    *  @since 1.0.0
    */
-  public InetAddress getAddress() { return address; }
-
-  /**
-   *  Returns client's api server port.
-   *  @return Api server port.
-   *  @since 1.0.0
-   */
-  public int getPort() { return port; }
+  public InetSocketAddress getHost() { return host; }
 
   /**
    *  Returns client's api server scheme.
@@ -650,7 +628,7 @@ public class Client {
 
       DefaultHttpClient defaultClient = new DefaultHttpClient(new PoolingClientConnectionManager(), httpParams);
       defaultClient.getCredentialsProvider().setCredentials(
-          new AuthScope(address.getHostName(), port),
+          new AuthScope(getTarget()),
           new UsernamePasswordCredentials(credentials.getKey(), credentials.getSecret()));
 
       // Add gzip header to all requests
@@ -727,7 +705,7 @@ public class Client {
 
   private HttpHost getTarget() {
     if(target == null) {
-      target = new HttpHost(address.getHostName(), port, scheme);
+      target = new HttpHost(host.getHostName(), host.getPort(), scheme);
     }
     return target;
   }

@@ -2,8 +2,7 @@ package com.tempodb;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class ClientIT {
 
     client = getClient(credentials);
     invalidClient = new Client(client.getDatabase(), new Credentials("key", "secret"),
-                               client.getAddress(), client.getScheme(), client.getPort());
+                               client.getHost(), client.getScheme());
   }
 
   static Client getClient(File propertiesFile) {
@@ -66,12 +65,8 @@ public class ClientIT {
 
     Database database = new Database(id);
     Credentials credentials = new Credentials(key, secret);
-    InetAddress address = null;
-    try {
-      address = InetAddress.getByName(hostname);
-    } catch (UnknownHostException e) { }
-
-    return new Client(database, credentials, address, scheme, port);
+    InetSocketAddress host = new InetSocketAddress(hostname, port);
+    return new Client(database, credentials, host, scheme);
   }
 
   @BeforeClass

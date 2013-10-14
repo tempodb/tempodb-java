@@ -1,8 +1,7 @@
 package com.tempodb;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 
 import org.apache.http.*;
 import org.apache.http.message.BasicHttpRequest;
@@ -17,14 +16,14 @@ public class ClientTest {
   public ExpectedException thrown = ExpectedException.none();
 
   @Test
-  public void testConstructor() throws UnknownHostException {
-    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), "http", 10);
+  public void testConstructor() {
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), new InetSocketAddress("example.com", 10), "http");
     assertNotNull(client);
   }
 
   @Test
-  public void testInvalidScheme() throws UnknownHostException {
+  public void testInvalidScheme() {
     thrown.expect(IllegalArgumentException.class);
-    Client client = new Client(new Database("id"), new Credentials("key", "secret"), InetAddress.getByName("example.com"), "scheme", 10);
+    Client client = new Client(new Database("id"), new Credentials("key", "secret"), new InetSocketAddress("example.com", 10), "scheme");
   }
 }
