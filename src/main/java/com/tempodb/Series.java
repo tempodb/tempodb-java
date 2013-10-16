@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -24,7 +23,6 @@ import static com.tempodb.util.Preconditions.*;
  *
  *  @since 1.0.0
  */
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class Series implements Serializable {
 
   private String key;

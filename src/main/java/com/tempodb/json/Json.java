@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -28,6 +29,7 @@ public class Json {
       _mapper.registerModule(new MultiDataPointModule());
       _mapper.registerModule(new WriteRequestModule());
       _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      _mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       mapper = _mapper;
     }
     return mapper;
