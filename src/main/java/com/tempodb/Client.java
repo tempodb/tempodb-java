@@ -396,7 +396,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/segment/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/segment/", API_VERSION, series.getKey()));
       addIntervalToURI(builder, interval);
       addRollupToURI(builder, rollup);
       addTimeZoneToURI(builder, timezone);
@@ -498,7 +498,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder(String.format("/%s/data/segment/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/segment/", API_VERSION));
       addFilterToURI(builder, filter);
       addIntervalToURI(builder, interval);
       addAggregationToURI(builder, aggregation);

@@ -108,7 +108,7 @@ public class ReadDataPointsBySeriesTest {
   @Test
   public void smokeTestMultipleClientCalls() throws IOException {
     HttpResponse response1 = Util.getResponse(200, json1);
-    response1.addHeader("Link", "</v1/series/key/key1/data/segment/?start=2012-03-27T00:02:00.000-05:00&end=2012-03-28>; rel=\"next\"");
+    response1.addHeader("Link", "</v1/series/key/key1/segment/?start=2012-03-27T00:02:00.000-05:00&end=2012-03-28>; rel=\"next\"");
     HttpResponse response2 = Util.getResponse(200, json2);
     HttpClient mockClient = Util.getMockHttpClient(response1, response2);
     Client client = Util.getClient(mockClient);
@@ -157,7 +157,7 @@ public class ReadDataPointsBySeriesTest {
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
-    assertEquals("/v1/series/key/key1/data/segment/", uri.getPath());
+    assertEquals("/v1/series/key/key1/segment/", uri.getPath());
   }
 
   @Test
