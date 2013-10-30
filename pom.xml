@@ -9,6 +9,10 @@
 
   <name>tempodb-java</name>
   <url>http://maven.apache.org</url>
+  <scm>
+    <connection>scm:git:file://${basedir}</connection>
+    <developerConnection>scm:git:file://${basedir}</developerConnection>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
