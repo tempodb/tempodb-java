@@ -27,6 +27,8 @@ public class ClientIT {
   private static final DateTime end = new DateTime(3000, 1, 1, 0, 0, 0, 0, timezone);
   private static final Interval interval = new Interval(start, end);
 
+  private static final int SLEEP = 5000;
+
   static {
     File credentials = new File("integration-credentials.properties");
     if(!credentials.exists()) {
@@ -117,7 +119,7 @@ public class ClientIT {
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result1 = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
     assertEquals(State.SUCCESS, result1.getState());
-    Thread.sleep(2000);
+    Thread.sleep(SLEEP);
 
     // Read datapoints
     List<DataPoint> expected1 = Arrays.asList(dp);
@@ -148,7 +150,7 @@ public class ClientIT {
 
     Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
-    Thread.sleep(2000);
+    Thread.sleep(SLEEP);
 
     DateTime start = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
     DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
@@ -166,7 +168,7 @@ public class ClientIT {
       .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
       .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 2, 0, 0, timezone), 8.0));
 
-    Thread.sleep(2000);
+    Thread.sleep(SLEEP);
 
     Result<Nothing> result = client.writeDataPoints(wr);
     assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result);
@@ -180,10 +182,10 @@ public class ClientIT {
       .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
       .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0));
 
-    Thread.sleep(2000);
-
     Result<Nothing> result1 = client.writeDataPoints(wr);
     assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result1);
+
+    Thread.sleep(SLEEP);
 
     Filter filter = new Filter();
     filter.addKey("key1");
