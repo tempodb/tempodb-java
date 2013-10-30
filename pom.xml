@@ -24,6 +24,19 @@
     <integration-test.testOutputDirectory>${project.build.directory}/integrationtest-classes</integration-test.testOutputDirectory>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>tempodb-release</id>
+      <name>maven.tempo-db.com-releases</name>
+      <url>http://maven.tempo-db.com/artifactory/libs-release-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>tempodb-snapshot</id>
+      <name>maven.tempo-db.com-snapshots</name>
+      <url>http://maven.tempo-db.com/artifactory/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
