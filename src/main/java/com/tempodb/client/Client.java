@@ -739,18 +739,17 @@ public class Client {
         return _targetHost;
     }
 
-    private synchronized BasicHttpContext getContext() {
-        if (_context == null) {
-            HttpHost targetHost = getTargetHost();
+    private BasicHttpContext getContext() {
+        HttpHost targetHost = getTargetHost();
 
-            AuthCache authCache = new BasicAuthCache();
-            BasicScheme basicAuth = new BasicScheme();
-            authCache.put(targetHost, basicAuth);
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(targetHost, basicAuth);
 
-            _context = new BasicHttpContext();
-            _context.setAttribute(ClientContext.AUTH_CACHE, authCache);
-        }
-        return _context;
+        BasicHttpContext localcontext = new BasicHttpContext();
+        localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+
+        return localcontext;
     }
 
     private synchronized ObjectMapper getMapper() {
