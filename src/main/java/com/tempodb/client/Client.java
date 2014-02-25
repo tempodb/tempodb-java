@@ -81,7 +81,6 @@ public class Client {
 
     private DefaultHttpClient _client = null;
     private HttpHost _targetHost = null;
-    private BasicHttpContext _context = null;
     private ObjectMapper _mapper = null;
     private String _version = null;
     private final DateTimeFormatter iso8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
