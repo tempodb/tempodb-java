@@ -4,7 +4,7 @@ Releases are available on our maven server. Add the following dependency to your
     <dependency>
       <groupId>com.tempodb</groupId>
       <artifactId>tempodb-java</artifactId>
-      <version>0.7.0</version>
+      <version>0.7.1</version>
     </dependency>
 
     <repositories>
