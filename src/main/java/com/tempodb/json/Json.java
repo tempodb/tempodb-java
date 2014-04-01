@@ -26,7 +26,7 @@ public class Json {
       _mapper.registerModule(new FoldModule());
       _mapper.registerModule(new DataPointSegmentModule());
       _mapper.registerModule(new SeriesSegmentModule());
-      _mapper.registerModule(new MultiDataPointModule());
+      _mapper.registerModule(new WritableDataPointModule());
       _mapper.registerModule(new WriteRequestModule());
       _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       _mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

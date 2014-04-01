@@ -9,19 +9,19 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 
-import com.tempodb.MultiDataPoint;
+import com.tempodb.WritableDataPoint;
 
 
-public class MultiDataPointModule extends SimpleModule {
-  public MultiDataPointModule() {
-    addSerializer(MultiDataPoint.class, new MultiDataPointSerializer());
+public class WritableDataPointModule extends SimpleModule {
+  public WritableDataPointModule() {
+    addSerializer(WritableDataPoint.class, new WritableDataPointSerializer());
   }
 
-  private static class MultiDataPointSerializer extends StdScalarSerializer<MultiDataPoint> {
-    public MultiDataPointSerializer() { super(MultiDataPoint.class); }
+  private static class WritableDataPointSerializer extends StdScalarSerializer<WritableDataPoint> {
+    public WritableDataPointSerializer() { super(WritableDataPoint.class); }
 
     @Override
-    public void serialize(MultiDataPoint value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+    public void serialize(WritableDataPoint value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
       jgen.writeStartObject();
       jgen.writeStringField("key", value.getSeries().getKey());
       jgen.writeObjectField("t", value.getTimestamp());

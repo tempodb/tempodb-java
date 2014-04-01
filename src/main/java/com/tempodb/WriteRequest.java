@@ -15,16 +15,16 @@ import static com.tempodb.util.Preconditions.*;
  *  <p>The request is created and datapoints are added for a Series.
  *  @since 1.0.0
  */
-public class WriteRequest implements Iterable<MultiDataPoint> {
+public class WriteRequest implements Iterable<WritableDataPoint> {
 
-  private final List<MultiDataPoint> data;
+  private final List<WritableDataPoint> data;
 
   /**
    *  Base constructor
    *  @since 1.0.0
    */
   public WriteRequest() {
-    this.data = new ArrayList<MultiDataPoint>();
+    this.data = new ArrayList<WritableDataPoint>();
   }
 
   /**
@@ -35,7 +35,7 @@ public class WriteRequest implements Iterable<MultiDataPoint> {
    *  @since 1.0.0
    */
   public WriteRequest add(Series series, DataPoint datapoint) {
-    MultiDataPoint mdp = new MultiDataPoint(series, datapoint.getTimestamp(), datapoint.getValue());
+    WritableDataPoint mdp = new WritableDataPoint(series, datapoint.getTimestamp(), datapoint.getValue());
     data.add(mdp);
     return this;
   }
@@ -49,14 +49,14 @@ public class WriteRequest implements Iterable<MultiDataPoint> {
    */
   public WriteRequest add(Series series, List<DataPoint> datapoints) {
     for(DataPoint datapoint : datapoints) {
-      MultiDataPoint mdp = new MultiDataPoint(series, datapoint.getTimestamp(), datapoint.getValue());
+      WritableDataPoint mdp = new WritableDataPoint(series, datapoint.getTimestamp(), datapoint.getValue());
       data.add(mdp);
     }
     return this;
   }
 
   @Override
-  public Iterator<MultiDataPoint> iterator() {
+  public Iterator<WritableDataPoint> iterator() {
     return data.iterator();
   }
 
