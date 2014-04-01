@@ -515,6 +515,105 @@ public class Client {
   }
 
   /**
+   *  Returns a cursor of multi-datapoints specified by a series filter.
+   *
+   *  <p>This endpoint allows one to request datapoints for multiple series in one call.
+   *  The system default timezone is used for the returned DateTimes.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @return A Cursor of MultiDataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see Filter
+   *  @see MultiDataPoint
+   *  @since 1.1.0
+   */
+  public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval) {
+    return readMultiDataPoints(filter, interval, DateTimeZone.getDefault(), null);
+  }
+
+  /**
+   *  Returns a cursor of multi-datapoints specified by a series filter.
+   *
+   *  <p>This endpoint allows one to request datapoints for multiple series in one call.
+   *  The system default timezone is used for the returned DateTimes.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @return A Cursor of MultiDataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see Filter
+   *  @see MultiDataPoint
+   *  @see Rollup
+   *  @since 1.1.0
+   */
+  public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, Rollup rollup) {
+    return readMultiDataPoints(filter, interval, DateTimeZone.getDefault(), rollup);
+  }
+
+  /**
+   *  Returns a cursor of multi-datapoints specified by a series filter.
+   *
+   *  This endpoint allows one to request datapoints for multiple series in one call.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of MultiDataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see Filter
+   *  @see MultiDataPoint
+   *  @see Rollup
+   *  @since 1.1.0
+   */
+  public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, DateTimeZone timezone) {
+    return readMultiDataPoints(filter, interval, timezone, null);
+  }
+
+  /**
+   *  Returns a cursor of multi-datapoints specified by a series filter.
+   *
+   *  This endpoint allows one to request datapoints for multiple series in one call.
+   *
+   *  @param filter The series filter
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param timezone The time zone for the returned datapoints.
+   *  @param rollup The rollup for the read query. This can be null.
+   *  @return A Cursor of MultiDataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see Filter
+   *  @see MultiDataPoint
+   *  @see Rollup
+   *  @since 1.1.0
+   */
+  public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Rollup rollup) {
+    checkNotNull(filter);
+    checkNotNull(interval);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/multi/", API_VERSION));
+      addFilterToURI(builder, filter);
+      addIntervalToURI(builder, interval);
+      addRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: filter: %s, interval: %s, rollup: %s, timezone: %s", filter, interval, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<MultiDataPoint> cursor = new MultiDataPointCursor(uri, this);
+    return cursor;
+  }
+
+  /**
    *  Updates all of a Series metadata
    *
    *  @param series The series to update
