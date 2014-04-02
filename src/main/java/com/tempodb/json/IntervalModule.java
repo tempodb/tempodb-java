@@ -2,6 +2,7 @@ package com.tempodb.json;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 
 
@@ -30,30 +32,33 @@ public class IntervalModule extends SimpleModule {
 
     @Override
     public Interval deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
-      TimeZone timezone = context.getTimeZone();
-      JsonNode root = parser.readValueAsTree();
-      JsonNode startNode = root.get("start");
-      JsonNode endNode = root.get("end");
+      DateTimeZone timezone = DateTimeZone.forTimeZone(context.getTimeZone());
+      Map<String, String> obj = parser.readValueAs(new TypeReference<Map<String, String>>() {});
 
-      if(startNode == null) {
+      String startStr = obj.get("start");
+      String endStr = obj.get("end");
+
+      if(startStr == null) {
         throw context.mappingException("Missing 'start' field in Interval.");
       }
-      if(endNode == null) {
+      if(endStr == null) {
         throw context.mappingException("Missing 'end' field in Interval.");
       }
 
-      DateTime start = Json.reader()
-                           .with(timezone)
-                           .withType(DateTime.class)
-                           .readValue(startNode);
-
-      DateTime end = Json.reader()
-                         .with(timezone)
-                         .withType(DateTime.class)
-                         .readValue(endNode);
-
+      DateTime start = datetimeFromString(startStr, timezone, context);
+      DateTime end = datetimeFromString(endStr, timezone, context);
       return new Interval(start, end);
     }
+  }
+
+  private static DateTime datetimeFromString(String str, DateTimeZone dtz, DeserializationContext ctxt) {
+    if (str.length() == 0) { // [JACKSON-360]
+      return null;
+    }
+    if (ctxt.isEnabled(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE))
+      return new DateTime(str, dtz);
+    else
+      return DateTime.parse(str);
   }
 
   @Override

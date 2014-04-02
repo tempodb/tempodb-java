@@ -33,7 +33,7 @@ public class DataPointFoundSegmentTest {
       "}";
 
     DateTimeZone zone = DateTimeZone.UTC;
-    DataPointFoundSegment segment = Json.loads(json, DataPointFoundSegment.class, zone);
+    DataPointFoundSegment segment = Json.loads(json, DataPointFoundSegment.class);
 
     Interval interval = new Interval(new DateTime(2012, 3, 28, 0, 0, 0, 0, zone), new DateTime(2012, 3, 29, 0, 0, 0, 0, zone));
     DataPoint datapoint = new DataPoint(new DateTime(2012, 3, 28, 23, 59, 0, 0, zone), 2879.0);
@@ -57,7 +57,7 @@ public class DataPointFoundSegmentTest {
       "}";
 
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
-    DataPointFoundSegment segment = Json.loads(json, DataPointFoundSegment.class, zone);
+    DataPointFoundSegment segment = Json.loads(json, DataPointFoundSegment.class);
 
     Interval interval = new Interval(new DateTime(2012, 3, 27, 19, 0, 0, 0, zone), new DateTime(2012, 3, 28, 19, 0, 0, 0, zone));
     DataPoint datapoint = new DataPoint(new DateTime(2012, 3, 28, 23, 59, 0, 0, zone), 2879.0);
@@ -78,7 +78,7 @@ public class DataPointFoundSegmentTest {
       "}";
 
     DateTimeZone zone = DateTimeZone.UTC;
-    DataPointFoundSegment segment = Json.loads(json, DataPointFoundSegment.class, zone);
+    DataPointFoundSegment segment = Json.loads(json, DataPointFoundSegment.class);
 
     Interval interval = new Interval(new DateTime(2012, 3, 28, 0, 0, 0, 0, zone), new DateTime(2012, 3, 29, 0, 0, 0, 0, zone));
     DataPoint datapoint = new DataPoint(new DateTime(2012, 3, 28, 23, 59, 0, 0, zone), 2879.0);
