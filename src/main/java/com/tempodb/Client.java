@@ -283,6 +283,56 @@ public class Client {
   }
 
   /**
+   *  Returns a cursor of intervals/datapoints matching a predicate specified by series.
+   *  <p>The system default timezone is used for the returned DateTimes.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param predicate The predicate for the query.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.1.0
+   */
+  public Cursor<DataPointFound> findDataPoints(Series series, Interval interval, Predicate predicate) {
+    return findDataPoints(series, interval, predicate, DateTimeZone.getDefault());
+  }
+
+  /**
+   *  Returns a cursor of intervals/datapoints matching a predicate specified by series.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param predicate The predicate for the query.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @since 1.1.0
+   */
+  public Cursor<DataPointFound> findDataPoints(Series series, Interval interval, Predicate predicate, DateTimeZone timezone) {
+    checkNotNull(series);
+    checkNotNull(interval);
+    checkNotNull(predicate);
+    checkNotNull(timezone);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/find/", API_VERSION, series.getKey()));
+      addIntervalToURI(builder, interval);
+      addPredicateToURI(builder, predicate);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s, predicate: %s, timezone: %s", series.getKey(), interval, predicate, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<DataPointFound> cursor = new DataPointFoundCursor(uri, this);
+    return cursor;
+  }
+
+  /**
    *  Returns a Series referenced by key.
    *
    *  @param key The Series key to retrieve
@@ -753,6 +803,13 @@ public class Client {
   private void addAggregationToURI(URIBuilder builder, Aggregation aggregation) {
     if(aggregation != null) {
       builder.addParameter("aggregation.fold", aggregation.getFold().toString().toLowerCase());
+    }
+  }
+
+  private void addPredicateToURI(URIBuilder builder, Predicate predicate) {
+    if(predicate != null) {
+      builder.addParameter("predicate.period", predicate.getPeriod().toString());
+      builder.addParameter("predicate.function", predicate.getFunction().toLowerCase());
     }
   }
 
