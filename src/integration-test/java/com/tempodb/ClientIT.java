@@ -13,6 +13,7 @@ import java.util.Properties;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -141,6 +142,26 @@ public class ClientIT {
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
     Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
     assertEquals(State.SUCCESS, result.getState());
+  }
+
+  @Test
+  public void testFindDataPointBySeries() throws InterruptedException {
+    DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
+    DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
+
+    Result<Nothing> result = client.writeDataPoints(new Series("key-find"), Arrays.asList(dp1, dp2));
+    assertEquals(State.SUCCESS, result.getState());
+    Thread.sleep(SLEEP);
+
+    DateTime start = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
+    DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
+    Interval interval = new Interval(start, end);
+    Predicate predicate = new Predicate(Period.days(1), "max");
+    DataPointFound dpf1 = new DataPointFound(interval, dp2);
+
+    List<DataPointFound> expected = Arrays.asList(dpf1);
+    Cursor<DataPointFound> cursor = client.findDataPoints(new Series("key-find"), new Interval(start, end), predicate, timezone);
+    assertEquals(expected, toList(cursor));
   }
 
   @Test
