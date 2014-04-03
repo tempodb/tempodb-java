@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.joda.time.DateTime;
@@ -178,6 +179,38 @@ public class ClientIT {
 
     List<DataPoint> expected = Arrays.asList(dp1, dp2);
     Cursor<DataPoint> cursor = client.readDataPoints(new Series("key1"), new Interval(start, end), timezone);
+    assertEquals(expected, toList(cursor));
+  }
+
+  @Test public void testReadMultiDataPoints() throws InterruptedException {
+    WriteRequest wr = new WriteRequest()
+      .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0))
+      .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0))
+      .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
+      .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0));
+
+    Result<Nothing> result1 = client.writeDataPoints(wr);
+    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result1);
+
+    Thread.sleep(SLEEP);
+
+    Filter filter = new Filter();
+    filter.addKey("key1");
+    filter.addKey("key2");
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, timezone);
+
+    Map<String, Number> data1 = new HashMap<String, Number>();
+    data1.put("key1", 5.0);
+    data1.put("key2", 6.0);
+
+    Map<String, Number> data2 = new HashMap<String, Number>();
+    data2.put("key1", 7.0);
+    data2.put("key2", 8.0);
+
+    List<MultiDataPoint> expected = Arrays.asList(
+      new MultiDataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), data1),
+      new MultiDataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), data2)
+    );
     assertEquals(expected, toList(cursor));
   }
 
