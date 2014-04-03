@@ -62,7 +62,7 @@ public class DataPointFound implements Serializable {
 
   /**
    *  Sets the datapoint of this DataPointFound.
-   *  @param value The datapoint of this DataPointFound
+   *  @param datapoint The datapoint of this DataPointFound
    *  @since 1.1.0
    */
   public void setDataPoint(DataPoint datapoint) { this.datapoint = checkNotNull(datapoint); }
