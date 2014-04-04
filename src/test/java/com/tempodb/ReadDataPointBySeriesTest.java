@@ -72,7 +72,6 @@ public class ReadDataPointBySeriesTest {
     assertEquals(expected, result);
   }
 
-  @Ignore
   @Test
   public void smokeTestTz() throws IOException {
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");

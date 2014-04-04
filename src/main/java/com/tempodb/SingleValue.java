@@ -73,7 +73,6 @@ public class SingleValue implements Serializable {
    */
   public void setDataPoint(DataPoint datapoint) { this.datapoint = checkNotNull(datapoint); }
 
-
   static SingleValue make(HttpResponse response) throws IOException {
     String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
     SingleValue value = Json.loads(body, SingleValue.class);

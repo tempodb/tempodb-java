@@ -34,7 +34,7 @@ public class SingleValueTest {
     "}";
 
     DateTimeZone zone = DateTimeZone.UTC;
-    SingleValue value = Json.loads(json, SingleValue.class, zone);
+    SingleValue value = Json.loads(json, SingleValue.class);
 
     DataPoint datapoint = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34);
     SingleValue expected = new SingleValue(series, datapoint);
@@ -59,7 +59,7 @@ public class SingleValueTest {
     "}";
 
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
-    SingleValue value = Json.loads(json, SingleValue.class, zone);
+    SingleValue value = Json.loads(json, SingleValue.class);
 
     DataPoint datapoint = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34);
     SingleValue expected = new SingleValue(series, datapoint);
