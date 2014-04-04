@@ -471,6 +471,94 @@ public class Client {
     return result;
   }
 
+  /**
+   *  Returns a cursor of single value for a set of series
+   *  <p>The returned values (datapoints) can be null if there are no
+   *  datapoints in the series or in the specified direction. The
+   *  system default timezone is used. The direction is set to EXACT.
+   *
+   *  @param filter The filter of series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @return A cursor over the values at the specified timestamp
+   *
+   *  @see Cursor
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp) {
+    return readDataPoint(filter, timestamp);
+  }
+
+  /**
+   *  Returns a cursor of single value for a set of series
+   *  <p>The returned values (datapoints) can be null if there are no
+   *  datapoints in the series or in the specified direction.
+   *  The direction is set to EXACT.
+   *
+   *  @param filter The filter of series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @param timezone The timezone of the returned datapoints
+   *  @return A cursor over the values at the specified timestamp
+   *
+   *  @see Cursor
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp, DateTimeZone timezone) {
+    return readDataPoint(filter, timestamp, timezone, Direction.EXACT);
+  }
+
+  /**
+   *  Returns a cursor of single value for a set of series
+   *  <p>The returned values (datapoints) can be null if there are no
+   *  datapoints in the series or in the specified direction. The
+   *  system default timezone is used.
+   *
+   *  @param filter The filter of series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @param direction The direction to search if an exact timestamp match is not found
+   *  @return A cursor over the values at the specified timestamp
+   *
+   *  @see Cursor
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp, Direction direction) {
+    return readDataPoint(filter, timestamp, DateTimeZone.getDefault(), direction);
+  }
+
+  /**
+   *  Returns a cursor of single value for a set of series
+   *  <p>The returned values (datapoints) can be null if there are no
+   *  datapoints in the series or in the specified direction.
+   *
+   *  @param filter The filter of series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @param timezone The timezone of the returned datapoint
+   *  @param direction The direction to search if an exact timestamp match is not found
+   *  @return A cursor over the values at the specified timestamp
+   *
+   *  @see Cursor
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp, DateTimeZone timezone, Direction direction) {
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/single/", API_VERSION));
+      addFilterToURI(builder, filter);
+      addTimestampToURI(builder, timestamp);
+      addTimeZoneToURI(builder, timezone);
+      addDirectionToURI(builder, direction);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with input - filter: %s", filter);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<SingleValue> cursor = new SingleValueCursor(uri, this);
+    return cursor;
+  }
 
   /**
    *  Returns a cursor of datapoints specified by series.
