@@ -25,6 +25,7 @@ import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.*;
 import org.apache.http.protocol.*;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
@@ -380,6 +381,96 @@ public class Client {
     Cursor<Series> cursor = new SeriesCursor(uri, this);
     return cursor;
   }
+
+  /**
+   *  Reads a single value for a series at a specific timestamp (exact match).
+   *  <p>The returned value (datapoint) can be null if there are no
+   *  datapoints in the series or in the specified direction. The system default
+   *  timezone is used.
+   *
+   *  @param series The series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @return The value at the specified timestamp
+   *
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp) {
+    return readDataPoint(series, timestamp, DateTimeZone.getDefault(), Direction.EXACT);
+  }
+
+  /**
+   *  Reads a single value for a series at a specific timestamp (exact match).
+   *  <p>The returned value (datapoint) can be null if there are no
+   *  datapoints in the series or in the specified direction.
+   *
+   *  @param series The series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @param timezone The timezone of the returned datapoint
+   *  @return The value at the specified timestamp
+   *
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp, DateTimeZone timezone) {
+    return readDataPoint(series, timestamp, timezone, Direction.EXACT);
+  }
+
+  /**
+   *  Reads a single value for a series at a specific timestamp.
+   *  <p>The returned value (datapoint) can be null if there are no
+   *  datapoints in the series or in the specified direction. The system
+   *  default timezone is used.
+   *
+   *  @param series The series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @param direction The direction to search if an exact timestamp match is not found
+   *  @return The value at the specified timestamp
+   *
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp, Direction direction) {
+    return readDataPoint(series, timestamp, DateTimeZone.getDefault(), direction);
+  }
+
+  /**
+   *  Reads a single value for a series at a specific timestamp.
+   *  <p>The returned value (datapoint) can be null if there are no
+   *  datapoints in the series or in the specified direction.
+   *
+   *  @param series The series to read from
+   *  @param timestamp The timestamp to read a value at
+   *  @param timezone The timezone of the returned datapoint
+   *  @param direction The direction to search if an exact timestamp match is not found
+   *  @return The value at the specified timestamp
+   *
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp, DateTimeZone timezone, Direction direction) {
+    checkNotNull(series);
+    checkNotNull(timestamp);
+    checkNotNull(timezone);
+    checkNotNull(direction);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/single/", API_VERSION, series.getKey()));
+      addTimestampToURI(builder, timestamp);
+      addTimeZoneToURI(builder, timezone);
+      addDirectionToURI(builder, direction);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, timestamp: %s, timezone: %s, direction: %s", series.getKey(), timestamp.toString(), timezone.toString(), direction.toString());
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString());
+    Result<SingleValue> result = execute(request, SingleValue.class);
+    return result;
+  }
+
 
   /**
    *  Returns a cursor of datapoints specified by series.
@@ -777,6 +868,18 @@ public class Client {
     return result;
   }
 
+  private void addAggregationToURI(URIBuilder builder, Aggregation aggregation) {
+    if(aggregation != null) {
+      builder.addParameter("aggregation.fold", aggregation.getFold().toString().toLowerCase());
+    }
+  }
+
+  private void addDirectionToURI(URIBuilder builder, Direction direction) {
+    if(direction != null) {
+      builder.addParameter("direction", direction.toString().toLowerCase());
+    }
+  }
+
   private void addFilterToURI(URIBuilder builder, Filter filter) {
     if(filter != null) {
       for(String key : filter.getKeys()) {
@@ -800,12 +903,6 @@ public class Client {
     }
   }
 
-  private void addAggregationToURI(URIBuilder builder, Aggregation aggregation) {
-    if(aggregation != null) {
-      builder.addParameter("aggregation.fold", aggregation.getFold().toString().toLowerCase());
-    }
-  }
-
   private void addPredicateToURI(URIBuilder builder, Predicate predicate) {
     if(predicate != null) {
       builder.addParameter("predicate.period", predicate.getPeriod().toString());
@@ -817,6 +914,12 @@ public class Client {
     if(rollup != null) {
       builder.addParameter("rollup.period", rollup.getPeriod().toString());
       builder.addParameter("rollup.fold", rollup.getFold().toString().toLowerCase());
+    }
+  }
+
+  private void addTimestampToURI(URIBuilder builder, DateTime timestamp) {
+    if(timestamp != null) {
+      builder.addParameter("ts", timestamp.toString(iso8601));
     }
   }
 

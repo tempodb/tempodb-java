@@ -1,12 +1,17 @@
 package com.tempodb;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 
+import com.tempodb.json.Json;
 import static com.tempodb.util.Preconditions.*;
 
 /**
@@ -20,6 +25,8 @@ public class SingleValue implements Serializable {
 
   /** Serialization lock */
   private static final long serialVersionUID = 1L;
+
+  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public SingleValue() {
     this(new Series(), new DataPoint());
@@ -65,6 +72,13 @@ public class SingleValue implements Serializable {
    *  @since 1.1.0
    */
   public void setDataPoint(DataPoint datapoint) { this.datapoint = checkNotNull(datapoint); }
+
+
+  static SingleValue make(HttpResponse response) throws IOException {
+    String body = EntityUtils.toString(response.getEntity(), DEFAULT_CHARSET);
+    SingleValue value = Json.loads(body, SingleValue.class);
+    return value;
+  }
 
   @Override
   public String toString() {

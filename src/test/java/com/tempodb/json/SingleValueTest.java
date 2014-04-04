@@ -29,7 +29,8 @@ public class SingleValueTest {
       "\"data\":{" +
         "\"t\":\"2012-01-01T00:00:01.000Z\"," +
         "\"v\":12.34" +
-      "}" +
+      "}," +
+      "\"tz\":\"UTC\"" +
     "}";
 
     DateTimeZone zone = DateTimeZone.UTC;
@@ -53,7 +54,8 @@ public class SingleValueTest {
       "\"data\":{" +
         "\"t\":\"2012-01-01T00:00:01.000-06:00\"," +
         "\"v\":12.34" +
-      "}" +
+      "}," +
+      "\"tz\":\"America/Chicago\"" +
     "}";
 
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
