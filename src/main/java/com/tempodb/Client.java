@@ -640,6 +640,41 @@ public class Client {
   }
 
   /**
+   *  Returns a cursor of datapoints specified by series with multiple rollups
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The MultiRollup for the read query.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see MultiRollup
+   *  @since 1.0.0
+   */
+  public Cursor<MultiDataPoint> readDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone) {
+    checkNotNull(series);
+    checkNotNull(interval);
+    checkNotNull(timezone);
+    checkNotNull(rollup);
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/rollups/segment/", API_VERSION, series.getKey()));
+      addIntervalToURI(builder, interval);
+      addMultiRollupToURI(builder, rollup);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s, rollup: %s, timezone: %s", series.getKey(), interval, rollup, timezone);
+      throw new IllegalArgumentException(message, e);
+    }
+
+    Cursor<MultiDataPoint> cursor = new MultiRollupDataPointCursor(uri, this);
+    return cursor;
+  }
+
+  /**
    *  Returns a cursor of datapoints specified by a series filter.
    *
    *  <p>This endpoint allows one to request multiple series and apply an aggregation function.
@@ -988,6 +1023,15 @@ public class Client {
     if(interval != null) {
       builder.addParameter("start", interval.getStart().toString(iso8601));
       builder.addParameter("end", interval.getEnd().toString(iso8601));
+    }
+  }
+
+  private void addMultiRollupToURI(URIBuilder builder, MultiRollup rollup) {
+    if(rollup != null) {
+      builder.addParameter("rollup.period", rollup.getPeriod().toString());
+      for(Fold fold : rollup.getFolds()) {
+        builder.addParameter("rollup.fold", fold.toString().toLowerCase());
+      }
     }
   }
 
