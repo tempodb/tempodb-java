@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import org.junit.rules.ExpectedException;
 
 
-public class ReadDataPointByFilterTest {
+public class ReadSingleValueByFilterTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -117,7 +117,7 @@ public class ReadDataPointByFilterTest {
 
     List<SingleValue> expected = Arrays.asList(new SingleValue(series1, new DataPoint(timestamp, 12.34)));
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
     List<SingleValue> output = new ArrayList<SingleValue>();
     for(SingleValue value : cursor) {
       output.add(value);
@@ -133,7 +133,7 @@ public class ReadDataPointByFilterTest {
 
     List<SingleValue> expected = Arrays.asList(new SingleValue(series1, new DataPoint(new DateTime(2012, 1, 1, 0, 0, 1, 0, zone), 12.34)));
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
     List<SingleValue> output = new ArrayList<SingleValue>();
     for(SingleValue value : cursor) {
       output.add(value);
@@ -155,7 +155,7 @@ public class ReadDataPointByFilterTest {
       new SingleValue(series3, new DataPoint(timestamp, 34.56))
     );
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
     List<SingleValue> output = new ArrayList<SingleValue>();
     for(SingleValue value : cursor) {
       output.add(value);
@@ -169,7 +169,7 @@ public class ReadDataPointByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
     List<SingleValue> output = new ArrayList<SingleValue>();
     for(SingleValue value : cursor) {
       output.add(value);
@@ -185,7 +185,7 @@ public class ReadDataPointByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
     List<SingleValue> output = new ArrayList<SingleValue>();
     for(SingleValue value : cursor) {
       output.add(value);
@@ -209,7 +209,7 @@ public class ReadDataPointByFilterTest {
     filter.addAttribute("key1", "value1");
     filter.addAttribute("key2", "value2");
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
     List<SingleValue> output = new ArrayList<SingleValue>();
     for(SingleValue value : cursor) {
       output.add(value);
@@ -234,7 +234,7 @@ public class ReadDataPointByFilterTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<SingleValue> cursor = client.readDataPoint(filter, timestamp, zone, Direction.EXACT);
+    Cursor<SingleValue> cursor = client.readSingleValue(filter, timestamp, zone, Direction.EXACT);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();

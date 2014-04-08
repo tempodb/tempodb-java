@@ -395,8 +395,8 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp) {
-    return readDataPoint(series, timestamp, DateTimeZone.getDefault(), Direction.EXACT);
+  public Result<SingleValue> readSingleValue(Series series, DateTime timestamp) {
+    return readSingleValue(series, timestamp, DateTimeZone.getDefault(), Direction.EXACT);
   }
 
   /**
@@ -412,8 +412,8 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp, DateTimeZone timezone) {
-    return readDataPoint(series, timestamp, timezone, Direction.EXACT);
+  public Result<SingleValue> readSingleValue(Series series, DateTime timestamp, DateTimeZone timezone) {
+    return readSingleValue(series, timestamp, timezone, Direction.EXACT);
   }
 
   /**
@@ -430,8 +430,8 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp, Direction direction) {
-    return readDataPoint(series, timestamp, DateTimeZone.getDefault(), direction);
+  public Result<SingleValue> readSingleValue(Series series, DateTime timestamp, Direction direction) {
+    return readSingleValue(series, timestamp, DateTimeZone.getDefault(), direction);
   }
 
   /**
@@ -448,7 +448,7 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Result<SingleValue> readDataPoint(Series series, DateTime timestamp, DateTimeZone timezone, Direction direction) {
+  public Result<SingleValue> readSingleValue(Series series, DateTime timestamp, DateTimeZone timezone, Direction direction) {
     checkNotNull(series);
     checkNotNull(timestamp);
     checkNotNull(timezone);
@@ -485,8 +485,8 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp) {
-    return readDataPoint(filter, timestamp);
+  public Cursor<SingleValue> readSingleValue(Filter filter, DateTime timestamp) {
+    return readSingleValue(filter, timestamp);
   }
 
   /**
@@ -504,8 +504,8 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp, DateTimeZone timezone) {
-    return readDataPoint(filter, timestamp, timezone, Direction.EXACT);
+  public Cursor<SingleValue> readSingleValue(Filter filter, DateTime timestamp, DateTimeZone timezone) {
+    return readSingleValue(filter, timestamp, timezone, Direction.EXACT);
   }
 
   /**
@@ -523,8 +523,8 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp, Direction direction) {
-    return readDataPoint(filter, timestamp, DateTimeZone.getDefault(), direction);
+  public Cursor<SingleValue> readSingleValue(Filter filter, DateTime timestamp, Direction direction) {
+    return readSingleValue(filter, timestamp, DateTimeZone.getDefault(), direction);
   }
 
   /**
@@ -542,7 +542,7 @@ public class Client {
    *  @see SingleValue
    *  @since 1.1.0
    */
-  public Cursor<SingleValue> readDataPoint(Filter filter, DateTime timestamp, DateTimeZone timezone, Direction direction) {
+  public Cursor<SingleValue> readSingleValue(Filter filter, DateTime timestamp, DateTimeZone timezone, Direction direction) {
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/single/", API_VERSION));

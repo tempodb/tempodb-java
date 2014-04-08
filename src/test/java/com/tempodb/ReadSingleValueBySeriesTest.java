@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.rules.ExpectedException;
 
 
-public class ReadDataPointBySeriesTest {
+public class ReadSingleValueBySeriesTest {
   private static final DateTimeZone zone = DateTimeZone.UTC;
   private static final Series series = new Series("key1");
   private static final DateTime timestamp = new DateTime(2012, 1, 1, 0, 0, 1, 0, zone);
@@ -65,7 +65,7 @@ public class ReadDataPointBySeriesTest {
     Client client = Util.getClient(response);
     DateTime timestamp = new DateTime(2012, 1, 1, 0, 0, 1, 0, zone);
 
-    Result<SingleValue> result = client.readDataPoint(series, timestamp, zone);
+    Result<SingleValue> result = client.readSingleValue(series, timestamp, zone);
 
     DataPoint datapoint = new DataPoint(timestamp, 12.34);
     Result<SingleValue> expected = new Result<SingleValue>(new SingleValue(series, datapoint), 200, "OK");
@@ -79,7 +79,7 @@ public class ReadDataPointBySeriesTest {
     Client client = Util.getClient(response);
     DateTime timestamp = new DateTime(2012, 1, 1, 0, 0, 1, 0, zone);
 
-    Result<SingleValue> result = client.readDataPoint(series, timestamp, zone);
+    Result<SingleValue> result = client.readSingleValue(series, timestamp, zone);
 
     DataPoint datapoint = new DataPoint(timestamp, 12.34);
     Result<SingleValue> expected = new Result<SingleValue>(new SingleValue(series, datapoint), 200, "OK");
@@ -92,7 +92,7 @@ public class ReadDataPointBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<SingleValue> result = client.readDataPoint(series, timestamp, zone);
+    Result<SingleValue> result = client.readSingleValue(series, timestamp, zone);
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("GET", request.getRequestLine().getMethod());
@@ -104,7 +104,7 @@ public class ReadDataPointBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<SingleValue> result = client.readDataPoint(series, timestamp, zone);
+    Result<SingleValue> result = client.readSingleValue(series, timestamp, zone);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
@@ -117,7 +117,7 @@ public class ReadDataPointBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<SingleValue> result = client.readDataPoint(series, timestamp, zone, Direction.NEAREST);
+    Result<SingleValue> result = client.readSingleValue(series, timestamp, zone, Direction.NEAREST);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
