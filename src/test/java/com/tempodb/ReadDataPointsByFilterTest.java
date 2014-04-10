@@ -208,7 +208,7 @@ public class ReadDataPointsByFilterTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation, rollup);
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation, rollup, null);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -225,6 +225,36 @@ public class ReadDataPointsByFilterTest {
     assertTrue(params.contains(new BasicNameValuePair("rollup.fold", "sum")));
     assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
     assertEquals(7, params.size());
+  }
+
+  @Test
+  public void testParametersRollupInterpolation() throws IOException, URISyntaxException {
+    HttpResponse response = Util.getResponse(200, json);
+    HttpClient mockClient = Util.getMockHttpClient(response);
+    Client client = Util.getClient(mockClient);
+
+    Filter filter = new Filter().addKey("key1");
+    Interpolation interpolation = Interpolation.linear(Period.minutes(1));
+
+    Cursor<DataPoint> cursor = client.readDataPoints(filter, interval, zone, aggregation, rollup, interpolation);
+    List<DataPoint> output = new ArrayList<DataPoint>();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
+
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
+    List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
+    assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
+    assertTrue(params.contains(new BasicNameValuePair("rollup.period", "PT1M")));
+    assertTrue(params.contains(new BasicNameValuePair("rollup.fold", "sum")));
+    assertTrue(params.contains(new BasicNameValuePair("interpolation.period", "PT1M")));
+    assertTrue(params.contains(new BasicNameValuePair("interpolation.function", "linear")));
+    assertTrue(params.contains(new BasicNameValuePair("aggregation.fold", "sum")));
+    assertEquals(9, params.size());
   }
 
   @Test

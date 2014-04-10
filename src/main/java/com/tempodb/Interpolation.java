@@ -74,6 +74,24 @@ public class Interpolation implements Serializable {
    */
   public void setFunction(InterpolationFunction function) { this.function = checkNotNull(function); }
 
+  /** Creates a zero-order-hold interpolation instance
+   *  @param period The interpolation period
+   *  @since 1.1.0
+   */
+  public static Interpolation zoh(Period period)
+  {
+    return new Interpolation(period, InterpolationFunction.ZOH);
+  }
+
+  /** Creates a linear interpolation instance
+   *  @param period The interpolation period
+   *  @since 1.1.0
+   */
+  public static Interpolation linear(Period period)
+  {
+    return new Interpolation(period, InterpolationFunction.LINEAR);
+  }
+
   @Override
   public String toString() {
     return String.format("Interpolation(period=%s,function=%s)", period.toString(), function.toString().toLowerCase());

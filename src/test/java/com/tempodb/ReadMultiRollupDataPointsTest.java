@@ -115,7 +115,7 @@ public class ReadMultiRollupDataPointsTest {
       new MultiDataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), data2)
     );
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -135,7 +135,7 @@ public class ReadMultiRollupDataPointsTest {
       new MultiDataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), data3)
     );
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -159,7 +159,7 @@ public class ReadMultiRollupDataPointsTest {
       new MultiDataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), data3)
     );
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
 
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
@@ -174,7 +174,7 @@ public class ReadMultiRollupDataPointsTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
 
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
@@ -191,7 +191,7 @@ public class ReadMultiRollupDataPointsTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
 
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
@@ -209,7 +209,7 @@ public class ReadMultiRollupDataPointsTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
 
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
@@ -234,7 +234,7 @@ public class ReadMultiRollupDataPointsTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone);
+    Cursor<MultiDataPoint> cursor = client.readDataPoints(series, new Interval(start, end), rollup, zone, null);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();

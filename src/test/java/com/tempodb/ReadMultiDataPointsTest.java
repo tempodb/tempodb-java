@@ -103,7 +103,7 @@ public class ReadMultiDataPointsTest {
       new MultiDataPoint(new DateTime(2012, 3, 27, 5, 1, 0, 0, zone), data2)
     );
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, new Interval(start, end), zone, null);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, new Interval(start, end), zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -125,7 +125,7 @@ public class ReadMultiDataPointsTest {
       new MultiDataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, zone), data3)
     );
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, new Interval(start, end), zone, null);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, new Interval(start, end), zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -151,7 +151,7 @@ public class ReadMultiDataPointsTest {
       new MultiDataPoint(new DateTime(2012, 3, 27, 5, 2, 0, 0, zone), data3)
     );
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, new Interval(start, end), zone, null);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, new Interval(start, end), zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -168,7 +168,7 @@ public class ReadMultiDataPointsTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, null);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -187,7 +187,7 @@ public class ReadMultiDataPointsTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, null);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -207,7 +207,7 @@ public class ReadMultiDataPointsTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -232,7 +232,7 @@ public class ReadMultiDataPointsTest {
     Filter filter = new Filter();
     filter.addKey("key1");
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, rollup);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, rollup, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);
@@ -251,6 +251,35 @@ public class ReadMultiDataPointsTest {
   }
 
   @Test
+  public void testParametersRollupInterpolation() throws IOException, URISyntaxException {
+    HttpResponse response = Util.getResponse(200, json);
+    HttpClient mockClient = Util.getMockHttpClient(response);
+    Client client = Util.getClient(mockClient);
+
+    Filter filter = new Filter().addKey("key1");
+    Interpolation interpolation = Interpolation.linear(Period.minutes(1));
+
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, rollup, interpolation);
+    List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
+    for(MultiDataPoint dp : cursor) {
+      output.add(dp);
+    }
+
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
+    List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
+    assertTrue(params.contains(new BasicNameValuePair("key", "key1")));
+    assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
+    assertTrue(params.contains(new BasicNameValuePair("rollup.period", "PT1M")));
+    assertTrue(params.contains(new BasicNameValuePair("rollup.fold", "sum")));
+    assertTrue(params.contains(new BasicNameValuePair("interpolation.period", "PT1M")));
+    assertTrue(params.contains(new BasicNameValuePair("interpolation.function", "linear")));
+    assertEquals(8, params.size());
+  }
+
+  @Test
   public void testParametersFullFilter() throws IOException, URISyntaxException {
     HttpResponse response = Util.getResponse(200, json);
     HttpClient mockClient = Util.getMockHttpClient(response);
@@ -263,7 +292,7 @@ public class ReadMultiDataPointsTest {
     filter.addAttribute("key1", "value1");
     filter.addAttribute("key2", "value2");
 
-    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone);
+    Cursor<MultiDataPoint> cursor = client.readMultiDataPoints(filter, interval, zone, null, null);
     List<MultiDataPoint> output = new ArrayList<MultiDataPoint>();
     for(MultiDataPoint dp : cursor) {
       output.add(dp);

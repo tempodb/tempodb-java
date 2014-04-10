@@ -187,7 +187,7 @@ public class ReadDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup, null);
     List<DataPoint> output = new ArrayList<DataPoint>();
     for(DataPoint dp : cursor) {
       output.add(dp);
@@ -205,11 +205,37 @@ public class ReadDataPointsBySeriesTest {
   }
 
   @Test
+  public void testParametersRollupInterpolation() throws IOException, URISyntaxException {
+    HttpResponse response = Util.getResponse(200, json);
+    HttpClient mockClient = Util.getMockHttpClient(response);
+    Client client = Util.getClient(mockClient);
+
+    Interpolation interpolation = Interpolation.zoh(Period.minutes(1));
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup, interpolation);
+    List<DataPoint> output = new ArrayList<DataPoint>();
+    for(DataPoint dp : cursor) {
+      output.add(dp);
+    }
+
+    HttpRequest request = Util.captureRequest(mockClient);
+    URI uri = new URI(request.getRequestLine().getUri());
+    List<NameValuePair> params = URLEncodedUtils.parse(uri, "UTF-8");
+    assertTrue(params.contains(new BasicNameValuePair("start", "2012-01-01T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("end", "2012-01-02T00:00:00.000+0000")));
+    assertTrue(params.contains(new BasicNameValuePair("tz", "UTC")));
+    assertTrue(params.contains(new BasicNameValuePair("rollup.period", "PT1M")));
+    assertTrue(params.contains(new BasicNameValuePair("rollup.fold", "sum")));
+    assertTrue(params.contains(new BasicNameValuePair("interpolation.period", "PT1M")));
+    assertTrue(params.contains(new BasicNameValuePair("interpolation.function", "zoh")));
+    assertEquals(7, params.size());
+  }
+
+  @Test
   public void testError() throws IOException {
     HttpResponse response = Util.getResponse(403, "You are forbidden");
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
-    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup);
+    Cursor<DataPoint> cursor = client.readDataPoints(series, interval, zone, rollup, null);
 
     thrown.expect(TempoDBException.class);
     cursor.iterator().next();

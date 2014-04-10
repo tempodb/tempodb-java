@@ -572,7 +572,7 @@ public class Client {
    *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPoints(Series series, Interval interval) {
-    return readDataPoints(series, interval, DateTimeZone.getDefault(), null);
+    return readDataPoints(series, interval, DateTimeZone.getDefault(), null, null);
   }
 
   /**
@@ -587,7 +587,7 @@ public class Client {
    *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPoints(Series series, Interval interval, DateTimeZone timezone) {
-    return readDataPoints(series, interval, timezone, null);
+    return readDataPoints(series, interval, timezone, null, null);
   }
 
   /**
@@ -603,7 +603,7 @@ public class Client {
    *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPoints(Series series, Interval interval, Rollup rollup) {
-    return readDataPoints(series, interval, DateTimeZone.getDefault(), rollup);
+    return readDataPoints(series, interval, DateTimeZone.getDefault(), rollup, null);
   }
 
   /**
@@ -613,12 +613,13 @@ public class Client {
    *  @param interval An interval of time for the query (start/end datetimes)
    *  @param timezone The time zone for the returned datapoints.
    *  @param rollup The rollup for the read query. This can be null.
+   *  @param interpolation The interpolation for the read query. This can be null.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Cursor
    *  @since 1.0.0
    */
-  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, DateTimeZone timezone, Rollup rollup) {
+  public Cursor<DataPoint> readDataPoints(Series series, Interval interval, DateTimeZone timezone, Rollup rollup, Interpolation interpolation) {
     checkNotNull(series);
     checkNotNull(interval);
     checkNotNull(timezone);
@@ -626,6 +627,7 @@ public class Client {
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/segment/", API_VERSION, series.getKey()));
+      addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
       addRollupToURI(builder, rollup);
       addTimeZoneToURI(builder, timezone);
@@ -646,13 +648,14 @@ public class Client {
    *  @param interval An interval of time for the query (start/end datetimes)
    *  @param rollup The MultiRollup for the read query.
    *  @param timezone The time zone for the returned datapoints.
+   *  @param interpolation The interpolation for the read query. This can be null.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Cursor
    *  @see MultiRollup
    *  @since 1.0.0
    */
-  public Cursor<MultiDataPoint> readDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone) {
+  public Cursor<MultiDataPoint> readDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone, Interpolation interpolation) {
     checkNotNull(series);
     checkNotNull(interval);
     checkNotNull(timezone);
@@ -661,6 +664,7 @@ public class Client {
     URI uri = null;
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/rollups/segment/", API_VERSION, series.getKey()));
+      addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
       addMultiRollupToURI(builder, rollup);
       addTimeZoneToURI(builder, timezone);
@@ -691,7 +695,7 @@ public class Client {
    *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, Aggregation aggregation) {
-    return readDataPoints(filter, interval, DateTimeZone.getDefault(), aggregation, null);
+    return readDataPoints(filter, interval, DateTimeZone.getDefault(), aggregation, null, null);
   }
 
   /**
@@ -713,7 +717,7 @@ public class Client {
    *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, Aggregation aggregation, Rollup rollup) {
-    return readDataPoints(filter, interval, DateTimeZone.getDefault(), aggregation, rollup);
+    return readDataPoints(filter, interval, DateTimeZone.getDefault(), aggregation, rollup, null);
   }
 
   /**
@@ -733,7 +737,7 @@ public class Client {
    *  @since 1.0.0
    */
   public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Aggregation aggregation) {
-    return readDataPoints(filter, interval, timezone, aggregation, null);
+    return readDataPoints(filter, interval, timezone, aggregation, null, null);
   }
 
   /**
@@ -746,15 +750,17 @@ public class Client {
    *  @param timezone The time zone for the returned datapoints.
    *  @param aggregation The aggregation for the read query. This is required.
    *  @param rollup The rollup for the read query. This can be null.
+   *  @param interpolation The interpolation for the read query. This can be null.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Aggregation
    *  @see Cursor
    *  @see Filter
+   *  @see Interpolation
    *  @see Rollup
    *  @since 1.0.0
    */
-  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Aggregation aggregation, Rollup rollup) {
+  public Cursor<DataPoint> readDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Aggregation aggregation, Rollup rollup, Interpolation interpolation) {
     checkNotNull(filter);
     checkNotNull(interval);
     checkNotNull(aggregation);
@@ -764,6 +770,7 @@ public class Client {
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/segment/", API_VERSION));
       addFilterToURI(builder, filter);
+      addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
       addAggregationToURI(builder, aggregation);
       addRollupToURI(builder, rollup);
@@ -794,7 +801,7 @@ public class Client {
    *  @since 1.1.0
    */
   public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval) {
-    return readMultiDataPoints(filter, interval, DateTimeZone.getDefault(), null);
+    return readMultiDataPoints(filter, interval, DateTimeZone.getDefault(), null, null);
   }
 
   /**
@@ -815,7 +822,7 @@ public class Client {
    *  @since 1.1.0
    */
   public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, Rollup rollup) {
-    return readMultiDataPoints(filter, interval, DateTimeZone.getDefault(), rollup);
+    return readMultiDataPoints(filter, interval, DateTimeZone.getDefault(), rollup, null);
   }
 
   /**
@@ -835,7 +842,7 @@ public class Client {
    *  @since 1.1.0
    */
   public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, DateTimeZone timezone) {
-    return readMultiDataPoints(filter, interval, timezone, null);
+    return readMultiDataPoints(filter, interval, timezone, null, null);
   }
 
   /**
@@ -847,15 +854,17 @@ public class Client {
    *  @param interval An interval of time for the query (start/end datetimes)
    *  @param timezone The time zone for the returned datapoints.
    *  @param rollup The rollup for the read query. This can be null.
+   *  @param interpolation The interpolation for the read query. This can be null.
    *  @return A Cursor of MultiDataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Cursor
    *  @see Filter
+   *  @see Interpolation
    *  @see MultiDataPoint
    *  @see Rollup
    *  @since 1.1.0
    */
-  public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Rollup rollup) {
+  public Cursor<MultiDataPoint> readMultiDataPoints(Filter filter, Interval interval, DateTimeZone timezone, Rollup rollup, Interpolation interpolation) {
     checkNotNull(filter);
     checkNotNull(interval);
     checkNotNull(timezone);
@@ -864,6 +873,7 @@ public class Client {
     try {
       URIBuilder builder = new URIBuilder(String.format("/%s/multi/", API_VERSION));
       addFilterToURI(builder, filter);
+      addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
       addRollupToURI(builder, rollup);
       addTimeZoneToURI(builder, timezone);
@@ -1016,6 +1026,13 @@ public class Client {
       for(Map.Entry<String, String> attribute : filter.getAttributes().entrySet()) {
         builder.addParameter(String.format("attr[%s]", attribute.getKey()), attribute.getValue());
       }
+    }
+  }
+
+  private void addInterpolationToURI(URIBuilder builder, Interpolation interpolation) {
+    if(interpolation != null) {
+      builder.addParameter("interpolation.period", interpolation.getPeriod().toString());
+      builder.addParameter("interpolation.function", interpolation.getFunction().toString().toLowerCase());
     }
   }
 
