@@ -29,7 +29,6 @@ public class Summary implements Map<String, Number>, Serializable {
 
   private Series series;
   private Interval interval;
-  private DateTimeZone timezone;
   private Map<String, Number> summary;
 
   /** Serialization lock */
@@ -38,7 +37,7 @@ public class Summary implements Map<String, Number>, Serializable {
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public Summary() {
-    this(new Series(""), new Interval(new DateTime(), new DateTime()), DateTimeZone.UTC, new HashMap<String, Number>());
+    this(new Series(""), new Interval(new DateTime(), new DateTime()), new HashMap<String, Number>());
   }
 
   /**
@@ -47,14 +46,12 @@ public class Summary implements Map<String, Number>, Serializable {
    *  @param series Series
    *  @param start Start datetime for the summary
    *  @param end End datetime for the summary
-   *  @param timezone DateTimeZone for the datetimes
    *  @param summary Map of statistic string to value
    *  @since 1.1.0
    */
-  public Summary(Series series, Interval interval, DateTimeZone timezone, Map<String, Number> summary) {
+  public Summary(Series series, Interval interval, Map<String, Number> summary) {
     this.series = checkNotNull(series);
     this.interval = checkNotNull(interval);
-    this.timezone = checkNotNull(timezone);
     this.summary = checkNotNull(summary);
   }
 
@@ -85,21 +82,6 @@ public class Summary implements Map<String, Number>, Serializable {
    *  @since 1.1.0
    */
   public void setInterval(Interval interval) { this.interval = checkNotNull(interval); }
-
-
-  /**
-   *  Returns the timezone of this Summary.
-   *  @return Summary timezone.
-   *  @since 1.1.0
-   */
-  public DateTimeZone getTimezone() { return timezone; }
-
-  /**
-   *  Sets the timezone of this Summary.
-   *  @param timezone Summary timezone.
-   *  @since 1.1.0
-   */
-  public void setTimezone(DateTimeZone timezone) { this.timezone = checkNotNull(timezone); }
 
   public void clear() { summary.clear(); }
 
@@ -133,7 +115,7 @@ public class Summary implements Map<String, Number>, Serializable {
 
   @Override
   public String toString() {
-    return String.format("Summary(series=%s, interval=%s, timezone=%s, summary=%s)", series, interval, timezone, summary);
+    return String.format("Summary(series=%s, interval=%s, summary=%s)", series, interval, summary);
   }
 
   @Override
@@ -141,7 +123,6 @@ public class Summary implements Map<String, Number>, Serializable {
     return new HashCodeBuilder(119, 123)
       .append(series)
       .append(interval)
-      .append(timezone)
       .append(summary)
       .toHashCode();
   }
@@ -156,7 +137,6 @@ public class Summary implements Map<String, Number>, Serializable {
     return new EqualsBuilder()
       .append(series, rhs.series)
       .append(interval, rhs.interval)
-      .append(timezone, rhs.timezone)
       .append(summary, rhs.summary)
       .isEquals();
   }

@@ -73,7 +73,7 @@ public class SummaryModule extends SimpleModule {
                           .withType(Series.class)
                           .readValue(seriesNode);
 
-      Summary summary = new Summary(series, new Interval(start, end), timezone, data);
+      Summary summary = new Summary(series, new Interval(start, end), data);
       return summary;
     }
   }

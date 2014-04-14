@@ -561,6 +561,37 @@ public class Client {
   }
 
   /**
+   *  Reads summary statistics for a series for the specified interval.
+   *
+   *  @param series The series to read from
+   *  @param interval The interval of data to summarize
+   *  @return A set of statistics for an interval of data
+   *
+   *  @see SingleValue
+   *  @since 1.1.0
+   */
+  public Result<Summary> readSummary(Series series, Interval interval) {
+    checkNotNull(series);
+    checkNotNull(interval);
+    DateTimeZone timezone = interval.getStart().getChronology().getZone();
+
+    URI uri = null;
+    try {
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/summary/", API_VERSION, series.getKey()));
+      addIntervalToURI(builder, interval);
+      addTimeZoneToURI(builder, timezone);
+      uri = builder.build();
+    } catch (URISyntaxException e) {
+      String message = String.format("Could not build URI with inputs: key: %s, interval: %s, timezone: %s", series.getKey(), interval.toString(), timezone.toString());
+      throw new IllegalArgumentException(message, e);
+    }
+
+    HttpRequest request = buildRequest(uri.toString());
+    Result<Summary> result = execute(request, Summary.class);
+    return result;
+  }
+
+  /**
    *  Returns a cursor of datapoints specified by series.
    *  <p>The system default timezone is used for the returned DateTimes.
    *

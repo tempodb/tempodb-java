@@ -46,7 +46,7 @@ public class SummaryTest {
     Series series = new Series("key1");
 
     Summary summary = Json.loads(json, Summary.class);
-    Summary expected = new Summary(series, new Interval(start, end), zone, data);
+    Summary expected = new Summary(series, new Interval(start, end), data);
     assertEquals(expected, summary);
   }
 
@@ -80,7 +80,7 @@ public class SummaryTest {
     Series series = new Series("key1");
 
     Summary summary = Json.loads(json, Summary.class);
-    Summary expected = new Summary(series, new Interval(start, end), zone, data);
+    Summary expected = new Summary(series, new Interval(start, end), data);
     assertEquals(expected, summary);
   }
 }
