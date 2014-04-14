@@ -32,6 +32,7 @@ public class Json {
       _mapper.registerModule(new SeriesSegmentModule());
       _mapper.registerModule(new SingleValueModule());
       _mapper.registerModule(new SingleValueSegmentModule());
+      _mapper.registerModule(new SummaryModule());
       _mapper.registerModule(new WritableDataPointModule());
       _mapper.registerModule(new WriteRequestModule());
       _mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

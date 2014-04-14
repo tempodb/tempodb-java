@@ -5,12 +5,9 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.http.HttpResponse;
@@ -41,7 +38,7 @@ public class Summary implements Map<String, Number>, Serializable {
   private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
   public Summary() {
-    this(new Series(""), new DateTime(), new DateTime(), DateTimeZone.UTC, new HashMap<String, Number>());
+    this(new Series(""), new Interval(new DateTime(), new DateTime()), DateTimeZone.UTC, new HashMap<String, Number>());
   }
 
   /**
@@ -54,10 +51,9 @@ public class Summary implements Map<String, Number>, Serializable {
    *  @param summary Map of statistic string to value
    *  @since 1.1.0
    */
-  @JsonCreator
-  public Summary(Series series, DateTime start, DateTime end, DateTimeZone timezone, Map<String, Number> summary) {
+  public Summary(Series series, Interval interval, DateTimeZone timezone, Map<String, Number> summary) {
     this.series = checkNotNull(series);
-    this.interval = new Interval(start, end);
+    this.interval = checkNotNull(interval);
     this.timezone = checkNotNull(timezone);
     this.summary = checkNotNull(summary);
   }

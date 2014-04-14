@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -42,42 +43,42 @@ public class SummaryTest {
 
   @Test
   public void testEquals() {
-    Summary s1 = new Summary(series1, dt1, dt1, zone1, data1);
-    Summary s2 = new Summary(series2, dt2, dt2, zone2, data2);
+    Summary s1 = new Summary(series1, new Interval(dt1, dt1), zone1, data1);
+    Summary s2 = new Summary(series2, new Interval(dt2, dt2), zone2, data2);
     assertEquals(s1, s2);
   }
 
   @Test
   public void testNotEquals_Series() {
-    Summary s1 = new Summary(series1, dt1, dt1, zone1, data1);
-    Summary s2 = new Summary(series3, dt2, dt2, zone2, data2);
+    Summary s1 = new Summary(series1, new Interval(dt1, dt1), zone1, data1);
+    Summary s2 = new Summary(series3, new Interval(dt2, dt2), zone2, data2);
     assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testNotEquals_Interval() {
-    Summary s1 = new Summary(series1, dt1, dt1, zone1, data1);
-    Summary s2 = new Summary(series2, dt2, dt3, zone2, data2);
+    Summary s1 = new Summary(series1, new Interval(dt1, dt1), zone1, data1);
+    Summary s2 = new Summary(series2, new Interval(dt2, dt3), zone2, data2);
     assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testNotEquals_Zone() {
-    Summary s1 = new Summary(series1, dt1, dt1, zone1, data1);
-    Summary s2 = new Summary(series2, dt2, dt2, zone3, data2);
+    Summary s1 = new Summary(series1, new Interval(dt1, dt1), zone1, data1);
+    Summary s2 = new Summary(series2, new Interval(dt2, dt2), zone3, data2);
     assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testNotEquals_Data() {
-    Summary s1 = new Summary(series1, dt1, dt1, zone1, data1);
-    Summary s2 = new Summary(series2, dt2, dt2, zone2, data3);
+    Summary s1 = new Summary(series1, new Interval(dt1, dt1), zone1, data1);
+    Summary s2 = new Summary(series2, new Interval(dt2, dt2), zone2, data3);
     assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testNotEquals_Null() {
-    Summary s1 = new Summary(series1, dt1, dt1, zone1, data1);
+    Summary s1 = new Summary(series1, new Interval(dt1, dt1), zone1, data1);
     assertFalse(s1.equals(null));
   }
 }
