@@ -44,8 +44,7 @@ public class Summary implements Map<String, Number>, Serializable {
    *  Base constructor
    *
    *  @param series Series
-   *  @param start Start datetime for the summary
-   *  @param end End datetime for the summary
+   *  @param interval Interval of data to calculate the statistics
    *  @param summary Map of statistic string to value
    *  @since 1.1.0
    */
@@ -64,7 +63,7 @@ public class Summary implements Map<String, Number>, Serializable {
 
   /**
    *  Sets the series of this Summary.
-   *  @param key Summary key.
+   *  @param series Summary series.
    *  @since 1.1.0
    */
   public void setSeries(Series series) { this.series = checkNotNull(series); }

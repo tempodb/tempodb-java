@@ -41,7 +41,7 @@ public class MultiRollup implements Serializable {
    *  Base constructor
    *
    *  @param period The rollup period.
-   *  @param fold The rollup folding function.
+   *  @param folds The rollup folding functions.
    *  @since 1.1.0
    */
   public MultiRollup(@JsonProperty("period") Period period, @JsonProperty("folds") Fold[] folds) {
