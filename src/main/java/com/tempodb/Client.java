@@ -673,7 +673,41 @@ public class Client {
   }
 
   /**
-   *  Returns a cursor of datapoints specified by series with multiple rollups
+   *  Returns a cursor of datapoints specified by series with multiple rollups.
+   *  <p>The system default timezone is used for the returned DateTimes.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The MultiRollup for the read query.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see MultiRollup
+   *  @since 1.1.0
+   */
+  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, MultiRollup rollup) {
+    return readMultiRollupDataPoints(series, interval, rollup, DateTimeZone.getDefault(), null);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by series with multiple rollups.
+   *
+   *  @param series The series
+   *  @param interval An interval of time for the query (start/end datetimes)
+   *  @param rollup The MultiRollup for the read query.
+   *  @param timezone The time zone for the returned datapoints.
+   *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
+   *
+   *  @see Cursor
+   *  @see MultiRollup
+   *  @since 1.0.0
+   */
+  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone) {
+    return readMultiRollupDataPoints(series, interval, rollup, timezone, null);
+  }
+
+  /**
+   *  Returns a cursor of datapoints specified by series with multiple rollups.
    *
    *  @param series The series
    *  @param interval An interval of time for the query (start/end datetimes)
@@ -686,7 +720,7 @@ public class Client {
    *  @see MultiRollup
    *  @since 1.0.0
    */
-  public Cursor<MultiDataPoint> readDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone, Interpolation interpolation) {
+  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone, Interpolation interpolation) {
     checkNotNull(series);
     checkNotNull(interval);
     checkNotNull(timezone);
