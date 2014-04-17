@@ -232,6 +232,28 @@ public class ClientIT {
   }
 
   @Test
+  public void testReadMultiRollupDataPointByKey() throws InterruptedException {
+    DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
+    DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
+
+    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
+    assertEquals(State.SUCCESS, result.getState());
+    Thread.sleep(SLEEP);
+
+    DateTime start = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
+    DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
+
+    Map<String, Number> data1 = new HashMap<String, Number>();
+    data1.put("max", 34.56);
+    data1.put("min", 23.45);
+
+    MultiDataPoint mdp1 = new MultiDataPoint(new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone), data1);
+    List<MultiDataPoint> expected = Arrays.asList(mdp1);
+    Cursor<MultiDataPoint> cursor = client.readMultiRollupDataPoints(new Series("key1"), new Interval(start, end), new MultiRollup(Period.days(1), new Fold[] { Fold.MAX, Fold.MIN }), timezone);
+    assertEquals(expected, toList(cursor));
+  }
+
+  @Test
   public void testWriteDataPoints() throws InterruptedException {
     WriteRequest wr = new WriteRequest()
       .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0))
