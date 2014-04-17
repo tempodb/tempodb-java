@@ -182,7 +182,24 @@ public class ClientIT {
     assertEquals(expected, toList(cursor));
   }
 
-  @Test public void testReadMultiDataPoints() throws InterruptedException {
+  @Test
+  public void testReadSingleValue() throws InterruptedException {
+    DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
+    DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
+
+    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
+    assertEquals(State.SUCCESS, result.getState());
+    Thread.sleep(SLEEP);
+
+    DateTime ts = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
+
+    SingleValue expected = new SingleValue(new Series("key1"), new DataPoint(ts, 23.45));
+    Result<SingleValue> value = client.readSingleValue(new Series("key1"), ts, timezone, Direction.EXACT);
+    assertEquals(expected, value.getValue());
+  }
+
+  @Test
+  public void testReadMultiDataPoints() throws InterruptedException {
     WriteRequest wr = new WriteRequest()
       .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 5.0))
       .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 6.0))
