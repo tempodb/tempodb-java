@@ -686,7 +686,7 @@ public class Client {
    *  @since 1.1.0
    */
   public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, MultiRollup rollup) {
-    return readMultiRollupDataPoints(series, interval, rollup, DateTimeZone.getDefault(), null);
+    return readMultiRollupDataPoints(series, interval, DateTimeZone.getDefault(), rollup, null);
   }
 
   /**
@@ -694,16 +694,16 @@ public class Client {
    *
    *  @param series The series
    *  @param interval An interval of time for the query (start/end datetimes)
-   *  @param rollup The MultiRollup for the read query.
    *  @param timezone The time zone for the returned datapoints.
+   *  @param rollup The MultiRollup for the read query.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
    *  @see Cursor
    *  @see MultiRollup
    *  @since 1.0.0
    */
-  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone) {
-    return readMultiRollupDataPoints(series, interval, rollup, timezone, null);
+  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, DateTimeZone timezone, MultiRollup rollup) {
+    return readMultiRollupDataPoints(series, interval, timezone, rollup, null);
   }
 
   /**
@@ -711,8 +711,8 @@ public class Client {
    *
    *  @param series The series
    *  @param interval An interval of time for the query (start/end datetimes)
-   *  @param rollup The MultiRollup for the read query.
    *  @param timezone The time zone for the returned datapoints.
+   *  @param rollup The MultiRollup for the read query.
    *  @param interpolation The interpolation for the read query. This can be null.
    *  @return A Cursor of DataPoints. The cursor.iterator().next() may throw a {@link TempoDBException} if an error occurs while making a request.
    *
@@ -720,7 +720,7 @@ public class Client {
    *  @see MultiRollup
    *  @since 1.0.0
    */
-  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, MultiRollup rollup, DateTimeZone timezone, Interpolation interpolation) {
+  public Cursor<MultiDataPoint> readMultiRollupDataPoints(Series series, Interval interval, DateTimeZone timezone, MultiRollup rollup, Interpolation interpolation) {
     checkNotNull(series);
     checkNotNull(interval);
     checkNotNull(timezone);

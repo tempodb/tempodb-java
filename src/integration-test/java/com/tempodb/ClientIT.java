@@ -242,6 +242,9 @@ public class ClientIT {
 
     DateTime start = new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone);
     DateTime end = new DateTime(2012, 1, 3, 0, 0, 0, 0, timezone);
+    MultiRollup rollup = new MultiRollup(Period.days(1), new Fold[] { Fold.MAX, Fold.MIN });
+
+    Cursor<MultiDataPoint> cursor = client.readMultiRollupDataPoints(new Series("key1"), new Interval(start, end), timezone, rollup);
 
     Map<String, Number> data1 = new HashMap<String, Number>();
     data1.put("max", 34.56);
@@ -249,7 +252,7 @@ public class ClientIT {
 
     MultiDataPoint mdp1 = new MultiDataPoint(new DateTime(2012, 1, 2, 0, 0, 0, 0, timezone), data1);
     List<MultiDataPoint> expected = Arrays.asList(mdp1);
-    Cursor<MultiDataPoint> cursor = client.readMultiRollupDataPoints(new Series("key1"), new Interval(start, end), new MultiRollup(Period.days(1), new Fold[] { Fold.MAX, Fold.MIN }), timezone);
+
     assertEquals(expected, toList(cursor));
   }
 
