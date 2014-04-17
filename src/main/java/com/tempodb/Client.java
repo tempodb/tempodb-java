@@ -486,7 +486,7 @@ public class Client {
    *  @since 1.1.0
    */
   public Cursor<SingleValue> readSingleValue(Filter filter, DateTime timestamp) {
-    return readSingleValue(filter, timestamp);
+    return readSingleValue(filter, timestamp, DateTimeZone.getDefault(), Direction.EXACT);
   }
 
   /**

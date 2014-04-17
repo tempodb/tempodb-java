@@ -1,6 +1,7 @@
 package com.tempodb;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -70,7 +71,7 @@ public class MultiRollup implements Serializable {
    * @since 1.1.0
    */
   @JsonProperty("folds")
-  public Fold[] getFolds() { return folds; }
+  public Fold[] getFolds() { return Arrays.copyOf(folds, folds.length); }
 
   /** Sets the rollup folding functions.
    *  @param folds The rollup folding functions.
@@ -80,7 +81,7 @@ public class MultiRollup implements Serializable {
 
   @Override
   public String toString() {
-    return String.format("MultiRollup(period=%s,folds=%s)", period.toString(), folds.toString().toLowerCase());
+    return String.format("MultiRollup(period=%s,folds=%s)", period.toString(), Arrays.toString(folds).toLowerCase());
   }
 
   @Override
