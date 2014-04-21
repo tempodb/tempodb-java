@@ -18,8 +18,8 @@ public class DeleteSeriesTest {
     HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
 
-    Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK");
-    Result<Nothing> result = client.deleteSeries(series);
+    Result<Void> expected = new Result<Void>(null, 200, "OK");
+    Result<Void> result = client.deleteSeries(series);
     assertEquals(expected, result);
   }
 
@@ -29,7 +29,7 @@ public class DeleteSeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteSeries(series);
+    Result<Void> result = client.deleteSeries(series);
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("DELETE", request.getRequestLine().getMethod());
@@ -41,7 +41,7 @@ public class DeleteSeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteSeries(series);
+    Result<Void> result = client.deleteSeries(series);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());

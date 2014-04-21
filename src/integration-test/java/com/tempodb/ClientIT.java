@@ -82,7 +82,7 @@ public class ClientIT {
     /* Delete all datapoints all series */
     Cursor<Series> cursor = client.getSeries(new Filter());
     for(Series series : cursor) {
-      Result<Nothing> result = client.deleteDataPoints(series, interval);
+      Result<Void> result = client.deleteDataPoints(series, interval);
       assertEquals(State.SUCCESS, result.getState());
     }
 
@@ -119,7 +119,7 @@ public class ClientIT {
   public void testDeleteDataPointsBySeries() throws InterruptedException {
     // Write datapoints
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
-    Result<Nothing> result1 = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
+    Result<Void> result1 = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
     assertEquals(State.SUCCESS, result1.getState());
     Thread.sleep(SLEEP);
 
@@ -129,8 +129,8 @@ public class ClientIT {
     assertEquals(expected1, toList(cursor1));
 
     // Delete datapoints
-    Result<Nothing> result2 = client.deleteDataPoints(new Series("key1"), interval);
-    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result2);
+    Result<Void> result2 = client.deleteDataPoints(new Series("key1"), interval);
+    assertEquals(new Result<Void>(null, 200, "OK"), result2);
 
     // Read datapoints again
     List<DataPoint> expected2 = new ArrayList<DataPoint>();
@@ -141,7 +141,7 @@ public class ClientIT {
   @Test
   public void testWriteDataPointBySeries() {
     DataPoint dp = new DataPoint(new DateTime(2012, 1, 1, 0, 0, 0, 0, timezone), 12.34);
-    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
+    Result<Void> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp));
     assertEquals(State.SUCCESS, result.getState());
   }
 
@@ -150,7 +150,7 @@ public class ClientIT {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
-    Result<Nothing> result = client.writeDataPoints(new Series("key-find"), Arrays.asList(dp1, dp2));
+    Result<Void> result = client.writeDataPoints(new Series("key-find"), Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
     Thread.sleep(SLEEP);
 
@@ -170,7 +170,7 @@ public class ClientIT {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
-    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
+    Result<Void> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
     Thread.sleep(SLEEP);
 
@@ -187,7 +187,7 @@ public class ClientIT {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
-    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
+    Result<Void> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
     Thread.sleep(SLEEP);
 
@@ -206,8 +206,8 @@ public class ClientIT {
       .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
       .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0));
 
-    Result<Nothing> result1 = client.writeDataPoints(wr);
-    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result1);
+    Result<Void> result1 = client.writeDataPoints(wr);
+    assertEquals(new Result<Void>(null, 200, "OK"), result1);
 
     Thread.sleep(SLEEP);
 
@@ -236,7 +236,7 @@ public class ClientIT {
     DataPoint dp1 = new DataPoint(new DateTime(2012, 1, 2, 0, 0 ,0, 0, timezone), 23.45);
     DataPoint dp2 = new DataPoint(new DateTime(2012, 1, 2, 1, 0 ,0, 0, timezone), 34.56);
 
-    Result<Nothing> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
+    Result<Void> result = client.writeDataPoints(new Series("key1"), Arrays.asList(dp1, dp2));
     assertEquals(State.SUCCESS, result.getState());
     Thread.sleep(SLEEP);
 
@@ -266,8 +266,8 @@ public class ClientIT {
 
     Thread.sleep(SLEEP);
 
-    Result<Nothing> result = client.writeDataPoints(wr);
-    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result);
+    Result<Void> result = client.writeDataPoints(wr);
+    assertEquals(new Result<Void>(null, 200, "OK"), result);
   }
 
   @Test
@@ -278,8 +278,8 @@ public class ClientIT {
       .add(new Series("key1"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 7.0))
       .add(new Series("key2"), new DataPoint(new DateTime(2012, 1, 1, 0, 1, 0, 0, timezone), 8.0));
 
-    Result<Nothing> result1 = client.writeDataPoints(wr);
-    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result1);
+    Result<Void> result1 = client.writeDataPoints(wr);
+    assertEquals(new Result<Void>(null, 200, "OK"), result1);
 
     Thread.sleep(SLEEP);
 
@@ -353,8 +353,8 @@ public class ClientIT {
     Result<Series> result1 = client.createSeries(series);
 
     // Delete the series
-    Result<Nothing> result2 = client.deleteSeries(series);
-    assertEquals(new Result<Nothing>(new Nothing(), 200, "OK"), result2);
+    Result<Void> result2 = client.deleteSeries(series);
+    assertEquals(new Result<Void>(null, 200, "OK"), result2);
 
     // Get the series
     Result<Series> result3 = client.getSeries("delete-series");

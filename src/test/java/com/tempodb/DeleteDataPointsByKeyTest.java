@@ -27,8 +27,8 @@ public class DeleteDataPointsByKeyTest {
     HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
 
-    Result<Nothing> result = client.deleteDataPoints(series, new Interval(start, end));
-    Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK");
+    Result<Void> result = client.deleteDataPoints(series, new Interval(start, end));
+    Result<Void> expected = new Result<Void>(null, 200, "OK");
     assertEquals(expected, result);
   }
 
@@ -38,7 +38,7 @@ public class DeleteDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteDataPoints(series, new Interval(start, end));
+    Result<Void> result = client.deleteDataPoints(series, new Interval(start, end));
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("DELETE", request.getRequestLine().getMethod());
@@ -50,7 +50,7 @@ public class DeleteDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteDataPoints(series, new Interval(start, end));
+    Result<Void> result = client.deleteDataPoints(series, new Interval(start, end));
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
@@ -63,7 +63,7 @@ public class DeleteDataPointsByKeyTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.deleteDataPoints(series, new Interval(start, end));
+    Result<Void> result = client.deleteDataPoints(series, new Interval(start, end));
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());

@@ -146,8 +146,12 @@ public class Result<T> {
   private static <T> T newInstanceFromResponse(HttpResponse response, Class<T> klass) {
     Throwable cause = null;
     try {
-      Method method = klass.getDeclaredMethod("make", HttpResponse.class);
-      return klass.cast(method.invoke(null, response));
+      if(klass == Void.class) {
+        return null;
+      } else {
+        Method method = klass.getDeclaredMethod("make", HttpResponse.class);
+        return klass.cast(method.invoke(null, response));
+      }
     }
     catch (IllegalAccessException e) { cause = e; }
     catch (InvocationTargetException e) { cause = e;  }

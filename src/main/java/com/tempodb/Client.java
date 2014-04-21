@@ -186,11 +186,11 @@ public class Client {
    *
    *  @param series The series
    *  @param interval The start/end datetime interval to delete.
-   *  @return Nothing
+   *  @return Void
    *
    *  @since 1.0.0
    */
-  public Result<Nothing> deleteDataPoints(Series series, Interval interval) {
+  public Result<Void> deleteDataPoints(Series series, Interval interval) {
     checkNotNull(series);
     checkNotNull(interval);
 
@@ -205,7 +205,7 @@ public class Client {
     }
 
     HttpRequest request = buildRequest(uri.toString(), HttpMethod.DELETE);
-    Result<Nothing> result = execute(request, Nothing.class);
+    Result<Void> result = execute(request, Void.class);
     return result;
   }
 
@@ -213,10 +213,10 @@ public class Client {
    *  Deletes a Series.
    *
    *  @param series The Series to delete
-   *  @return {@link Nothing}
+   *  @return {@link Void}
    *  @since 1.0.0
    */
-  public Result<Nothing> deleteSeries(Series series) {
+  public Result<Void> deleteSeries(Series series) {
     checkNotNull(series);
 
     URI uri = null;
@@ -229,7 +229,7 @@ public class Client {
     }
 
     HttpRequest request = buildRequest(uri.toString(), HttpMethod.DELETE);
-    Result<Nothing> result = execute(request, Nothing.class);
+    Result<Void> result = execute(request, Void.class);
     return result;
   }
 
@@ -991,13 +991,13 @@ public class Client {
    *
    *  @param series The series to write to.
    *  @param data A list of datapoints
-   *  @return {@link Nothing}
+   *  @return {@link Void}
    *
    *  @see DataPoint
-   *  @see Nothing
+   *  @see Void
    *  @since 1.0.0
    */
-  public Result<Nothing> writeDataPoints(Series series, List<DataPoint> data) {
+  public Result<Void> writeDataPoints(Series series, List<DataPoint> data) {
     checkNotNull(series);
     checkNotNull(data);
 
@@ -1010,18 +1010,18 @@ public class Client {
       throw new IllegalArgumentException(message, e);
     }
 
-    Result<Nothing> result = null;
+    Result<Void> result = null;
     String body = null;
     try{
       body = Json.dumps(data);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();
-      result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
+      result = new Result<Void>(null, GENERIC_ERROR_CODE, message);
       return result;
     }
 
     HttpRequest request = buildRequest(uri.toString(), HttpMethod.POST, body);
-    result = execute(request, Nothing.class);
+    result = execute(request, Void.class);
     return result;
   }
 
@@ -1033,13 +1033,13 @@ public class Client {
    *  what failed.
    *
    *  @param request A WriteRequest for the DataPoints to write.
-   *  @return {@link Nothing}
+   *  @return {@link Void}
    *
    *  @see MultiDataPoint
    *  @see MultiStatus
    *  @since 1.0.0
    */
-  public Result<Nothing> writeDataPoints(WriteRequest request) {
+  public Result<Void> writeDataPoints(WriteRequest request) {
     checkNotNull(request);
 
     URI uri = null;
@@ -1051,18 +1051,18 @@ public class Client {
       throw new IllegalArgumentException(message, e);
     }
 
-    Result<Nothing> result = null;
+    Result<Void> result = null;
     String body = null;
     try {
       body = Json.dumps(request);
     } catch (JsonProcessingException e) {
       String message = "Error serializing the body of the request. More detail: " + e.getMessage();
-      result = new Result<Nothing>(null, GENERIC_ERROR_CODE, message);
+      result = new Result<Void>(null, GENERIC_ERROR_CODE, message);
       return result;
     }
 
     HttpRequest httpRequest = buildRequest(uri.toString(), HttpMethod.POST, body);
-    result = execute(httpRequest, Nothing.class);
+    result = execute(httpRequest, Void.class);
     return result;
   }
 

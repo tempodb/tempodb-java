@@ -37,9 +37,9 @@ public class WriteDataPointsBySeriesTest {
   public void smokeTest() throws IOException {
     HttpResponse response = Util.getResponse(200, "");
     Client client = Util.getClient(response);
-    Result<Nothing> result = client.writeDataPoints(series, data);
+    Result<Void> result = client.writeDataPoints(series, data);
 
-    Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK");
+    Result<Void> expected = new Result<Void>(null, 200, "OK");
     assertEquals(expected, result);
   }
 
@@ -49,7 +49,7 @@ public class WriteDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.writeDataPoints(series, data);
+    Result<Void> result = client.writeDataPoints(series, data);
 
     HttpRequest request = Util.captureRequest(mockClient);
     assertEquals("POST", request.getRequestLine().getMethod());
@@ -61,7 +61,7 @@ public class WriteDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.writeDataPoints(series, data);
+    Result<Void> result = client.writeDataPoints(series, data);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
@@ -74,7 +74,7 @@ public class WriteDataPointsBySeriesTest {
     HttpClient mockClient = Util.getMockHttpClient(response);
     Client client = Util.getClient(mockClient);
 
-    Result<Nothing> result = client.writeDataPoints(series, data);
+    Result<Void> result = client.writeDataPoints(series, data);
 
     ArgumentCaptor<HttpPost> argument = ArgumentCaptor.forClass(HttpPost.class);
     verify(mockClient).execute(any(HttpHost.class), argument.capture(), any(HttpContext.class));

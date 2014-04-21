@@ -38,8 +38,8 @@ public class ResultTest {
   @Test
   public void testSuccessfulRequest() throws IOException {
     HttpResponse response = Util.getResponse(200, "");
-    Result<Nothing> result = new Result<Nothing>(response, Nothing.class);
-    Result<Nothing> expected = new Result<Nothing>(new Nothing(), 200, "OK", null);
+    Result<Void> result = new Result<Void>(response, Void.class);
+    Result<Void> expected = new Result<Void>(null, 200, "OK", null);
     assertEquals(expected, result);
     assertTrue(result.getState() == State.SUCCESS);
   }
@@ -47,8 +47,8 @@ public class ResultTest {
   @Test
   public void testFailedRequest_Body() throws IOException {
     HttpResponse response = Util.getResponse(403, "You are forbidden");
-    Result<Nothing> result = new Result<Nothing>(response, Nothing.class);
-    Result<Nothing> expected = new Result<Nothing>(null, 403, "You are forbidden", null);
+    Result<Void> result = new Result<Void>(response, Void.class);
+    Result<Void> expected = new Result<Void>(null, 403, "You are forbidden", null);
     assertEquals(expected, result);
     assertTrue(result.getState() == State.FAILURE);
   }
@@ -56,8 +56,8 @@ public class ResultTest {
   @Test
   public void testFailedRequest_NoBody() throws IOException {
     HttpResponse response = Util.getResponse(403, "");
-    Result<Nothing> result = new Result<Nothing>(response, Nothing.class);
-    Result<Nothing> expected = new Result<Nothing>(null, 403, "Forbidden", null);
+    Result<Void> result = new Result<Void>(response, Void.class);
+    Result<Void> expected = new Result<Void>(null, 403, "Forbidden", null);
     assertEquals(expected, result);
     assertTrue(result.getState() == State.FAILURE);
   }
@@ -66,10 +66,10 @@ public class ResultTest {
   public void testPartialFailure() throws IOException {
     String json = "{\"multistatus\":[{\"status\":403,\"messages\":[\"Forbidden\"]}]}";
     HttpResponse response = Util.getResponse(207, json);
-    Result<Nothing> result = new Result<Nothing>(response, Nothing.class);
+    Result<Void> result = new Result<Void>(response, Void.class);
 
     MultiStatus multistatus = new MultiStatus(Arrays.asList(new Status(403, Arrays.asList("Forbidden"))));
-    Result<Nothing> expected = new Result<Nothing>(null, 207, "Multi-Status", multistatus);
+    Result<Void> expected = new Result<Void>(null, 207, "Multi-Status", multistatus);
     assertEquals(expected, result);
     assertTrue(result.getState() == State.PARTIAL_SUCCESS);
   }
