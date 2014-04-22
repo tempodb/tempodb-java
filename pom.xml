@@ -154,6 +154,7 @@
             <link>http://www.joda.org/joda-time/apidocs/</link>
             <link>http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/</link>
           </links>
+          <additionalJOption>-J-Xmx2G</additionalJOption>
         </configuration>
         <executions>
           <execution>
