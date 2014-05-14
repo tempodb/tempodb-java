@@ -14,7 +14,8 @@ import static org.junit.Assert.*;
 
 public class GetSeriesByKeyTest {
 
-  private static final String json = "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
+  private static final String json  = "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
+  private static final String json2 = "{\"id\":\"id1\",\"key\":\"appid:myappid.txn:com%asfd%Ping.count\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
 
   @Test
   public void smokeTest() throws IOException {
@@ -23,6 +24,16 @@ public class GetSeriesByKeyTest {
 
     Result<Series> expected = new Result<Series>(new Series("key1", "name1", new HashSet<String>(), new HashMap<String, String>()), 200, "OK");
     Result<Series> result = client.getSeries("key1");
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void smokeTestUnescapedKey() throws IOException {
+    HttpResponse response = Util.getResponse(200, json2);
+    Client client = Util.getClient(response);
+
+    Result<Series> expected = new Result<Series>(new Series("appid:myappid.txn:com%asfd%Ping.count", "name1", new HashSet<String>(), new HashMap<String, String>()), 200, "OK");
+    Result<Series> result = client.getSeries("appid:myappid.txn:com%asfd%Ping.count");
     assertEquals(expected, result);
   }
 
