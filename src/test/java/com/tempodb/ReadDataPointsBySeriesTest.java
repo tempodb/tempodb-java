@@ -88,6 +88,19 @@ public class ReadDataPointsBySeriesTest {
   }
 
   @Test
+  public void smokeTestNext() throws IOException {
+    HttpResponse response = Util.getResponse(200, json1);
+    Client client = Util.getClient(response);
+    DateTime start = new DateTime(2012, 3, 27, 0, 0, 0, zone);
+    DateTime end = new DateTime(2012, 3, 28, 0, 0, 0, zone);
+
+    DataPoint expected = new DataPoint(new DateTime(2012, 3, 27, 5, 0, 0, 0, zone), 12.34);
+
+    Cursor<DataPoint> cursor = client.readDataPoints(series, new Interval(start, end), zone);
+    assertEquals(expected, cursor.iterator().next());
+  }
+
+  @Test
   public void smokeTestTz() throws IOException {
     DateTimeZone zone = DateTimeZone.forID("America/Chicago");
     HttpResponse response = Util.getResponse(200, jsonTz);

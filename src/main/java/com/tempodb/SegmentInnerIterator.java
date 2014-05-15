@@ -1,6 +1,7 @@
 package com.tempodb;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 
 class SegmentInnerIterator<T> implements Iterator<T> {
@@ -29,6 +30,9 @@ class SegmentInnerIterator<T> implements Iterator<T> {
   }
 
   public T next() {
+    if(!hasNext()) {
+      throw new NoSuchElementException();
+    }
     return currentSegment.next();
   }
 
