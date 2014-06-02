@@ -298,13 +298,15 @@ public class ClientIT {
   @Test
   public void testGetSeriesByKey() {
     // Create a series
-    HashSet<String> tags = new HashSet<String>();
-    tags.add("create");
-    Series series = new Series("create-series", "name", tags, new HashMap<String, String>());
+    HashMap<String, String> attributes = new HashMap<String, String>();
+    attributes.put("appidÜ", "1234");
+    attributes.put("txn", "/def ault");
+
+    Series series = new Series("appidÜ:1234.txn:/def ault.count", "name", new HashSet<String>(), attributes);
     Result<Series> result1 = client.createSeries(series);
 
     // Get the series
-    Result<Series> result2 = client.getSeries("create-series");
+    Result<Series> result2 = client.getSeries("appidÜ:1234.txn:/def ault.count");
     Result<Series> expected = new Result<Series>(series, 200, "OK");
     assertEquals(expected, result2);
   }

@@ -1,9 +1,11 @@
 package com.tempodb;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +161,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = "Could not build URI";
@@ -196,7 +198,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/data/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, urlencode(series.getKey())));
       addIntervalToURI(builder, interval);
       uri = builder.build();
     } catch (URISyntaxException e) {
@@ -221,7 +223,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, urlencode(series.getKey())));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = String.format("Could not build URI with inputs: key: %s", series.getKey());
@@ -246,7 +248,7 @@ public class Client {
   public Result<DeleteSummary> deleteSeries(Filter filter) {
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
       addFilterToURI(builder, filter);
       uri = builder.build();
     } catch (URISyntaxException e) {
@@ -270,7 +272,7 @@ public class Client {
   public Result<DeleteSummary> deleteAllSeries() {
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
       builder.addParameter("allow_truncation", "true");
       uri = builder.build();
     } catch (URISyntaxException e) {
@@ -319,7 +321,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/find/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/find/", API_VERSION, urlencode(series.getKey())));
       addIntervalToURI(builder, interval);
       addPredicateToURI(builder, predicate);
       addTimeZoneToURI(builder, timezone);
@@ -345,7 +347,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/", API_VERSION, key));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, urlencode(key)));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = String.format("Could not build URI with inputs: key: %s", key);
@@ -370,7 +372,7 @@ public class Client {
   public Cursor<Series> getSeries(Filter filter) {
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/", API_VERSION));
       addFilterToURI(builder, filter);
       uri = builder.build();
     } catch (URISyntaxException e) {
@@ -456,7 +458,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/single/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/single/", API_VERSION, urlencode(series.getKey())));
       addTimestampToURI(builder, timestamp);
       addTimeZoneToURI(builder, timezone);
       addDirectionToURI(builder, direction);
@@ -545,7 +547,7 @@ public class Client {
   public Cursor<SingleValue> readSingleValue(Filter filter, DateTime timestamp, DateTimeZone timezone, Direction direction) {
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/single/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/single/", API_VERSION));
       addFilterToURI(builder, filter);
       addTimestampToURI(builder, timestamp);
       addTimeZoneToURI(builder, timezone);
@@ -577,7 +579,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/summary/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/summary/", API_VERSION, urlencode(series.getKey())));
       addIntervalToURI(builder, interval);
       addTimeZoneToURI(builder, timezone);
       uri = builder.build();
@@ -657,7 +659,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/segment/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/segment/", API_VERSION, urlencode(series.getKey())));
       addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
       addRollupToURI(builder, rollup);
@@ -728,7 +730,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/data/rollups/segment/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/rollups/segment/", API_VERSION, urlencode(series.getKey())));
       addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
       addMultiRollupToURI(builder, rollup);
@@ -833,7 +835,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/segment/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/segment/", API_VERSION));
       addFilterToURI(builder, filter);
       addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
@@ -936,7 +938,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/multi/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/multi/", API_VERSION));
       addFilterToURI(builder, filter);
       addInterpolationToURI(builder, interpolation);
       addIntervalToURI(builder, interval);
@@ -964,7 +966,7 @@ public class Client {
   public Result<Series> updateSeries(Series series) {
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/", API_VERSION, urlencode(series.getKey())));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = "Could not build URI";
@@ -1003,7 +1005,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/series/key/%s/data/", API_VERSION, series.getKey()));
+      URIBuilder builder = new URIBuilder(String.format("/%s/series/key/%s/data/", API_VERSION, urlencode(series.getKey())));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = String.format("Could not build URI with inputs: key: %s", series.getKey());
@@ -1044,7 +1046,7 @@ public class Client {
 
     URI uri = null;
     try {
-      URIBuilder builder = new URIBuilder().setPath(String.format("/%s/multi/", API_VERSION));
+      URIBuilder builder = new URIBuilder(String.format("/%s/multi/", API_VERSION));
       uri = builder.build();
     } catch (URISyntaxException e) {
       String message = "Could not build URI.";
@@ -1141,6 +1143,16 @@ public class Client {
     if(timezone != null) {
       builder.addParameter("tz", timezone.toString());
     }
+  }
+
+  private String urlencode(String key) {
+    String encoded;
+    try {
+      encoded = URLEncoder.encode(key, "utf-8").replaceAll("\\+", "%20");
+    } catch (UnsupportedEncodingException e) {
+      encoded = key;
+    }
+    return encoded;
   }
 
   HttpRequest buildRequest(String uri) {
