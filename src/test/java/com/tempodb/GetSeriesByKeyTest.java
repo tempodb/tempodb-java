@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class GetSeriesByKeyTest {
 
   private static final String json  = "{\"id\":\"id1\",\"key\":\"key1\",\"name\":\"name1\",\"tags\":[],\"attributes\":{}}";
-  private static final String json2 = "{\"id\":\"id1\",\"key\":\"appidÜ:1234.txn:/def ault.count\",\"name\":\"name1\",\"tags\":[],\"attributes\":{\"appidÜ\":\"1234\",\"txn\":\"def ault\"}}";
+  private static final String json2 = "{\"id\":\"id1\",\"key\":\"appidÜ:1234.txn:/def ault.cou+()+={}nt\",\"name\":\"name1\",\"tags\":[],\"attributes\":{\"appidÜ\":\"1234\",\"txn\":\"def ault\"}}";
 
   @Test
   public void smokeTest() throws IOException {
@@ -37,14 +37,14 @@ public class GetSeriesByKeyTest {
     Map<String, String> attributes = new HashMap<String, String>();
     attributes.put("appidÜ", "1234");
     attributes.put("txn", "def ault");
-    Result<Series> expected = new Result<Series>(new Series("appidÜ:1234.txn:/def ault.count", "name1", new HashSet<String>(), attributes), 200, "OK");
+    Result<Series> expected = new Result<Series>(new Series("appidÜ:1234.txn:/def ault.cou+()+={}nt", "name1", new HashSet<String>(), attributes), 200, "OK");
 
-    Result<Series> result = client.getSeries("appidÜ:1234.txn:/def ault.count");
+    Result<Series> result = client.getSeries("appidÜ:1234.txn:/def ault.cou+()+={}nt");
     assertEquals(expected, result);
 
     HttpRequest request = Util.captureRequest(mockClient);
     URI uri = new URI(request.getRequestLine().getUri());
-    assertEquals("/v1/series/key/appid%C3%9C%3A1234.txn%3A%2Fdef%20ault.count/", uri.getRawPath());
+    assertEquals("/v1/series/key/appid%C3%9C%3A1234.txn%3A%2Fdef%20ault.cou%2B%28%29%2B%3D%7B%7Dnt/", uri.getRawPath());
   }
 
   @Test
