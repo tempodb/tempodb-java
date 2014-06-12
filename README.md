@@ -2,20 +2,14 @@
 
 [![Build Status](https://travis-ci.org/tempodb/tempodb-java.png?branch=1.0)](https://travis-ci.org/tempodb/tempodb-java)
 
-Releases are available on our maven server. Add the following dependency to your pom.
+Releases are available on our maven server. Ensure that you can pull from maven central,
+and add the following dependency to your pom:
 
     <dependency>
       <groupId>com.tempodb</groupId>
       <artifactId>tempodb-java</artifactId>
-      <version>1.1.2</version>
+      <version>1.1.5</version>
     </dependency>
-
-    <repositories>
-      <repository>
-        <id>TempoDB Repository</id>
-        <url>http://maven.tempo-db.com/artifactory/repo/</url>
-      </repository>
-    </repositories>
 
 Or, you can clone the repository and build with maven.
 
