@@ -9,8 +9,8 @@
   <name>tempodb-java</name>
   <url>http://maven.apache.org</url>
   <scm>
-    <connection>scm:git:git://github.com/tempodb/tempodb-java.git</connection>
-    <developerConnection>scm:git:git@github.com:tempodb/tempodb-java.git</developerConnection>
+    <connection>scm:git:file://${basedir}</connection>
+    <developerConnection>scm:git:file://${basedir}</developerConnection>
     <url>http://github.com/tempodb/tempodb</url>
     <tag>HEAD</tag>
   </scm>
