@@ -3,7 +3,7 @@
 
   <groupId>com.tempodb</groupId>
   <artifactId>tempodb-java</artifactId>
-  <version>1.1.4</version>
+  <version>1.1.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>tempodb-java</name>
@@ -12,7 +12,7 @@
     <connection>scm:git:file://${basedir}</connection>
     <developerConnection>scm:git:file://${basedir}</developerConnection>
     <url>http://github.com/tempodb/tempodb</url>
-    <tag>v1.1.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
