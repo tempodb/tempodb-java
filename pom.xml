@@ -7,13 +7,29 @@
   <packaging>jar</packaging>
 
   <name>tempodb-java</name>
-  <url>http://maven.apache.org</url>
+  <url>http://github.com/tempodb/tempodb-java</url>
+  <description>TempoDB REST Client</description>
   <scm>
     <connection>scm:git:file://${basedir}</connection>
     <developerConnection>scm:git:file://${basedir}</developerConnection>
     <url>http://github.com/tempodb/tempodb</url>
     <tag>HEAD</tag>
   </scm>
+  <developers>
+    <developer>
+      <id>tempodb</id>
+      <name>TempoDB Open Source</name>
+      <email>opensource@tempo-db.com</email>
+      <url>http://tempo-db.com</url>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
