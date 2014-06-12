@@ -9,8 +9,9 @@
   <name>tempodb-java</name>
   <url>http://maven.apache.org</url>
   <scm>
-    <connection>scm:git:file://${basedir}</connection>
-    <developerConnection>scm:git:file://${basedir}</developerConnection>
+    <connection>scm:git:git://github.com/tempodb/tempodb-java.git</connection>
+    <developerConnection>scm:git:git@github.com:tempodb/tempodb-java.git</developerConnection>
+    <url>http://github.com/tempodb/tempodb</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -24,18 +25,64 @@
     <integration-test.testOutputDirectory>${project.build.directory}/integrationtest-classes</integration-test.testOutputDirectory>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+	<property>
+	  <name>performRelease</name>
+	  <value>true</value>
+	</property>
+      </activation>
+      <build>
+	<plugins>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-gpg-plugin</artifactId>
+	    <version>1.4</version>
+	    <configuration>
+	      <passphrase>${gpg.passphrase}</passphrase>
+	    </configuration>
+	    <executions>
+	      <execution>
+		<id>sign-artifacts</id>
+		<phase>verify</phase>
+		<goals>
+		  <goal>sign</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <distributionManagement>
     <repository>
-      <id>tempodb-release</id>
-      <name>maven.tempo-db.com-releases</name>
-      <url>http://maven.tempo-db.com/artifactory/libs-release-local</url>
+      <id>sonatype-nexus-staging</id>
+      <name>Sonatype Nexus release repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>tempodb-snapshot</id>
-      <name>maven.tempo-db.com-snapshots</name>
-      <url>http://maven.tempo-db.com/artifactory/libs-snapshot-local</url>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus snapshot repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+
+  <!-- <distributionManagement> -->
+  <!--   <repository> -->
+  <!--     <id>tempodb-release</id> -->
+  <!--     <name>maven.tempo-db.com-releases</name> -->
+  <!--     <url>http://maven.tempo-db.com/artifactory/libs-release-local</url> -->
+  <!--   </repository> -->
+  <!--   <snapshotRepository> -->
+  <!--     <id>tempodb-snapshot</id> -->
+  <!--     <name>maven.tempo-db.com-snapshots</name> -->
+  <!--     <url>http://maven.tempo-db.com/artifactory/libs-snapshot-local</url> -->
+  <!--   </snapshotRepository> -->
+  <!-- </distributionManagement> -->
 
   <dependencies>
     <dependency>
